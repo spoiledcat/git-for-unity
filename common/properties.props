@@ -2,8 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Build flags -->
   <PropertyGroup>
-    <BuildType Condition="Exists('$(SolutionDir)script\src\MetricsService.cs')">Internal</BuildType>
-    <BuildDefs Condition="$(BuildType) == 'Internal'">ENABLE_METRICS</BuildDefs>
+    <BuildType Condition="Exists('$(SolutionDir)script\src\ApplicationInfo_Local.cs')">Internal</BuildType>
     <BuildDefs>$(BuildDefs);ENABLE_MONO</BuildDefs>
 
     <UnityDir Condition="$(UnityDir) == '' and Exists('$(SolutionDir)\script\lib\Managed\UnityEditor.dll')">$(SolutionDir)script\lib\</UnityDir>
