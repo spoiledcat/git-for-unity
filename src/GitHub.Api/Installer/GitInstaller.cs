@@ -366,7 +366,7 @@ namespace GitHub.Unity
         {
             public const string GitPackageName = "git.json";
             public const string GitLfsPackageName = "git-lfs.json";
-#if DEBUG
+#if DEVELOPER_BUILD
             private const string packageFeed = "http://localhost:50000/unity/git/";
 #else
             private const string packageFeed = "http://github-vs.s3.amazonaws.com/unity/git/";

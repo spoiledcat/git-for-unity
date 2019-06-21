@@ -18,7 +18,7 @@ namespace GitHub.Logging
 
         public void Debug(string message)
         {
-#if DEBUG
+#if DEVELOPER_BUILD
             LogHelper.LogAdapter.Debug(context, message);
 #endif
         }
@@ -51,28 +51,28 @@ namespace GitHub.Logging
 
         public void Debug(string format, params object[] objects)
         {
-#if DEBUG
+#if DEVELOPER_BUILD
             Debug(String.Format(format, objects));
 #endif
         }
 
         public void Debug(Exception ex, string message)
         {
-#if DEBUG
+#if DEVELOPER_BUILD
             Debug(String.Concat(message, Environment.NewLine, ex.GetExceptionMessage()));
 #endif
         }
 
         public void Debug(Exception ex)
         {
-#if DEBUG
+#if DEVELOPER_BUILD
             Debug(ex, string.Empty);
 #endif
         }
 
         public void Debug(Exception ex, string format, params object[] objects)
         {
-#if DEBUG
+#if DEVELOPER_BUILD
             Debug(ex, String.Format(format, objects));
 #endif
         }

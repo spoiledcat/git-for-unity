@@ -4,17 +4,20 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\</SolutionDir>
     <ProjectGuid>{F5D69B3F-E2BF-4D32-9DCE-51F3E52D74AF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GitHub.Unity</RootNamespace>
     <AssemblyName>GitHub.Unity.Localization</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <FileAlignment>512</FileAlignment>
     <OutputPath>.</OutputPath>
+    <IntermediateOutputPath>$(SolutionDir)\build\obj\$(Configuration)</IntermediateOutputPath>
     <TargetFrameworkProfile />
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\common\properties.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BuildConfiguration>Release</BuildConfiguration>
     <DebugType>pdbonly</DebugType>
@@ -56,4 +59,5 @@
   <Target Name="BeforeBuild">
   </Target>
 -->
+  <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

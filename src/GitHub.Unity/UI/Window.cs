@@ -72,7 +72,7 @@ namespace GitHub.Unity
             EntryPoint.ApplicationManager.UsageTracker.IncrementApplicationMenuMenuItemCommandLine();
         }
 
-#if DEBUG
+#if DEVELOPER_BUILD
 
         [MenuItem("GitHub/Select Window")]
         public static void GitHub_SelectWindow()

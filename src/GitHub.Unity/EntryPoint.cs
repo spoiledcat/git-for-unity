@@ -55,11 +55,11 @@ namespace GitHub.Unity
                     LogHelper.Error(ex, "Error rotating log files");
                 }
 
-                Debug.LogFormat("Initialized GitHub for Unity version {0}{1}Log file: {2}", ApplicationInfo.Version, ApplicationManager.Environment.NewLine, logPath);
+                Debug.LogFormat("Initialized GitHub for Unity version {0}{1} ({2}) Log file: {2}", ApplicationInfo.Version, ApplicationManager.Environment.NewLine, logPath);
             }
 
             LogHelper.LogAdapter = new MultipleLogAdapter(new FileLogAdapter(logPath)
-#if DEBUG
+#if DEVELOPER_BUILD
                 , new UnityLogAdapter()
 #endif
                 );

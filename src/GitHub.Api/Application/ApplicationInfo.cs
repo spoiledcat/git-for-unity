@@ -3,7 +3,7 @@ namespace GitHub.Unity
 {
     static partial class ApplicationInfo
     {
-#if DEBUG
+#if DEVELOPER_BUILD
         public const string ApplicationName = "GitHub for Unity Debug";
         public const string ApplicationProvider = "GitHub";
         public const string ApplicationSafeName = "GitHubUnity-dev";
@@ -14,7 +14,7 @@ namespace GitHub.Unity
 #endif
         public const string ApplicationDescription = "GitHub for Unity";
 
-#if DEBUG
+#if DEVELOPER_BUILD
 /*
         For external contributors, we have bundled a developer OAuth application
         called `GitHub for Unity (dev)` so that you can complete the sign in flow
