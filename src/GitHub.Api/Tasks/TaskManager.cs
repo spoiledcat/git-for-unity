@@ -109,7 +109,9 @@ namespace GitHub.Unity
             {
                 task.Task.ContinueWith(tt =>
                 {
-                    logger.Error(tt.Exception.InnerException, String.Format("Exception on ui thread: {0} {1}", tt.Id, task.Name));
+                    Exception ex = tt.Exception.GetBaseException();
+                    while (ex.InnerException != null) ex = ex.InnerException;
+                    logger.Error(ex, String.Format("Exception on ui thread: {0} {1}", tt.Id, task.Name));
                 },
                     cts.Token,
                     TaskContinuationOptions.OnlyOnFaulted, ConcurrentScheduler
@@ -123,9 +125,10 @@ namespace GitHub.Unity
         {
             if (setupFaultHandler)
             {
-                task.Task.ContinueWith(tt =>
-                {
-                    logger.Error(tt.Exception.InnerException, String.Format("Exception on exclusive thread: {0} {1}", tt.Id, task.Name));
+                task.Task.ContinueWith(tt => {
+                    Exception ex = tt.Exception.GetBaseException();
+                    while (ex.InnerException != null) ex = ex.InnerException;
+                    logger.Error(ex, String.Format("Exception on exclusive thread: {0} {1}", tt.Id, task.Name));
                 },
                     cts.Token,
                     TaskContinuationOptions.OnlyOnFaulted, ConcurrentScheduler
@@ -143,7 +146,9 @@ namespace GitHub.Unity
             {
                 task.Task.ContinueWith(tt =>
                 {
-                    logger.Error(tt.Exception.InnerException, String.Format("Exception on concurrent thread: {0} {1}", tt.Id, task.Name));
+                    Exception ex = tt.Exception.GetBaseException();
+                    while (ex.InnerException != null) ex = ex.InnerException;
+                    logger.Error(ex, String.Format("Exception on concurrent thread: {0} {1}", tt.Id, task.Name));
                 },
                     cts.Token,
                     TaskContinuationOptions.OnlyOnFaulted, ConcurrentScheduler
