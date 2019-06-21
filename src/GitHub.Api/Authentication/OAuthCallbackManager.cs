@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -75,7 +77,12 @@ namespace GitHub.Unity
                         while (true)
                         {
                             var context = httpListener.GetContext();
-                            var queryParts = HttpUtility.ParseQueryString(context.Request.Url.Query);
+                            var queryParts = new NameValueCollection();
+                            context.Request.Url.Query.Split('&').All(x => {
+                                var parts = x.Split('=');
+                                queryParts.Add(WebUtility.UrlDecode(parts[0]), WebUtility.UrlDecode(parts[1]));
+                                return true;
+                            });
 
                             var state = queryParts["state"];
                             var code = queryParts["code"];

@@ -2,6 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
+    <SourceDir Condition="'$(SourceDir)' == '' ">$(SolutionDir)\src\Assets\Editor</SourceDir>
     <PublishTo Condition="'$(PublishTo)' == '' ">$(SolutionDir)\unity\PackageProject\Assets\Plugins\GitHub\Editor</PublishTo>
     <ExternalPublishTo>$(SolutionDir)..\github-unity-test\GitHubExtensionProject\Assets\Plugins\GitHub\Editor</ExternalPublishTo>
   </PropertyGroup>
@@ -13,9 +14,7 @@
   -->
   <Target Name="AfterBuild">
 
-    <Delete Files="$(OutputPath)\$(AssemblyName).dll;$(OutputPath)\$(AssemblyName).pdb;$(OutputPath)\$(AssemblyName).dll.mdb" TreatErrorsAsWarnings="true" />
-
-    <CreateItem Include="$(OutputPath)\**\*.*">
+    <CreateItem Include="$(SourceDir)\**\*.*">
       <Output TaskParameter="Include" ItemName="ToCopy" />
     </CreateItem>
 
@@ -38,36 +37,4 @@
 
   </Target>
 
-  <Target Name="CopyMainAssembly" DependsOnTargets="DetectMainAssembly">
-
-    <Copy
-      Condition="'%(IndirectDependency.FullPath)'!=''"
-      SourceFiles="%(IndirectDependency.FullPath)"
-      DestinationFolder="$(OutputPath)"
-      SkipUnchangedFiles="true">
-      <Output TaskParameter="CopiedFiles" ItemName="IndirectDependencyCopied" />
-    </Copy>
-
-    <Message Importance="high"
-      Condition="'%(IndirectDependencyCopied.FullPath)'!='' and '%(IndirectDependencyCopied.Extension)'!='.pdb' and '%(IndirectDependencyCopied.Extension)'!='.xml'"
-      Text="Dependency copied: %(IndirectDependencyCopied.FullPath)" />
-
-  </Target>
-
-  <Target Name="DetectMainAssembly" DependsOnTargets="ResolveAssemblyReferences">
-
-    <Message Importance="low" Text="Dependency: %(ReferencePath.Filename)%(ReferencePath.Extension) %(ReferencePath.CopyLocal)" />
-
-    <!-- Creating indirect dependency list -->
-    <CreateItem Include="%(ReferencePath.FullPath)" Condition="$([System.String]::Copy('%(ReferencePath.Filename)').Contains('GitHub.Unity'))">
-      <Output TaskParameter="Include" ItemName="IndirectDependency" />
-    </CreateItem>
-  </Target>
-
-  <PropertyGroup>
-    <CoreBuildDependsOn>
-      $(CoreBuildDependsOn);
-      CopyMainAssembly
-    </CoreBuildDependsOn>
-  </PropertyGroup>
 </Project>

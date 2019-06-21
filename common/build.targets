@@ -20,11 +20,10 @@
         - Copy UnityEngine.dll and UnityEditor.dll to the {0}lib\Managed folder
         - Copy UnityEngine.TestRunner.dll to the {0}lib\UnityExtensions/Unity/TestRunner folder
         - Copy UnityEditor.TestRunner.dll to the {0}lib\UnityExtensions/Unity/TestRunner/Editor folder
+      {1}
       </UnityDLLsMissingErrorText>
-      <MissingOctokitProject>To build the OctokitDebugging solution you need to have https://github.com/github-for-unity/octokit.net checked out in {0}</MissingOctokitProject>
-      <MissingHttpProject>To build the OctokitDebugging solution you need to have https://github.com/github-for-unity/dotnet-httpclient35 checked out in {0}</MissingHttpProject>
     </PropertyGroup>
-    <Error Condition="'$(UnityDir)' == ''" Text="$([System.String]::Format('$(UnityDLLsMissingErrorText)', '$(SolutionDir)'))" />
-    <Error Condition="$(SolutionType) == 'OctokitDebugging' and !Exists('$(SolutionDir)..\dotnet-httpclient35\System.Net.Http\System.Net.Http-net_3_5.csproj')" Text="$([System.String]::Format('$(MissingOctokitProject)', '$(SolutionDir)..\dotnet-httpclient35'))" />
+    <Error Condition="'$(UnityDir)' == ''" Text="$([System.String]::Format('$(UnityDLLsMissingErrorText)', '$(SolutionDir)', 
+      '$(Exists(\'C:\Program Files\Unity\Hub\Editor\2018.4.2f1\Editor\Data\Managed\UnityEditor.dll\'))'))" />
   </Target>
 </Project>

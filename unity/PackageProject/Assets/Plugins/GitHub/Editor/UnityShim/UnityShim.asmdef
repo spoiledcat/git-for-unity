@@ -1,0 +1,12 @@
+{
+    "name": "GitHub.UnityShim",
+    "references": [
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "autoReferenced": false,
+    "allowUnsafeCode": false
+}

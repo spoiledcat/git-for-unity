@@ -4,25 +4,27 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B389ADAF-62CC-486E-85B4-2D8B078DF763}</ProjectGuid>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\</SolutionDir>
+    <ProjectGuid>{B389ADAF-62CC-486E-85B4-2D8B078DF76B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GitHub.Unity</RootNamespace>
     <AssemblyName>GitHub.Api</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
     <LangVersion>6</LangVersion>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <OutputPath>..\UnityExtension\Assets\Editor\build\</OutputPath>
+    <OutputPath>$(SolutionDir)\build\$(Configuration)</OutputPath>
+    <IntermediateOutputPath>$(SolutionDir)\build\obj\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
-  <Import Project="..\..\common\properties.props" />
+  <Import Project="$(SolutionDir)\common\properties.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;$(BuildDefs)</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;DEVELOPER_BUILD;$(BuildDefs);NET_4_6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
@@ -32,7 +34,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;$(BuildDefs)</DefineConstants>
+    <DefineConstants>TRACE;$(BuildDefs);NET_4_6</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <BuildConfig>Release</BuildConfig>
@@ -40,43 +42,19 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'dev|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <DefineConstants>TRACE;DEBUG;DEVELOPER_BUILD;$(BuildDefs)</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
-    <CodeAnalysisRuleSet>..\..\common\codeanalysis-debug.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <PropertyGroup>
     <BuildConfig Condition=" '$(BuildConfig)' == '' ">Debug</BuildConfig>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AsyncBridge.Net35, Version=0.2.3333.0, Culture=neutral, PublicKeyToken=b3b1c0202c0d6a87, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)\packages\AsyncBridge.Net35.0.2.3333.0\lib\net35-Client\AsyncBridge.Net35.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Mono.Posix">
-      <HintPath>$(SolutionDir)lib\Mono.Posix.dll</HintPath>
-    </Reference>
-    <Reference Include="ReadOnlyCollectionsInterfaces, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\ReadOnlyCollectionInterfaces.1.0.0\lib\NET20\ReadOnlyCollectionsInterfaces.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\Mono.Posix\Mono.Posix.dll</HintPath>
     </Reference>
     <Reference Include="sfw.net">
-      <HintPath>$(SolutionDir)\lib\sfw\sfw.net.dll</HintPath>
+      <HintPath>$(SolutionDir)\src\sfw\sfw.net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Threading, Version=1.0.3333.0, Culture=neutral, PublicKeyToken=402899b480e6f383, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir).\packages\TaskParallelLibrary.1.0.3333.0\lib\Net35\System.Threading.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +131,32 @@
     <Compile Include="SharpZipLib\Encryption\ZipAESStream.cs" />
     <Compile Include="SharpZipLib\Encryption\ZipAESTransform.cs" />
     <Compile Include="SharpZipLib\SharpZipBaseException.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Deflater.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\DeflaterConstants.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\DeflaterEngine.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\DeflaterHuffman.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\DeflaterPending.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Inflater.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\InflaterDynHeader.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\InflaterHuffmanTree.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\PendingBuffer.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Streams\DeflaterOutputStream.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Streams\InflaterInputStream.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Streams\OutputWindow.cs" />
+    <Compile Include="SharpZipLib\Zip\Compression\Streams\StreamManipulator.cs" />
+    <Compile Include="SharpZipLib\Zip\FastZip.cs" />
+    <Compile Include="SharpZipLib\Zip\IEntryFactory.cs" />
+    <Compile Include="SharpZipLib\Zip\WindowsNameTransform.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipConstants.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipEntry.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipEntryFactory.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipException.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipExtraData.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipFile.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipHelperStream.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipInputStream.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipNameTransform.cs" />
+    <Compile Include="SharpZipLib\Zip\ZipOutputStream.cs" />
     <Compile Include="Tasks\ActionTask.cs" />
     <Compile Include="Tasks\BaseOutputProcessor.cs" />
     <Compile Include="Tasks\ConcurrentExclusiveInterleave.cs" />
@@ -195,11 +199,6 @@
     <Compile Include="OutputProcessors\RemoteListOutputProcessor.cs" />
     <Compile Include="Git\IRepository.cs" />
     <Compile Include="Platform\ISettings.cs" />
-    <Compile Include="Localization.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Localization.resx</DependentUpon>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Git\Repository.cs" />
     <Compile Include="Git\RepositoryManager.cs" />
@@ -253,39 +252,10 @@
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Git\GitCredentialManager.cs" />
     <Compile Include="UI\TreeBase.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Deflater.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\DeflaterConstants.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\DeflaterEngine.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\DeflaterHuffman.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\DeflaterPending.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Inflater.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\InflaterDynHeader.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\InflaterHuffmanTree.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\PendingBuffer.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Streams\DeflaterOutputStream.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Streams\InflaterInputStream.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Streams\OutputWindow.cs" />
-    <Compile Include="SharpZipLib\Zip\Compression\Streams\StreamManipulator.cs" />
-    <Compile Include="SharpZipLib\Zip\FastZip.cs" />
-    <Compile Include="SharpZipLib\Zip\IEntryFactory.cs" />
-    <Compile Include="SharpZipLib\Zip\WindowsNameTransform.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipConstants.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipEntry.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipEntryFactory.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipException.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipExtraData.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipFile.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipHelperStream.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipInputStream.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipNameTransform.cs" />
-    <Compile Include="SharpZipLib\Zip\ZipOutputStream.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="$(Buildtype) == 'Internal'">
       <ItemGroup>
-        <Compile Include="$(SolutionDir)\script\src\MetricsService.cs">
-          <Link>Metrics\MetricsService.cs</Link>
-        </Compile>
         <Compile Include="$(SolutionDir)\script\src\ApplicationInfo_Local.cs">
           <Link>Properties\ApplicationInfo_Local.cs</Link>
         </Compile>
@@ -303,6 +273,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <ProjectReference Include="..\GitHub.Unity.Localization\GitHub.Unity.Localization.csproj">
+      <Project>{f5d69b3f-e2bf-4d32-9dce-51f3e52d74af}</Project>
+      <Name>GitHub.Unity.Localization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GitHub.Logging\GitHub.Logging.csproj">
       <Project>{bb6a8eda-15d8-471b-a6ed-ee551e0b3ba0}</Project>
       <Name>GitHub.Logging</Name>
@@ -318,20 +292,8 @@
     <EmbeddedResource Include="PlatformResources\mac\git-lfs.json" />
     <EmbeddedResource Include="PlatformResources\windows\git-lfs.json" />
     <EmbeddedResource Include="PlatformResources\windows\git.json" />
-    <None Include="PlatformResources\linux\git-lfs.zip" />
-    <None Include="PlatformResources\mac\git-lfs.zip" />
-    <None Include="PlatformResources\windows\git-lfs.zip" />
-    <None Include="PlatformResources\windows\git.zip" />
     <EmbeddedResource Include="Resources\octorun.zip" />
     <EmbeddedResource Include="Resources\octorun.zip.md5" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-    <EmbeddedResource Include="Localization.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Localization.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
@@ -339,10 +301,5 @@
   <Target Name="BeforeBuild">
   </Target>
   -->
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="PlatformResources\linux\git-lfs.zip;PlatformResources\linux\git-lfs.json" DestinationFolder="$(SolutionDir)\src\UnityExtension\Assets\Editor\GitHub.Unity\PlatformResources\linux" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="PlatformResources\mac\git-lfs.zip;PlatformResources\mac\git-lfs.json" DestinationFolder="$(SolutionDir)\src\UnityExtension\Assets\Editor\GitHub.Unity\PlatformResources\mac" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="PlatformResources\windows\git.zip;PlatformResources\windows\git.json;PlatformResources\windows\git-lfs.zip;PlatformResources\windows\git-lfs.json" DestinationFolder="$(SolutionDir)\src\UnityExtension\Assets\Editor\GitHub.Unity\PlatformResources\windows" SkipUnchangedFiles="true" />
-  </Target>
-  <Import Project="..\..\common\build.targets" />
+  <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

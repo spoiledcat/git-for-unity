@@ -1,0 +1,18 @@
+{
+    "name": "GitHub.Unity",
+    "references": [
+        "GitHub.Api",
+        "GitHub.Logging",
+        "GitHub.UnityShim"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": []
+}
