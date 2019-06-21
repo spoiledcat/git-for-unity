@@ -65,4 +65,3 @@ crashlytics-build.properties
 
 *.sln
 /*.csproj
-obj.meta
