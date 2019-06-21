@@ -34,16 +34,13 @@ namespace GitHub.Unity
                 return iconCache[key];
             }
 
-            Texture2D texture2D = null;
+            Texture2D texture2D;
 
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GitHub.Unity.IconsAndLogos." + filename);
-            if (stream == null)
+            using (var stream =
+                AssemblyResources.ToStream(ResourceType.Icon, filename, EntryPoint.ApplicationManager.Environment))
             {
-                stream = new MemoryStream(Application.dataPath.ToNPath().Combine("Editor/GitHub.Unity/IconsAndLogos/", filename).ReadAllBytes());
+                texture2D = stream.ToTexture2D();
             }
-
-            texture2D = stream.ToTexture2D();
-            stream.Dispose();
 
             if (texture2D != null)
             {
@@ -119,6 +116,8 @@ namespace GitHub.Unity
 
         public static Texture2D ToTexture2D(this Stream input)
         {
+            if (input == null) return null;
+
             var buffer = new byte[16 * 1024];
             using (var ms = new MemoryStream())
             {
