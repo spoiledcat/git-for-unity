@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using GitHub.Unity;
+using Unity.Git;
 using NSubstitute;
 using NUnit.Framework;
 using TestUtils;

@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace GitHub.Unity.Tests
+namespace Unity.Git.Tests
 {
     [TestFixture]
     public class MozRootsTests

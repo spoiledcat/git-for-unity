@@ -1,6 +1,6 @@
 using System;
 using FluentAssertions;
-using GitHub.Unity;
+using Unity.Git;
 using NCrunch.Framework;
 using NSubstitute;
 using NUnit.Framework;

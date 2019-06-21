@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using FluentAssertions;
 using NUnit.Framework;
-using GitHub.Unity;
+using Unity.Git;
 using TestUtils;
 using System.Threading.Tasks;
 

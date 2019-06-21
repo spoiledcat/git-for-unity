@@ -1,7 +1,7 @@
 using TestUtils;
 using System.Collections.Generic;
 using NUnit.Framework;
-using GitHub.Unity;
+using Unity.Git;
 
 namespace UnitTests
 {

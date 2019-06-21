@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using FluentAssertions;
-using GitHub.Unity;
 using NSubstitute;
 using NUnit.Framework;
 using TestUtils;
 using TestUtils.Events;
-using System.Threading.Tasks;
-using GitHub.Logging;
+using Unity.Git;
 
 namespace IntegrationTests
 {

@@ -1,10 +1,9 @@
-using GitHub.Logging;
-using GitHub.Unity;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
+using Unity.Git;
 
 namespace IntegrationTests
 {

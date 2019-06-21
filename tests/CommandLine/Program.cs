@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Mono.Options;
 using System.IO;
-using System.Threading;
-using GitHub.Unity;
-using GitHub;
-using GitHub.Logging;
 using System.Net;
 using System.Text;
+using System.Threading;
+using Mono.Options;
+using Unity.Git;
 
 namespace TestApp
 {

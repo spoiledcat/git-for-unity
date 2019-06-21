@@ -1,10 +1,10 @@
 ﻿using System;
-using GitHub.Unity;
+using Unity.Git;
 using System.Threading;
 
 namespace TestUtils
 {
-    class TestSynchronizationContext : SynchronizationContext, IMainThreadSynchronizationContext
+    public class TestSynchronizationContext : SynchronizationContext, IMainThreadSynchronizationContext
     {
         public void Schedule(Action action)
         {

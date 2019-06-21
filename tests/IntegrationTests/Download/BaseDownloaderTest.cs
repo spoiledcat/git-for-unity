@@ -2,8 +2,8 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using GitHub.Logging;
-using GitHub.Unity;
+using Unity.Git;
+using Unity.Git;
 
 namespace IntegrationTests.Download
 {

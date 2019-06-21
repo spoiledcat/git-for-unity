@@ -1,0 +1,13 @@
+{
+	"name": "com.unity.version-control.git.ui",
+	"displayName": "Git for Unity UI",
+	"version": "2.0.0-preview",
+	"unity": "2018.4",
+	"description": "Git for Unity brings [Git](https://git-scm.com/) into [Unity](https://unity3d.com/), integrating source control into your work with friendly and accessible tools and workflows.",
+	"dependencies": {
+		"com.unity.version-control.git": "file:../api"
+	},
+	"devDependencies": {
+
+	}
+}

@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using GitHub.Unity;
-using NSubstitute;
-using GitHub.Logging;
-using NUnit.Framework;
 using System.Threading.Tasks;
+using NSubstitute;
+using NUnit.Framework;
+using Unity.Git;
 
 namespace TestUtils.Events
 {

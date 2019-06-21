@@ -1,0 +1,19 @@
+{
+    "name": "Unity.Git.Api",
+    "references": [
+        "Unity.Git.Logging",
+        "Unity.Git.Localization",
+        "sfw.net",
+        "Mono.Posix"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": []
+}

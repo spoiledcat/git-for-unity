@@ -66,6 +66,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\src\api\Api\Unity.Git.Api.csproj">
+      <Project>{b389adaf-62cc-486e-85b4-2d8b078df76b}</Project>
+      <Name>Unity.Git.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\src\api\Logging\Unity.Git.Logging.csproj">
+      <Project>{bb6a8eda-15d8-471b-a6ed-ee551e0b3ba0}</Project>
+      <Name>Unity.Git.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestUtils\TestUtils.csproj">
+      <Project>{66a1d219-f61d-4ae4-9bd7-aaeb97276fff}</Project>
+      <Name>TestUtils</Name>
+    </ProjectReference>
+    <Reference Include="sfw.net">
+      <HintPath>$(SolutionDir)\src\api\sfw\sfw.net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Authentication\KeychainTests.cs" />
     <Compile Include="Extensions\ListExtensionTests.cs" />
     <Compile Include="Git\ValidationTests.cs" />
@@ -97,24 +115,6 @@
     <Compile Include="SetUpFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\TreeBaseTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\src\GitHub.Api\GitHub.Api.csproj">
-      <Project>{b389adaf-62cc-486e-85b4-2d8b078df76b}</Project>
-      <Name>GitHub.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\src\GitHub.Logging\GitHub.Logging.csproj">
-      <Project>{bb6a8eda-15d8-471b-a6ed-ee551e0b3ba0}</Project>
-      <Name>GitHub.Logging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TestUtils\TestUtils.csproj">
-      <Project>{66a1d219-f61d-4ae4-9bd7-aaeb97276fff}</Project>
-      <Name>TestUtils</Name>
-    </ProjectReference>
-    <Reference Include="sfw.net">
-      <HintPath>$(SolutionDir)\src\sfw\sfw.net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">

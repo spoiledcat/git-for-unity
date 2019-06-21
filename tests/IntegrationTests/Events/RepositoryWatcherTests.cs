@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
-using GitHub.Unity;
 using NSubstitute;
 using NUnit.Framework;
-using TestUtils;
-using System.Threading.Tasks;
-using GitHub.Logging;
+using Unity.Git;
 
 namespace IntegrationTests
 {

@@ -1,5 +1,5 @@
 ﻿using System;
-using GitHub.Unity;
+using Unity.Git;
 
 namespace TestUtils
 {

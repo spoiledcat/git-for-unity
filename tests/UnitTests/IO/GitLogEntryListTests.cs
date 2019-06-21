@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using NUnit.Framework;
 using TestUtils;
-using GitHub.Unity;
+using Unity.Git;
 
 namespace UnitTests
 {

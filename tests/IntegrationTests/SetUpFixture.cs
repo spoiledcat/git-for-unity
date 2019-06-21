@@ -1,7 +1,6 @@
 using System;
-using GitHub.Unity;
 using NUnit.Framework;
-using GitHub.Logging;
+using Unity.Git;
 
 namespace IntegrationTests
 {

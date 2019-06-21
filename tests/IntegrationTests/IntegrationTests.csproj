@@ -8,7 +8,7 @@
     <ProjectGuid>{1AC3F82E-AEAE-4C84-825C-207BB264FCFA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GitHub.Unity</RootNamespace>
+    <RootNamespace>Unity.Git</RootNamespace>
     <AssemblyName>IntegrationTests</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -62,6 +62,32 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="sfw.net">
+      <HintPath>$(SolutionDir)\src\api\sfw.net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <ProjectReference Include="$(SolutionDir)\src\api\Api\Unity.Git.Api.csproj">
+      <Project>{b389adaf-62cc-486e-85b4-2d8b078df76b}</Project>
+      <Name>Unity.Git.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\src\api\Logging\Unity.Git.Logging.csproj">
+      <Project>{bb6a8eda-15d8-471b-a6ed-ee551e0b3ba0}</Project>
+      <Name>Unity.Git.Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CommandLine\CommandLine.csproj">
+      <Project>{08b87d2a-8cf1-4211-b7aa-5209f00f72f8}</Project>
+      <Name>CommandLine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestUtils\TestUtils.csproj">
+      <Project>{66a1d219-f61d-4ae4-9bd7-aaeb97276fff}</Project>
+      <Name>TestUtils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestWebServer\TestWebServer.csproj">
+      <Project>{3dd3451c-30fa-4294-a3a9-1e080342f867}</Project>
+      <Name>TestWebServer</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Download\BaseTestWithHttpServer.cs" />
     <Compile Include="Download\DownloadTaskTests.cs" />
     <Compile Include="Events\RepositoryManagerTests.cs" />
@@ -80,32 +106,6 @@
     <Compile Include="UnzipTaskTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\src\GitHub.Api\GitHub.Api.csproj">
-      <Project>{b389adaf-62cc-486e-85b4-2d8b078df76b}</Project>
-      <Name>GitHub.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\src\GitHub.Logging\GitHub.Logging.csproj">
-      <Project>{bb6a8eda-15d8-471b-a6ed-ee551e0b3ba0}</Project>
-      <Name>GitHub.Logging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CommandLine\CommandLine.csproj">
-      <Project>{08b87d2a-8cf1-4211-b7aa-5209f00f72f8}</Project>
-      <Name>CommandLine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TestUtils\TestUtils.csproj">
-      <Project>{66a1d219-f61d-4ae4-9bd7-aaeb97276fff}</Project>
-      <Name>TestUtils</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TestWebServer\TestWebServer.csproj">
-      <Project>{3dd3451c-30fa-4294-a3a9-1e080342f867}</Project>
-      <Name>TestWebServer</Name>
-    </ProjectReference>
-    <Reference Include="sfw.net">
-      <HintPath>$(SolutionDir)\src\sfw.net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="IOTestsRepo.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -118,11 +118,11 @@
   </ItemGroup>
   <Import Project="$(SolutionDir)\common\nativelibraries.props" />
   <ItemGroup>
-    <None Include="$(SolutionDir)\src\sfw\win\x64\sfw_x64.dll">
+    <None Include="$(SolutionDir)\src\api\sfw\win\x64\sfw_x64.dll">
       <Link>sfw_x64.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="$(SolutionDir)\src\sfw\win\x64\pthreadVC2.dll">
+    <None Include="$(SolutionDir)\src\api\sfw\win\x64\pthreadVC2.dll">
       <Link>pthreadVC2.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

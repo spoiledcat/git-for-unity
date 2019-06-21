@@ -1,6 +1,6 @@
 ﻿#if ENABLE_METRICS
 
-using GitHub.Unity;
+using Unity.Git;
 using NSubstitute;
 using NUnit.Framework;
 using System;

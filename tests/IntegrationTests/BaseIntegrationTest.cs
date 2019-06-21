@@ -1,14 +1,12 @@
 using System;
 using System.Diagnostics;
-using NUnit.Framework;
-using GitHub.Unity;
-using NCrunch.Framework;
-using System.Threading;
-using GitHub.Logging;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+using System.Threading;
+using NCrunch.Framework;
+using NUnit.Framework;
+using Unity.Git;
 
 namespace IntegrationTests
 {
@@ -115,7 +113,7 @@ namespace IntegrationTests
             DotGitHead = DotGitPath.Combine("HEAD");
             DotGitConfig = DotGitPath.Combine("config");
 
-            RepositoryManager = GitHub.Unity.RepositoryManager.CreateInstance(Platform, TaskManager, GitClient, repoPath);
+            RepositoryManager = Unity.Git.RepositoryManager.CreateInstance(Platform, TaskManager, GitClient, repoPath);
             RepositoryManager.Initialize();
 
             onRepositoryManagerCreated?.Invoke(RepositoryManager);
@@ -170,7 +168,7 @@ namespace IntegrationTests
         {
             Logger = LogHelper.GetLogger(GetType());
             Factory = new TestUtils.SubstituteFactory();
-            GitHub.Unity.Guard.InUnitTestRunner = true;
+            Unity.Git.Guard.InUnitTestRunner = true;
         }
 
         [TestFixtureTearDown]

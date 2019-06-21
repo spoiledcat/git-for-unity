@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Common includes and references -->
+  <Target Name="BeforeBuild">
+    <PropertyGroup>
+      <UnityDLLsMissingErrorText>The location of Unity dlls is not set. You'll need to install Unity in a known location (the default installation directory for your system), or:
+        - Copy UnityEngine.dll and UnityEditor.dll to the {0}lib\Managed folder
+        - Copy UnityEngine.TestRunner.dll to the {0}lib\UnityExtensions/Unity/TestRunner folder
+        - Copy UnityEditor.TestRunner.dll to the {0}lib\UnityExtensions/Unity/TestRunner/Editor folder
+      {1}
+      </UnityDLLsMissingErrorText>
+    </PropertyGroup>
+    <Error Condition="'$(UnityDir)' == ''" Text="$([System.String]::Format('$(UnityDLLsMissingErrorText)', '$(SolutionDir)', 
+      '$(Exists(\'C:\Program Files\Unity\Hub\Editor\2018.4.2f1\Editor\Data\Managed\UnityEditor.dll\'))'))" />
+  </Target>
+</Project>

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using GitHub.Unity;
+using Unity.Git;
 using NUnit.Framework;
 
 namespace TestUtils

@@ -4,7 +4,7 @@ using System.Globalization;
 using FluentAssertions;
 using NUnit.Framework;
 using TestUtils;
-using GitHub.Unity;
+using Unity.Git;
 
 namespace UnitTests
 {

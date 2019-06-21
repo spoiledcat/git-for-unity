@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using System.Threading;
-using GitHub.Unity;
-using System.Threading.Tasks.Schedulers;
-using System.IO;
-using NSubstitute;
-using GitHub.Logging;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Threading.Tasks.Schedulers;
 using FluentAssertions;
+using NSubstitute;
+using NUnit.Framework;
+using Unity.Git;
 
 namespace IntegrationTests
 {
@@ -35,7 +33,7 @@ namespace IntegrationTests
         [TestFixtureSetUp]
         public void OneTimeSetup()
         {
-            GitHub.Unity.Guard.InUnitTestRunner = true;
+            Unity.Git.Guard.InUnitTestRunner = true;
             LogHelper.LogAdapter = new MultipleLogAdapter(new FileLogAdapter($"..\\{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}-tasksystem-tests.log"));
             //LogHelper.TracingEnabled = true;
             TaskManager = new TaskManager();

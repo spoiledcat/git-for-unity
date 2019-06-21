@@ -1,9 +1,9 @@
-using GitHub.Unity;
+using Unity.Git;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using GitHub.Unity.Git.Tasks;
+using Unity.Git.Git.Tasks;
 
 namespace TestUtils
 {

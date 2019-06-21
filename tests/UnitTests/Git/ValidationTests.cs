@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
-using GitHub.Unity.Helpers;
+using Unity.Git.Helpers;
 using NUnit.Framework;
 
 namespace UnitTests

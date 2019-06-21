@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
-using GitHub.Unity;
+using Unity.Git;
 using NCrunch.Framework;
 using NSubstitute;
 using NUnit.Framework;

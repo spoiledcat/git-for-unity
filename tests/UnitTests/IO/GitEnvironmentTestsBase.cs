@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using NSubstitute;
-using GitHub.Unity;
+using Unity.Git;
 using TestUtils;
 
 namespace UnitTests

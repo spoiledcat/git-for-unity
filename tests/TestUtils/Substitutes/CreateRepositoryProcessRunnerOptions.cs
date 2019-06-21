@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using GitHub.Unity;
+using Unity.Git;
 
 namespace TestUtils
 {

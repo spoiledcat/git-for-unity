@@ -1,4 +1,4 @@
-﻿using GitHub.Unity;
+﻿using Unity.Git;
 using NUnit.Framework;
 using TestUtils;
 

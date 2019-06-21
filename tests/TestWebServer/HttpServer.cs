@@ -1,6 +1,4 @@
-﻿using GitHub.Logging;
-using GitHub.Unity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using Newtonsoft.Json;
+using Unity.Git;
 
 namespace TestWebServer
 {

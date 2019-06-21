@@ -1,11 +1,11 @@
-using GitHub.Logging;
+using Unity.Git;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GitHub.Unity
+namespace Unity.Git
 {
     class ThreadSynchronizationContext : SynchronizationContext
     {

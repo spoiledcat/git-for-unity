@@ -53,6 +53,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\src\api\Api\Unity.Git.Api.csproj">
+      <Project>{b389adaf-62cc-486e-85b4-2d8b078df76b}</Project>
+      <Name>Unity.Git.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(SolutionDir)\src\api\Logging\Unity.Git.Logging.csproj">
+      <Project>{bb6a8eda-15d8-471b-a6ed-ee551e0b3ba0}</Project>
+      <Name>Unity.Git.Logging</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Events\IRepositoryListener.cs" />
     <Compile Include="Events\IRepositoryManagerListener.cs" />
     <Compile Include="Helpers\Args.cs" />
@@ -68,16 +78,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\src\GitHub.Api\GitHub.Api.csproj">
-      <Project>{b389adaf-62cc-486e-85b4-2d8b078df76b}</Project>
-      <Name>GitHub.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\src\GitHub.Logging\GitHub.Logging.csproj">
-      <Project>{bb6a8eda-15d8-471b-a6ed-ee551e0b3ba0}</Project>
-      <Name>GitHub.Logging</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -86,4 +86,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

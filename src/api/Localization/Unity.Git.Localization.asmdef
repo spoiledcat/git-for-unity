@@ -1,0 +1,11 @@
+{
+    "name": "Unity.Git.Localization",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "autoReferenced": false,
+    "allowUnsafeCode": false
+}

@@ -1,13 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using GitHub.Unity;
 using NUnit.Framework;
-using System.Diagnostics;
-using GitHub.Logging;
-using System.Collections.Generic;
+using Unity.Git;
 
 namespace IntegrationTests.Download
 {

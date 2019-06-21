@@ -1,8 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using GitHub.Unity;
-using GitHub.Logging;
+using Unity.Git;
 
 namespace IntegrationTests
 {
@@ -31,7 +30,7 @@ namespace IntegrationTests
             UserCachePath = environmentPath.Value.Combine("User");
             SystemCachePath = environmentPath.Value.Combine("System");
 
-            var installPath = solutionDirectory.Parent.Parent.Combine("src", "GitHub.Api");
+            var installPath = solutionDirectory.Parent.Parent.Combine("src", "Git.Api");
 
             Initialize(UnityVersion, installPath, solutionDirectory, NPath.Default, repoPath.Combine("Assets"));
 

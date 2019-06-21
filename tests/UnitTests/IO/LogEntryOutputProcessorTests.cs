@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using NUnit.Framework;
 using TestUtils;
-using GitHub.Unity;
+using Unity.Git;
 
 namespace UnitTests
 {
@@ -36,7 +36,7 @@ namespace UnitTests
                 "2017-01-06T15:36:57+01:00",
                 "Rename RepositoryModelBase to RepositoryModel",
                 "---GHUBODYEND---",
-                "M       src/GitHub.App/Models/RemoteRepositoryModel.cs",
+                "M       src/Git.App/Models/RemoteRepositoryModel.cs",
                 null,
             };
 
@@ -52,8 +52,8 @@ namespace UnitTests
                     commitTime, commitTime, 
                     new List<GitStatusEntry>
                     {
-                        new GitStatusEntry("src/GitHub.App/Models/RemoteRepositoryModel.cs",
-                            TestRootPath + @"\src/GitHub.App/Models/RemoteRepositoryModel.cs", null,
+                        new GitStatusEntry("src/Git.App/Models/RemoteRepositoryModel.cs",
+                            TestRootPath + @"\src/Git.App/Models/RemoteRepositoryModel.cs", null,
                             GitFileStatus.Modified, GitFileStatus.None),
                     })
             };
@@ -78,7 +78,7 @@ namespace UnitTests
                 "",
                 "This is a line on the description",
                 "---GHUBODYEND---",
-                "M       src/GitHub.App/Models/RemoteRepositoryModel.cs",
+                "M       src/Git.App/Models/RemoteRepositoryModel.cs",
                 null,
             };
 
@@ -95,8 +95,8 @@ namespace UnitTests
                     commitTime,
                     new List<GitStatusEntry>
                     {
-                        new GitStatusEntry("src/GitHub.App/Models/RemoteRepositoryModel.cs",
-                            TestRootPath + @"\src/GitHub.App/Models/RemoteRepositoryModel.cs", null,
+                        new GitStatusEntry("src/Git.App/Models/RemoteRepositoryModel.cs",
+                            TestRootPath + @"\src/Git.App/Models/RemoteRepositoryModel.cs", null,
                             GitFileStatus.Modified, GitFileStatus.None),
                     })
             };
@@ -123,7 +123,7 @@ namespace UnitTests
                 "",
                 "This is a line on the description",
                 "---GHUBODYEND---",
-                "M       src/GitHub.App/Models/RemoteRepositoryModel.cs",
+                "M       src/Git.App/Models/RemoteRepositoryModel.cs",
                 null,
             };
 
@@ -140,8 +140,8 @@ namespace UnitTests
                     commitTime,
                     new List<GitStatusEntry>
                     {
-                        new GitStatusEntry("src/GitHub.App/Models/RemoteRepositoryModel.cs",
-                            TestRootPath + @"\src/GitHub.App/Models/RemoteRepositoryModel.cs", null,
+                        new GitStatusEntry("src/Git.App/Models/RemoteRepositoryModel.cs",
+                            TestRootPath + @"\src/Git.App/Models/RemoteRepositoryModel.cs", null,
                             GitFileStatus.Modified, GitFileStatus.None),
                     })
             };
