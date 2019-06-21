@@ -10,8 +10,6 @@ namespace GitHub.Unity
     {
         private const float DefaultNotificationTimeout = 2f;
         private const string Title = "GitHub";
-        private const string Menu_Window_GitHub = "Window/GitHub";
-        private const string Menu_Window_GitHub_Command_Line = "Window/GitHub Command Line";
 
         [NonSerialized] private Spinner spinner;
         [NonSerialized] private IProgress repositoryProgress;
@@ -58,43 +56,6 @@ namespace GitHub.Unity
         [SerializeField] private string appManagerProgressMessage;
         [SerializeField] private Connection[] connections;
         [SerializeField] private string primaryConnectionUsername;
-
-        [MenuItem(Menu_Window_GitHub)]
-        public static void Window_GitHub()
-        {
-            ShowWindow(EntryPoint.ApplicationManager);
-        }
-
-        [MenuItem(Menu_Window_GitHub_Command_Line)]
-        public static void GitHub_CommandLine()
-        {
-            EntryPoint.ApplicationManager.ProcessManager.RunCommandLineWindow(NPath.CurrentDirectory);
-            EntryPoint.ApplicationManager.UsageTracker.IncrementApplicationMenuMenuItemCommandLine();
-        }
-
-#if DEVELOPER_BUILD
-
-        [MenuItem("GitHub/Select Window")]
-        public static void GitHub_SelectWindow()
-        {
-            var window = Resources.FindObjectsOfTypeAll(typeof(Window)).FirstOrDefault() as Window;
-            Selection.activeObject = window;
-        }
-
-        [MenuItem("GitHub/Restart")]
-        public static void GitHub_Restart()
-        {
-            EntryPoint.Restart();
-        }
-#endif
-
-        public static void ShowWindow(IApplicationManager applicationManager)
-        {
-            var type = typeof(EditorWindow).Assembly.GetType("UnityEditor.InspectorWindow");
-            var window = GetWindow<Window>(type);
-            window.InitializeWindow(applicationManager);
-            window.Show();
-        }
 
         public static Window GetWindow()
         {

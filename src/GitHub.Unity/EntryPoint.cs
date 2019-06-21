@@ -63,6 +63,7 @@ namespace GitHub.Unity
                 , new UnityLogAdapter()
 #endif
                 );
+
             LogHelper.Info("Initializing GitHubForUnity:'v{0}' Unity:'v{1}'", ApplicationInfo.Version, ApplicationManager.Environment.UnityVersion);
 
             ApplicationManager.Run();
