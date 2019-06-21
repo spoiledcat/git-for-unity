@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\..\..\</SolutionDir>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\</SolutionDir>
     <ProjectGuid>{ADD7A18B-DD2A-4C22-A2C1-488964EFF30B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -68,7 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Localization\GitHub.Unity.Localization\GitHub.Unity.Localization.csproj">
+    <ProjectReference Include="..\GitHub.Unity.Localization\GitHub.Unity.Localization.csproj">
       <Project>{f5d69b3f-e2bf-4d32-9dce-51f3e52d74af}</Project>
       <Name>GitHub.Unity.Localization</Name>
     </ProjectReference>

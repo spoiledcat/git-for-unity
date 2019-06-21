@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.705
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHub.Unity", "src\Assets\Editor\GitHub.Unity\GitHub.Unity.csproj", "{ADD7A18B-DD2A-4C22-A2C1-488964EFF30B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHub.Unity", "src\GitHub.Unity\GitHub.Unity.csproj", "{ADD7A18B-DD2A-4C22-A2C1-488964EFF30B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHub.Api", "src\Assets\Editor\GitHub.Api\GitHub.Api.csproj", "{B389ADAF-62CC-486E-85B4-2D8B078DF76B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHub.Api", "src\GitHub.Api\GitHub.Api.csproj", "{B389ADAF-62CC-486E-85B4-2D8B078DF76B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHub.Logging", "src\Assets\Editor\GitHub.Logging\GitHub.Logging.csproj", "{BB6A8EDA-15D8-471B-A6ED-EE551E0B3BA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHub.Logging", "src\GitHub.Logging\GitHub.Logging.csproj", "{BB6A8EDA-15D8-471B-A6ED-EE551E0B3BA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityTests", "src\Assets\Editor\UnityTests\UnityTests.csproj", "{462CDBD4-0DDA-4854-1B13-CFDACBFB66F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityTests", "src\UnityTests\UnityTests.csproj", "{462CDBD4-0DDA-4854-1B13-CFDACBFB66F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityShim", "src\Assets\Editor\UnityShim\UnityShim.csproj", "{F94F8AE1-C171-4A83-89E8-6557CA91A188}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityShim", "src\UnityShim\UnityShim.csproj", "{F94F8AE1-C171-4A83-89E8-6557CA91A188}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D17F1B4C-42DC-4E78-BCEF-9F239A084C4D}"
 EndProject
@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandLine", "tests\Comman
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWebServer", "tests\TestWebServer\TestWebServer.csproj", "{3DD3451C-30FA-4294-A3A9-1E080342F867}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHub.Unity.Localization", "src\Localization\GitHub.Unity.Localization\GitHub.Unity.Localization.csproj", "{F5D69B3F-E2BF-4D32-9DCE-51F3E52D74AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitHub.Unity.Localization", "src\GitHub.Unity.Localization\GitHub.Unity.Localization.csproj", "{F5D69B3F-E2BF-4D32-9DCE-51F3E52D74AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

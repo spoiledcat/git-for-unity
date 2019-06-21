@@ -1,7 +1,6 @@
 .vs/
 .idea/
 .vscode/
-packages/
 _NCrunch_GitHub.Unity
 *.user
 .DS_Store
@@ -36,11 +35,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 build/
-
-# Visual Studio 2015 cache/options directory
-.vs/
-# Uncomment if you have tasks that create the project's static files in wwwroot
-#wwwroot/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -175,9 +169,9 @@ PublishScripts/
 # NuGet Packages
 *.nupkg
 # The packages folder can be ignored because of Package Restore
-**/packages/*
+/packages/*
 # except build/, which is used as an MSBuild target.
-!**/packages/build/
+!/packages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
 #!**/packages/repositories.config
 # NuGet v3's project.json files produces more ignoreable files

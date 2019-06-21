@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\..\..\</SolutionDir>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\</SolutionDir>
     <ProjectGuid>{B389ADAF-62CC-486E-85B4-2D8B078DF76B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -62,7 +62,7 @@
       <HintPath>..\Mono.Posix\Mono.Posix.dll</HintPath>
     </Reference>
     <Reference Include="sfw.net">
-      <HintPath>$(SolutionDir)\src\Assets\Editor\sfw\sfw.net.dll</HintPath>
+      <HintPath>$(SolutionDir)\src\sfw\sfw.net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -285,7 +285,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Localization\GitHub.Unity.Localization\GitHub.Unity.Localization.csproj">
+    <ProjectReference Include="..\GitHub.Unity.Localization\GitHub.Unity.Localization.csproj">
       <Project>{f5d69b3f-e2bf-4d32-9dce-51f3e52d74af}</Project>
       <Name>GitHub.Unity.Localization</Name>
     </ProjectReference>

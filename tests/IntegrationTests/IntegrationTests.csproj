@@ -80,11 +80,11 @@
     <Compile Include="UnzipTaskTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\src\Assets\Editor\GitHub.Api\GitHub.Api.csproj">
+    <ProjectReference Include="$(SolutionDir)\src\GitHub.Api\GitHub.Api.csproj">
       <Project>{b389adaf-62cc-486e-85b4-2d8b078df76b}</Project>
       <Name>GitHub.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\src\Assets\Editor\GitHub.Logging\GitHub.Logging.csproj">
+    <ProjectReference Include="$(SolutionDir)\src\GitHub.Logging\GitHub.Logging.csproj">
       <Project>{bb6a8eda-15d8-471b-a6ed-ee551e0b3ba0}</Project>
       <Name>GitHub.Logging</Name>
     </ProjectReference>
@@ -101,7 +101,7 @@
       <Name>TestWebServer</Name>
     </ProjectReference>
     <Reference Include="sfw.net">
-      <HintPath>$(SolutionDir)\src\Assets\Editor\sfw.net.dll</HintPath>
+      <HintPath>$(SolutionDir)\src\sfw.net.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -118,11 +118,11 @@
   </ItemGroup>
   <Import Project="$(SolutionDir)\common\nativelibraries.props" />
   <ItemGroup>
-    <None Include="$(SolutionDir)\src\Assets\Editor\sfw\win\x64\sfw_x64.dll">
+    <None Include="$(SolutionDir)\src\sfw\win\x64\sfw_x64.dll">
       <Link>sfw_x64.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="$(SolutionDir)\src\Assets\Editor\sfw\win\x64\pthreadVC2.dll">
+    <None Include="$(SolutionDir)\src\sfw\win\x64\pthreadVC2.dll">
       <Link>pthreadVC2.dll</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

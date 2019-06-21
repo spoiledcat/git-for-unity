@@ -65,11 +65,11 @@
       <Project>{08b87d2a-8cf1-4211-b7aa-5209f00f72f8}</Project>
       <Name>CommandLine</Name>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\src\Assets\Editor\GitHub.Api\GitHub.Api.csproj">
+    <ProjectReference Include="$(SolutionDir)\src\GitHub.Api\GitHub.Api.csproj">
       <Project>{b389adaf-62cc-486e-85b4-2d8b078df76b}</Project>
       <Name>GitHub.Api</Name>
     </ProjectReference>
-    <ProjectReference Include="$(SolutionDir)\src\Assets\Editor\GitHub.Logging\GitHub.Logging.csproj">
+    <ProjectReference Include="$(SolutionDir)\src\GitHub.Logging\GitHub.Logging.csproj">
       <Project>{bb6a8eda-15d8-471b-a6ed-ee551e0b3ba0}</Project>
       <Name>GitHub.Logging</Name>
     </ProjectReference>
