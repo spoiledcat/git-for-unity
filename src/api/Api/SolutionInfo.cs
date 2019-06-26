@@ -35,6 +35,6 @@ namespace System
         internal const string VersionForAssembly = GitForUnityVersion;
 
         // If this is an alpha, beta or other pre-release, mark it as such as shown below
-        internal const string Version = GitForUnityVersion + "-alpha.1";
+        internal const string Version = GitForUnityVersion + "-alpha.2";
     }
 }
