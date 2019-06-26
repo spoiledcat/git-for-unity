@@ -191,7 +191,7 @@ namespace Unity.Git
                 if (selectedArea == null)
                 {
                     selectedArea = new GUIStyle(GUI.skin.label);
-                    selectedArea.name = "SelectedArea";
+                    //selectedArea.name = "SelectedArea";
 
                     var hierarchyStyle = GUI.skin.FindStyle("PR Label");
                     selectedArea.normal.background = hierarchyStyle.onFocused.background;
@@ -208,7 +208,7 @@ namespace Unity.Git
                 if (label == null)
                 {
                     label = new GUIStyle(GUI.skin.label);
-                    label.name = "CustomLabel";
+                    //label.name = "CustomLabel";
 
                     var hierarchyStyle = GUI.skin.FindStyle("PR Label");
                     label.onNormal.background = hierarchyStyle.onNormal.background;
@@ -228,7 +228,7 @@ namespace Unity.Git
                 if (labelNoWrap == null)
                 {
                     labelNoWrap = new GUIStyle(GUI.skin.label);
-                    labelNoWrap.name = "LabelNoWrap";
+                    //labelNoWrap.name = "LabelNoWrap";
 
                     var hierarchyStyle = GUI.skin.FindStyle("PR Label");
                     labelNoWrap.onNormal.background = hierarchyStyle.onNormal.background;
@@ -248,7 +248,7 @@ namespace Unity.Git
                 if (invisibleLabel == null)
                 {
                     invisibleLabel = new GUIStyle(GUI.skin.label);
-                    invisibleLabel.name = "InvisibleLabel";
+                    //invisibleLabel.name = "InvisibleLabel";
 
                     var hierarchyStyle = GUI.skin.FindStyle("PR Label");
                     invisibleLabel.onNormal.background = hierarchyStyle.onNormal.background;
@@ -268,7 +268,7 @@ namespace Unity.Git
                 if (selectedLabel == null)
                 {
                     selectedLabel = new GUIStyle(GUI.skin.label);
-                    selectedLabel.name = "SelectedLabel";
+                    //selectedLabel.name = "SelectedLabel";
 
                     var hierarchyStyle = GUI.skin.FindStyle("PR Label");
                     selectedLabel.onNormal.background = hierarchyStyle.onFocused.background;
@@ -290,7 +290,7 @@ namespace Unity.Git
                 if (headerBranchLabelStyle == null)
                 {
                     headerBranchLabelStyle = new GUIStyle(EditorStyles.label);
-                    headerBranchLabelStyle.name = "HeaderBranchLabelStyle";
+                    //headerBranchLabelStyle.name = "HeaderBranchLabelStyle";
                     headerBranchLabelStyle.margin = new RectOffset(0, 0, 0, 0);
                     headerBranchLabelStyle.wordWrap = true;
                 }
@@ -305,7 +305,7 @@ namespace Unity.Git
                 if (headerRepoLabelStyle == null)
                 {
                     headerRepoLabelStyle = new GUIStyle(EditorStyles.boldLabel);
-                    headerRepoLabelStyle.name = "HeaderRepoLabelStyle";
+                    //headerRepoLabelStyle.name = "HeaderRepoLabelStyle";
                     headerRepoLabelStyle.margin = new RectOffset(0, 0, 0, 0);
                     headerRepoLabelStyle.wordWrap = true;
                 }
@@ -320,7 +320,7 @@ namespace Unity.Git
                 if (headerUrlLabelStyle == null)
                 {
                     headerUrlLabelStyle = new GUIStyle(EditorStyles.label);
-                    headerUrlLabelStyle.name = "HeaderUrlLabelStyle";
+                    //headerUrlLabelStyle.name = "HeaderUrlLabelStyle";
                     headerUrlLabelStyle.margin = new RectOffset(0, 0, 0, 0);
                     headerUrlLabelStyle.fontStyle = FontStyle.Italic;
                 }
@@ -335,7 +335,7 @@ namespace Unity.Git
                 if (headerTitleStyle == null)
                 {
                     headerTitleStyle = new GUIStyle(EditorStyles.boldLabel);
-                    headerTitleStyle.name = "HeaderTitleStyle";
+                    //headerTitleStyle.name = "HeaderTitleStyle";
                     headerTitleStyle.margin = new RectOffset(0, 0, 0, 0);
                     headerTitleStyle.wordWrap = true;
                 }
@@ -350,7 +350,7 @@ namespace Unity.Git
                 if (headerDescriptionStyle == null)
                 {
                     headerDescriptionStyle = new GUIStyle(EditorStyles.wordWrappedLabel);
-                    headerDescriptionStyle.name = "HeaderDescriptionStyle";
+                    //headerDescriptionStyle.name = "HeaderDescriptionStyle";
                     headerDescriptionStyle.margin = new RectOffset(0, 0, 0, 0);
                 }
                 return headerDescriptionStyle;
@@ -364,7 +364,7 @@ namespace Unity.Git
                 if (headerBoxStyle == null)
                 {
                     headerBoxStyle = new GUIStyle("IN BigTitle");
-                    headerBoxStyle.name = "HeaderBoxStyle";
+                    //headerBoxStyle.name = "HeaderBoxStyle";
                     headerBoxStyle.padding = new RectOffset(5, 5, 5, 5);
                     headerBoxStyle.margin = new RectOffset(0, 0, 0, 0);
                 }
@@ -379,7 +379,7 @@ namespace Unity.Git
                 if (headerStyle == null)
                 {
                     headerStyle = new GUIStyle("IN BigTitle");
-                    headerStyle.name = "HeaderStyle";
+                    //headerStyle.name = "HeaderStyle";
                     headerStyle.margin = new RectOffset(0, 0, 0, 0);
                     headerStyle.padding = new RectOffset(0, 0, 0, 0);
                 }
@@ -394,7 +394,7 @@ namespace Unity.Git
                 if (boldLabel == null)
                 {
                     boldLabel = new GUIStyle(Label);
-                    boldLabel.name = "CustomBoldLabel";
+                    //boldLabel.name = "CustomBoldLabel";
 
                     boldLabel.fontStyle = FontStyle.Bold;
                 }
@@ -409,7 +409,7 @@ namespace Unity.Git
                 if (deletedFileLabel == null)
                 {
                     deletedFileLabel = new GUIStyle(EditorStyles.label);
-                    deletedFileLabel.name = "DeletedFileLabel";
+                    //deletedFileLabel.name = "DeletedFileLabel";
                     deletedFileLabel.normal.textColor = Color.gray;
                 }
                 return deletedFileLabel;
@@ -423,7 +423,7 @@ namespace Unity.Git
                 if (errorLabel == null)
                 {
                     errorLabel = new GUIStyle(EditorStyles.wordWrappedLabel);
-                    errorLabel.name = "ErrorLabel";
+                    //errorLabel.name = "ErrorLabel";
                     errorLabel.normal.textColor = Color.red;
                 }
                 return errorLabel;
@@ -438,7 +438,7 @@ namespace Unity.Git
                 {
                     centeredErrorLabel = new GUIStyle(EditorStyles.wordWrappedLabel);
                     centeredErrorLabel.alignment = TextAnchor.MiddleCenter;
-                    centeredErrorLabel.name = "CenteredErrorLabel";
+                    //centeredErrorLabel.name = "CenteredErrorLabel";
                     centeredErrorLabel.normal.textColor = Color.red;
                 }
                 return centeredErrorLabel;
@@ -452,7 +452,7 @@ namespace Unity.Git
                 if (longMessageStyle == null)
                 {
                     longMessageStyle = new GUIStyle(EditorStyles.wordWrappedLabel);
-                    longMessageStyle.name = "LongMessageStyle";
+                    //longMessageStyle.name = "LongMessageStyle";
                     longMessageStyle.richText = true;
                 }
                 return longMessageStyle;
@@ -466,7 +466,7 @@ namespace Unity.Git
                 if (toolbarButtonStyle == null)
                 {
                     toolbarButtonStyle = new GUIStyle(EditorStyles.toolbarButton);
-                    toolbarButtonStyle.name = "HistoryToolbarButtonStyle";
+                    //toolbarButtonStyle.name = "HistoryToolbarButtonStyle";
                     toolbarButtonStyle.richText = true;
                 }
                 return toolbarButtonStyle;
@@ -480,7 +480,7 @@ namespace Unity.Git
                 if (historyLockStyle == null)
                 {
                     historyLockStyle = new GUIStyle(GUI.skin.FindStyle("IN LockButton"));
-                    historyLockStyle.name = "LockStyle";
+                    //historyLockStyle.name = "LockStyle";
                 }
                 historyLockStyle.margin = new RectOffset(3, 3, 2, 2);
                 return historyLockStyle;
@@ -493,7 +493,7 @@ namespace Unity.Git
                 if (historyEntrySummaryStyle == null)
                 {
                     historyEntrySummaryStyle = new GUIStyle(LabelNoWrap);
-                    historyEntrySummaryStyle.name = "HistoryEntrySummaryStyle";
+                    //historyEntrySummaryStyle.name = "HistoryEntrySummaryStyle";
 
                     historyEntrySummaryStyle.contentOffset = new Vector2(BaseSpacing * 2, 0);
                 }
@@ -508,7 +508,7 @@ namespace Unity.Git
                 if (historyEntryDetailsStyle == null)
                 {
                     historyEntryDetailsStyle = new GUIStyle(EditorStyles.miniLabel);
-                    historyEntryDetailsStyle.name = "HistoryEntryDetailsStyle";
+                    //historyEntryDetailsStyle.name = "HistoryEntryDetailsStyle";
                     var c = EditorStyles.miniLabel.normal.textColor;
                     historyEntryDetailsStyle.normal.textColor = new Color(c.r, c.g, c.b, c.a * 0.7f);
 
@@ -530,7 +530,7 @@ namespace Unity.Git
                 if (historyEntryDetailsRightStyle == null)
                 {
                     historyEntryDetailsRightStyle = new GUIStyle(HistoryEntryDetailsStyle);
-                    historyEntryDetailsRightStyle.name = "HistoryEntryDetailsRightStyle";
+                    //historyEntryDetailsRightStyle.name = "HistoryEntryDetailsRightStyle";
                 }
                 historyEntryDetailsRightStyle.alignment = TextAnchor.MiddleRight;
                 return historyEntryDetailsRightStyle;
@@ -544,7 +544,7 @@ namespace Unity.Git
                 if (lockedFileRowStyle == null)
                 {
                     lockedFileRowStyle = new GUIStyle();
-                    lockedFileRowStyle.name = "LockedFileRowStyle";
+                    //lockedFileRowStyle.name = "LockedFileRowStyle";
                     lockedFileRowStyle.padding = new RectOffset(2, 2, 1, 1);
                 }
                 return lockedFileRowStyle;
@@ -559,7 +559,7 @@ namespace Unity.Git
                 {
                     var hierarchyStyle = GUI.skin.FindStyle("PR Label");
                     lockedFileRowSelectedStyle = new GUIStyle(LockedFileRowStyle);
-                    lockedFileRowSelectedStyle.name = "LockedFileRowSelectedStyle";
+                    //lockedFileRowSelectedStyle.name = "LockedFileRowSelectedStyle";
                     lockedFileRowSelectedStyle.normal.background = hierarchyStyle.onFocused.background;
                     lockedFileRowSelectedStyle.normal.textColor = hierarchyStyle.onFocused.textColor;
                 }
@@ -574,7 +574,7 @@ namespace Unity.Git
                 if (genericTableBoxStyle == null)
                 {
                     genericTableBoxStyle = new GUIStyle(GUI.skin.box);
-                    genericTableBoxStyle.name = "GenericTableBoxStyle";
+                    //genericTableBoxStyle.name = "GenericTableBoxStyle";
                 }
                 return genericTableBoxStyle;
             }
@@ -587,7 +587,7 @@ namespace Unity.Git
                 if (historyDetailsTitleStyle == null)
                 {
                     historyDetailsTitleStyle = new GUIStyle(EditorStyles.boldLabel);
-                    historyDetailsTitleStyle.name = "HistoryDetailsTitleStyle";
+                    //historyDetailsTitleStyle.name = "HistoryDetailsTitleStyle";
                     historyDetailsTitleStyle.wordWrap = true;
                 }
                 return historyDetailsTitleStyle;
@@ -601,7 +601,7 @@ namespace Unity.Git
                 if (historyDetailsMetaInfoStyle == null)
                 {
                     historyDetailsMetaInfoStyle = new GUIStyle(EditorStyles.miniLabel);
-                    historyDetailsMetaInfoStyle.name = "HistoryDetailsMetaInfoStyle";
+                    //historyDetailsMetaInfoStyle.name = "HistoryDetailsMetaInfoStyle";
                     historyDetailsMetaInfoStyle.normal.textColor = new Color(0f, 0f, 0f, 0.6f);
                 }
                 return historyDetailsMetaInfoStyle;
@@ -615,7 +615,7 @@ namespace Unity.Git
                 if (locksViewLockedByStyle == null)
                 {
                     locksViewLockedByStyle = new GUIStyle(EditorStyles.miniLabel);
-                    locksViewLockedByStyle.name = "LocksViewLockedByStyle";
+                    //locksViewLockedByStyle.name = "LocksViewLockedByStyle";
                     var hierarchyStyle = GUI.skin.FindStyle("PR Label");
                     locksViewLockedByStyle.onNormal.background = hierarchyStyle.onNormal.background;
                     locksViewLockedByStyle.onNormal.textColor = hierarchyStyle.onNormal.textColor;
@@ -633,7 +633,7 @@ namespace Unity.Git
                 if (locksViewLockedBySelectedStyle == null)
                 {
                     locksViewLockedBySelectedStyle = new GUIStyle(EditorStyles.miniLabel);
-                    locksViewLockedBySelectedStyle.name = "LocksViewLockedBySelectedStyle";
+                    //locksViewLockedBySelectedStyle.name = "LocksViewLockedBySelectedStyle";
                     var hierarchyStyle = GUI.skin.FindStyle("PR Label");
                     locksViewLockedBySelectedStyle.onNormal.textColor = hierarchyStyle.onNormal.textColor;
                     locksViewLockedBySelectedStyle.onNormal.background = hierarchyStyle.onFocused.background;
@@ -654,7 +654,7 @@ namespace Unity.Git
                 if (commitFileAreaStyle == null)
                 {
                     commitFileAreaStyle = new GUIStyle(GUI.skin.box);
-                    commitFileAreaStyle.name = "CommitFileAreaStyle";
+                    //commitFileAreaStyle.name = "CommitFileAreaStyle";
                     commitFileAreaStyle.margin = new RectOffset(0, 0, 0, 0);
                     commitFileAreaStyle.padding = new RectOffset(0, 0, 2, 2);
                 }
@@ -669,7 +669,7 @@ namespace Unity.Git
                 if (commitButtonStyle == null)
                 {
                     commitButtonStyle = new GUIStyle(GUI.skin.button);
-                    commitButtonStyle.name = "CommitButtonStyle";
+                    //commitButtonStyle.name = "CommitButtonStyle";
                     commitButtonStyle.richText = true;
                     commitButtonStyle.wordWrap = true;
                 }
@@ -684,7 +684,7 @@ namespace Unity.Git
                 if (textFieldStyle == null)
                 {
                     textFieldStyle = new GUIStyle(GUI.skin.textField);
-                    textFieldStyle.name = "TextFieldStyle";
+                    //textFieldStyle.name = "TextFieldStyle";
                     textFieldStyle.fixedHeight = 21;
                     textFieldStyle.padding = new RectOffset(HalfSpacing, HalfSpacing, 4, 0);
                 }
@@ -699,7 +699,7 @@ namespace Unity.Git
                 if (progressAreaBackStyle == null)
                 {
                     progressAreaBackStyle = new GUIStyle(GUI.skin.FindStyle("ProgressBarBack"));
-                    progressAreaBackStyle.name = "ProgressAreaBackStyle";
+                    //progressAreaBackStyle.name = "ProgressAreaBackStyle";
                     //progressAreaBackStyle.normal.background = Utility.GetTextureFromColor(new Color(194f/255f, 194f/255f, 194f/255f));
                     progressAreaBackStyle.margin = new RectOffset(0, 0, 0, 0);
                     progressAreaBackStyle.padding = new RectOffset(0, 0, 0, 0);
@@ -728,7 +728,7 @@ namespace Unity.Git
                 if (boldCenteredLabel == null)
                 {
                     boldCenteredLabel = new GUIStyle(EditorStyles.boldLabel);
-                    boldCenteredLabel.name = "BoldCenteredLabelStyle";
+                    //boldCenteredLabel.name = "BoldCenteredLabelStyle";
                     boldCenteredLabel.alignment = TextAnchor.MiddleCenter;
                     boldCenteredLabel.wordWrap = true;
                 }
@@ -743,7 +743,7 @@ namespace Unity.Git
                 if (commitDescriptionFieldStyle == null)
                 {
                     commitDescriptionFieldStyle = new GUIStyle(GUI.skin.textArea);
-                    commitDescriptionFieldStyle.name = "CommitDescriptionFieldStyle";
+                    //commitDescriptionFieldStyle.name = "CommitDescriptionFieldStyle";
                     commitDescriptionFieldStyle.padding = new RectOffset(HalfSpacing, HalfSpacing, HalfSpacing, HalfSpacing);
                     commitDescriptionFieldStyle.wordWrap = true;
                 }
@@ -770,7 +770,7 @@ namespace Unity.Git
                 if (authHeaderBoxStyle == null)
                 {
                     authHeaderBoxStyle = new GUIStyle(HeaderBoxStyle);
-                    authHeaderBoxStyle.name = "AuthHeaderBoxStyle";
+                    //authHeaderBoxStyle.name = "AuthHeaderBoxStyle";
                 }
                 return authHeaderBoxStyle;
             }
@@ -809,7 +809,7 @@ namespace Unity.Git
                 if (fileHistoryLogTitleStyle == null)
                 {
                     fileHistoryLogTitleStyle = new GUIStyle(EditorStyles.largeLabel);
-                    fileHistoryLogTitleStyle.name = "FileHistoryLogTitleStyle";
+                    //fileHistoryLogTitleStyle.name = "FileHistoryLogTitleStyle";
                     fileHistoryLogTitleStyle.margin = new RectOffset(0, 0, 0, 0);
                 }
                 return fileHistoryLogTitleStyle;
@@ -1031,7 +1031,7 @@ namespace Unity.Git
                 if (foldout == null)
                 {
                     foldout = new GUIStyle(EditorStyles.foldout);
-                    foldout.name = "CustomFoldout";
+                    //foldout.name = "CustomFoldout";
 
                     foldout.focused.textColor = Color.white;
                     foldout.onFocused.textColor = Color.white;
@@ -1051,7 +1051,7 @@ namespace Unity.Git
                 if (treeNode == null)
                 {
                     treeNode = new GUIStyle(GUI.skin.label);
-                    treeNode.name = "Custom TreeNode";
+                    //treeNode.name = "Custom TreeNode";
 
                     var greyTexture = Utility.GetTextureFromColor(Color.gray);
 
@@ -1071,7 +1071,7 @@ namespace Unity.Git
                 if (activeTreeNode == null)
                 {
                     activeTreeNode = new GUIStyle(TreeNode);
-                    activeTreeNode.name = "Custom Active TreeNode";
+                    //activeTreeNode.name = "Custom Active TreeNode";
 
                     activeTreeNode.fontStyle = FontStyle.Bold;
                 }
@@ -1088,7 +1088,7 @@ namespace Unity.Git
                 if (focusedTreeNode == null)
                 {
                     focusedTreeNode = new GUIStyle(TreeNode);
-                    focusedTreeNode.name = "Custom Focused TreeNode";
+                    //focusedTreeNode.name = "Custom Focused TreeNode";
 
                     var blueColor = new Color(62f / 255f, 125f / 255f, 231f / 255f);
                     var blueTexture = Utility.GetTextureFromColor(blueColor);
@@ -1108,7 +1108,7 @@ namespace Unity.Git
                 if (focusedActiveTreeNode == null)
                 {
                     focusedActiveTreeNode = new GUIStyle(FocusedTreeNode);
-                    focusedActiveTreeNode.name = "Custom Focused Active TreeNode";
+                    //focusedActiveTreeNode.name = "Custom Focused Active TreeNode";
 
                     focusedActiveTreeNode.fontStyle = FontStyle.Bold;
                 }
@@ -1125,7 +1125,7 @@ namespace Unity.Git
                 if (lockPathStyle == null)
                 {
                     lockPathStyle = new GUIStyle(GUI.skin.label);
-                    lockPathStyle.name = "Custom LockPathStyle";
+                    //lockPathStyle.name = "Custom LockPathStyle";
 
                     lockPathStyle.fontSize = 11;
                 }
@@ -1142,7 +1142,7 @@ namespace Unity.Git
                 if (lockMetaDataStyle == null)
                 {
                     lockMetaDataStyle = new GUIStyle(GUI.skin.label);
-                    lockMetaDataStyle.name = "Custom LockMetaDataStyle";
+                    //lockMetaDataStyle.name = "Custom LockMetaDataStyle";
 
                     lockMetaDataStyle.fontSize = 10;
                 }
