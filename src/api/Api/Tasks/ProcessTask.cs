@@ -193,6 +193,7 @@ namespace Unity.Git
                     sb.AppendLine($"'{Process.StartInfo.FileName} {Process.StartInfo.Arguments}'");
                 if (errorCode == 2)
                     sb.AppendLine("The system cannot find the file specified.");
+                sb.AppendLine($"Working directory: {Process.StartInfo.WorkingDirectory}");
                 foreach (string env in Process.StartInfo.EnvironmentVariables.Keys)
                 {
                     sb.AppendFormat("{0}:{1}", env, Process.StartInfo.EnvironmentVariables[env]);
@@ -375,7 +376,7 @@ namespace Unity.Git
                     }
 
                     if (thrownException != null && !RaiseFaultHandlers(thrownException))
-                        throw thrownException;
+                        ThrownException.Rethrow();
                 },
                 (ex, error) =>
                 {
@@ -502,7 +503,7 @@ namespace Unity.Git
                     }
 
                     if (thrownException != null && !RaiseFaultHandlers(thrownException))
-                        throw thrownException;
+                        ThrownException.Rethrow();
                 },
                 (ex, error) =>
                 {
@@ -546,7 +547,7 @@ namespace Unity.Git
             this.arguments = arguments;
         }
 
-        public override string ProcessName => fullPathToExecutable?.FileName;
+        public override string ProcessName => fullPathToExecutable;
         public override string ProcessArguments => arguments;
     }
 

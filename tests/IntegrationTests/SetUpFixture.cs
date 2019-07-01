@@ -7,7 +7,7 @@ namespace IntegrationTests
     [SetUpFixture]
     public class SetUpFixture
     {
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
             LogHelper.TracingEnabled = true;

@@ -229,7 +229,7 @@ namespace Unity.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    throw;
+                    ThrownException.Rethrow();
                 Token.ThrowIfCancellationRequested();
             }
         }
@@ -273,7 +273,7 @@ namespace Unity.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    throw;
+                    ThrownException.Rethrow();
                 Token.ThrowIfCancellationRequested();
             }
             return ret;
@@ -324,7 +324,7 @@ namespace Unity.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    throw;
+                    ThrownException.Rethrow();
             }
         }
     }
@@ -408,7 +408,7 @@ namespace Unity.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    throw;
+                    ThrownException.Rethrow();
             }
         }
 
@@ -462,7 +462,7 @@ namespace Unity.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    throw;
+                    ThrownException.Rethrow();
             }
             return result;
         }
@@ -507,7 +507,7 @@ namespace Unity.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    throw;
+                    ThrownException.Rethrow();
             }
             return result;
         }
@@ -562,7 +562,7 @@ namespace Unity.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    throw;
+                    ThrownException.Rethrow();
             }
             finally
             {
@@ -610,7 +610,7 @@ namespace Unity.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    throw;
+                    ThrownException.Rethrow();
             }
             return result;
         }

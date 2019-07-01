@@ -1,6 +1,7 @@
 using Unity.Git;
 using System;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -238,7 +239,7 @@ namespace Unity.Git
                 {
                     actionToContinueWith(s, ex);
                     if (!s)
-                        throw ex;
+                        ex.Rethrow();
                 })
                 { Affinity = affinity, Name = "Finally" }, TaskRunOptions.OnAlways)
                 .CatchInternal(_ => true);
@@ -641,7 +642,7 @@ namespace Unity.Git
                 {
                     continuation(s, ex, res);
                     if (!s)
-                        throw ex;
+                        ex.Rethrow();
                 })
                 { Affinity = affinity, Name = "Finally" }, TaskRunOptions.OnAlways)
                 .CatchInternal(_ => true);

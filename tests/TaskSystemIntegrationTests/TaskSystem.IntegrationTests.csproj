@@ -17,6 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\src\api\Api\Api.csproj" />
+    <ProjectReference Include="..\CommandLine\CommandLine.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="**\*.cs" />

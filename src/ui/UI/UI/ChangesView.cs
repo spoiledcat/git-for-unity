@@ -210,7 +210,7 @@ namespace Unity.Git
                             leftRight[1].IsInitialized ? leftRight[1].MakeAbsolute().ToString() : null,
                             null, null);
                     else
-                        throw ex;
+                        ex.Rethrow();
                 })
                 .Start();
             });

@@ -30,7 +30,7 @@ namespace IntegrationTests
             UserCachePath = environmentPath.Value.Combine("User");
             SystemCachePath = environmentPath.Value.Combine("System");
 
-            var installPath = solutionDirectory.Parent.Parent.Combine("src", "Git.Api");
+            var installPath = solutionDirectory.Parent.Parent.Parent.Combine("src", "api", "Api");
 
             Initialize(UnityVersion, installPath, solutionDirectory, NPath.Default, repoPath.Combine("Assets"));
 

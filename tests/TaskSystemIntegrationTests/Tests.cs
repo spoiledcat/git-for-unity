@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Schedulers;
 using FluentAssertions;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Unity.Git;
 
@@ -333,7 +334,7 @@ namespace IntegrationTests
         }
 
         [Test]
-        public async void NonUITasksAlwaysRunOnDifferentThreadFromUITasks()
+        public async Task NonUITasksAlwaysRunOnDifferentThreadFromUITasks()
         {
             var output = new Dictionary<int, int>();
             var tasks = new List<ITask>();
@@ -355,7 +356,7 @@ namespace IntegrationTests
 
 
         [Test]
-        public async void ChainingOnDifferentSchedulers()
+        public async Task ChainingOnDifferentSchedulers()
         {
             var output = new Dictionary<int, KeyValuePair<int, int>>();
             var tasks = new List<ITask>();
@@ -1007,10 +1008,10 @@ namespace IntegrationTests
         public void FailingTasksThrowCorrectlyEvenIfFinallyIsPresent()
         {
             var queue = new TaskQueue();
-            var task = new ActionTask(Token, () => { throw new Exception(); })
+            var task = new ActionTask(Token, () => throw new InvalidOperationException())
                 .Finally((s, e) => { });
             queue.Queue(task);
-            Assert.Throws<Exception>(() => queue.RunSynchronously());
+            Assert.Throws<InvalidOperationException>(() => queue.RunSynchronously());
         }
 
         [Test]

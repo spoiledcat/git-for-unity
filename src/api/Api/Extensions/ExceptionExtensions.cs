@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 
 namespace Unity.Git
 {
-    static class ExceptionExtensions
+    public static class ExceptionExtensions
     {
         /// <summary>
         /// Represents exceptions we should never attempt to catch and ignore.
@@ -49,6 +51,33 @@ namespace Unity.Git
         {
             return !exception.IsCriticalException()
                 && !(exception is ObjectDisposedException);
+        }
+
+        public static void Rethrow(this Exception exception)
+        {
+#if NET35
+            SaveStackTraceForThrowing(exception);
+            throw exception;
+#else
+            ExceptionDispatchInfo.Capture(exception).Throw();
+#endif
+        }
+
+        private static Action<Exception> saveStackTraceForThrowing;
+        private static Action<Exception> SaveStackTraceForThrowing {
+            get {
+                if (saveStackTraceForThrowing == null)
+                {
+                    // in mono, FixRemotingException saves the original stacktrace
+                    // in .net < 4.0, InternalPreserveStackTrace saves it
+                    // but .net also has a FixRemotingException method, so try InternalPreserveStackTrace first
+                    var method = typeof(Exception).GetMethod( "InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic );
+                    if (method == null) // maybe it's mono
+                        typeof(Exception).GetMethod( "FixRemotingException", BindingFlags.Instance | BindingFlags.NonPublic );
+                    saveStackTraceForThrowing = (Action<Exception>)Delegate.CreateDelegate(typeof(Action<Exception>), method);
+                }
+                return saveStackTraceForThrowing;
+            }
         }
     }
 }

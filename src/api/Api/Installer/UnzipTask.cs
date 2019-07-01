@@ -36,7 +36,7 @@ namespace Unity.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    throw;
+                    ThrownException.Rethrow();
             }
             return ret;
         }

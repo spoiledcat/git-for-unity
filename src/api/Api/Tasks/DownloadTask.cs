@@ -20,7 +20,7 @@ namespace Unity.Git
                     return e.Response;
                 }
 
-                throw e;
+                throw;
             }
         }
     }
@@ -59,7 +59,7 @@ namespace Unity.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    throw;
+                    ThrownException.Rethrow();
             }
             return result;
         }

@@ -7,6 +7,9 @@
     <RootNamespace>Test.CommandLine</RootNamespace>
     <AssemblyName>CommandLine</AssemblyName>
     <OutputPath>$(SolutionDir)\build\tests\</OutputPath>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
   <ItemGroup>

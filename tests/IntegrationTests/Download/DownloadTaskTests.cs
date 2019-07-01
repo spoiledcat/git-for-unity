@@ -60,7 +60,8 @@ namespace IntegrationTests.Download
             var task = await Task.WhenAny(downloader.Start().Task, Task.Delay(Timeout));
             StopTrackTimeAndLog(watch, logger);
             Assert.AreEqual(downloader.Task, task);
-            Assert.Throws(typeof(DownloadException), async () => await downloader.Task);
+            Func<Task> act = async () => await downloader.Task;
+            await act.Should().ThrowAsync<DownloadException>();
         }
 
         [Test]
