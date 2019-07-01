@@ -24,6 +24,17 @@
     <BuildConfig Condition=" '$(Configuration)' != 'dev'">$(Configuration)</BuildConfig>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <TargetFramework>net471</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <LangVersion>latest</LangVersion>
+    <OutputPath Condition="$(OutputPath) == ''">$(SolutionDir)\build\$(Configuration)</OutputPath>
+    <IntermediateOutputPath Condition="$(IntermediateOutputPath) == ''">$(SolutionDir)\build\obj\$(Configuration)</IntermediateOutputPath>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <CodeAnalysisRuleSet>$(SolutionDir)\common\codeanalysis-debug.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>

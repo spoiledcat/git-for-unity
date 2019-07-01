@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <TargetFramework>net471</TargetFramework>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\</SolutionDir>
+    <ProjectGuid>{1A382F40-FD9E-43E1-89C1-320073F35CE9}</ProjectGuid>
+    <RootNamespace>TaskSystem.IntegrationTests</RootNamespace>
+    <AssemblyName>TaskSystem.IntegrationTests</AssemblyName>
+    <OutputPath>$(SolutionDir)\build\tests\</OutputPath>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\common\properties.props" />
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" Version="5.7.0" />
+    <PackageReference Include="NSubstitute" Version="4.2.0" />
+    <PackageReference Include="NUnit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SolutionDir)\src\api\Api\Api.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="**\*.cs" />
+  </ItemGroup>
+  <Import Project="$(SolutionDir)\common\build.targets" />
+</Project>

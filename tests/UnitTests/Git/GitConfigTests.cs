@@ -11,7 +11,7 @@ namespace UnitTests
     [TestFixture, Isolated]
     public class GitConfigTests
     {
-        private static readonly SubstituteFactory SubstituteFactory = new SubstituteFactory();
+        private static readonly TestSubstituteFactory SubstituteFactory = new TestSubstituteFactory();
 
         private static GitConfig LoadGitConfig(string configFileContents)
         {

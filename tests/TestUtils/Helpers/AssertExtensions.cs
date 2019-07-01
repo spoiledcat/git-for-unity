@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace TestUtils
 {
-    static class AssertExtensions
+    public static class AssertExtensions
     {
         public static void AssertEqual(this GitLogEntry gitLogEntry, GitLogEntry other)
         {
@@ -29,7 +29,7 @@ namespace TestUtils
         public static void AssertNotEqual(this GitLogEntry gitLogEntry, GitLogEntry other)
         {
             Action action = () => gitLogEntry.AssertEqual(other);
-            action.ShouldThrow<AssertionException>();
+            action.Should().Throw<AssertionException>();
         }
 
         public static void AssertEqual(this IList<GitLogEntry> gitLogEntries, IList<GitLogEntry> others)
@@ -55,7 +55,7 @@ namespace TestUtils
         public static void AssertNotEqual(this IList<GitLogEntry> gitLogEntries, IList<GitLogEntry> others)
         {
             Action action = () => gitLogEntries.AssertEqual(others);
-            action.ShouldThrow<AssertionException>();
+            action.Should().Throw<AssertionException>();
         }
 
         public static void AssertEqual(this GitStatusEntry gitStatusEntry, GitStatusEntry other)
@@ -71,7 +71,7 @@ namespace TestUtils
         public static void AssertNotEqual(this GitStatusEntry gitStatusEntry, GitStatusEntry other)
         {
             Action action = () => gitStatusEntry.AssertEqual(other);
-            action.ShouldThrow<AssertionException>();
+            action.Should().Throw<AssertionException>();
         }
 
         public static void AssertEqual(this IList<GitStatusEntry> gitLogEntries, IList<GitStatusEntry> others)
@@ -97,7 +97,7 @@ namespace TestUtils
         public static void AssertNotEqual(this IList<GitStatusEntry> gitLogEntries, IList<GitStatusEntry> others)
         {
             Action action = () => gitLogEntries.AssertEqual(others);
-            action.ShouldThrow<AssertionException>();
+            action.Should().Throw<AssertionException>();
         }
 
         public static void AssertEqual(this GitStatus gitStatus, GitStatus other)
@@ -112,7 +112,7 @@ namespace TestUtils
         public static void AssertNotEqual(this GitStatus gitStatus, GitStatus other)
         {
             Action action = () => gitStatus.AssertEqual(other);
-            action.ShouldThrow<AssertionException>();
+            action.Should().Throw<AssertionException>();
         }
     }
 }

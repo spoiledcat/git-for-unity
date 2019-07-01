@@ -30,7 +30,7 @@ namespace IntegrationTests
         protected CancellationToken Token => TaskManager.Token;
         protected NPath TestApp => System.Reflection.Assembly.GetExecutingAssembly().Location.ToNPath().Parent.Combine("CommandLine.exe");
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void OneTimeSetup()
         {
             Unity.Git.Guard.InUnitTestRunner = true;
@@ -57,7 +57,7 @@ namespace IntegrationTests
             env.GitInstallationState = state;
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public void OneTimeTearDown()
         {
             TaskManager?.Dispose();
@@ -236,7 +236,7 @@ namespace IntegrationTests
         public void ConcurrentSchedulerDoesNotGuaranteeOrdering()
         {
             var runningOrder = new List<int>();
-            var rand = new Randomizer();
+            var rand = TestContext.CurrentContext.Random;
             var tasks = new List<ActionTask>();
             for (int i = 1; i < 11; i++)
             {
@@ -260,7 +260,7 @@ namespace IntegrationTests
         {
             var count = 3;
             var runningOrder = new List<int>();
-            var rand = new Randomizer();
+            var rand = TestContext.CurrentContext.Random;
             var startTasks = new List<ActionTask>();
             for (var i = 0; i < count; i++)
             {
@@ -303,7 +303,7 @@ namespace IntegrationTests
         {
             var runningOrder = new List<int>();
             var tasks = new List<ActionTask>();
-            var rand = new Randomizer();
+            var rand = TestContext.CurrentContext.Random;
             for (int i = 1; i < 11; i++)
             {
                 tasks.Add(GetTask(TaskAffinity.Exclusive, i, id => { new ManualResetEventSlim().Wait(rand.Next(100, 200)); lock (runningOrder) runningOrder.Add(id); }));
@@ -320,7 +320,7 @@ namespace IntegrationTests
         {
             var runningOrder = new List<int>();
             var tasks = new List<ActionTask>();
-            var rand = new Randomizer();
+            var rand = TestContext.CurrentContext.Random;
             for (int i = 1; i < 11; i++)
             {
                 tasks.Add(GetTask(TaskAffinity.UI, i, id => { new ManualResetEventSlim().Wait(rand.Next(100, 200)); lock (runningOrder) runningOrder.Add(id); }));
@@ -337,7 +337,6 @@ namespace IntegrationTests
         {
             var output = new Dictionary<int, int>();
             var tasks = new List<ITask>();
-            var seed = Randomizer.RandomSeed;
 
             var uiThread = 0;
             await new ActionTask(Token, _ => uiThread = Thread.CurrentThread.ManagedThreadId) { Affinity = TaskAffinity.UI }
@@ -360,7 +359,6 @@ namespace IntegrationTests
         {
             var output = new Dictionary<int, KeyValuePair<int, int>>();
             var tasks = new List<ITask>();
-            var seed = Randomizer.RandomSeed;
 
             var uiThread = 0;
             await new ActionTask(Token, _ => uiThread = Thread.CurrentThread.ManagedThreadId) { Affinity = TaskAffinity.UI }
@@ -637,12 +635,12 @@ namespace IntegrationTests
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public async Task ExceptionPropagatesOutIfNoFinally()
         {
             var task = new ActionTask(Token, _ => { throw new InvalidOperationException(); })
                 .Catch(_ => { });
-            await task.StartAsAsync();
+            Func<Task> act = async () => await task.StartAsAsync();
+            await act.Should().ThrowAsync<InvalidOperationException>();
         }
 
         [Test]

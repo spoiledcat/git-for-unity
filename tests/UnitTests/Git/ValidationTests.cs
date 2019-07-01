@@ -14,7 +14,7 @@ namespace UnitTests
         [TestCase(true, "feature.1", TestName = "Branch name can contain dots")]
         [TestCase(true, "feature..1", TestName = "Branch name cannot contain consecutive dots")]
         [TestCase(false, "feature 1", TestName = "Branch name cannot contain a space")]
-        [TestCase(false, "feature~1", TestName = "Branch name cannot contain a ~")]
+        [TestCase(false, "feature~1", TestName = "Branch name cannot contain a tilde")]
         [TestCase(false, "feature^1", TestName = "Branch name cannot contain a ^")]
         [TestCase(false, "feature:1", TestName = "Branch name cannot contain a :")]
         [TestCase(false, "feature?1", TestName = "Branch name cannot contain a ?")]
@@ -42,7 +42,7 @@ namespace UnitTests
 
         [TestCase(true, 65, 65, 65, TestName = "Can test with ascii values")]
         [TestCase(false, 65, 65, 31, TestName = "No individual ASCII value should be < octal(40) or dec(32)")]
-        [TestCase(false, 65, 65, 127, TestName = "No individual ASCII value should = octal(177) or dec(127)")]
+        [TestCase(false, 65, 65, 127, TestName = "No individual ASCII value should equal to octal(177) or dec(127)")]
         public void TestFeatureStringFromAsciiArray(bool isValid, params int[] asciiValues)
         {
             var branch = new string(asciiValues.Select(Convert.ToChar).ToArray());

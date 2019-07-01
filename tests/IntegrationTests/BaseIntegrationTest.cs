@@ -43,7 +43,7 @@ namespace IntegrationTests
         protected NPath TestBasePath { get; set; }
         public IRepository Repository => Environment.Repository;
 
-        protected TestUtils.SubstituteFactory Factory { get; set; }
+        protected TestUtils.TestSubstituteFactory Factory { get; set; }
         protected static NPath SolutionDirectory => TestContext.CurrentContext.TestDirectory.ToNPath();
 
         protected void InitializeEnvironment(NPath repoPath,
@@ -163,15 +163,15 @@ namespace IntegrationTests
             path.Move(installDetails.GitLfsInstallationPath);
         }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public virtual void TestFixtureSetUp()
         {
             Logger = LogHelper.GetLogger(GetType());
-            Factory = new TestUtils.SubstituteFactory();
+            Factory = new TestUtils.TestSubstituteFactory();
             Unity.Git.Guard.InUnitTestRunner = true;
         }
 
-        [TestFixtureTearDown]
+        [OneTimeTearDown]
         public virtual void TestFixtureTearDown()
         {
         }
@@ -222,19 +222,19 @@ namespace IntegrationTests
             NPath.FileSystem = null;
         }
 
-        protected void StartTest(out Stopwatch watch, out ILogging logger, [CallerMemberName] string testName = "test")
+        protected virtual void StartTest(out Stopwatch watch, out ILogging logger, [CallerMemberName] string testName = "test")
         {
             watch = new Stopwatch();
             logger = LogHelper.GetLogger(testName);
             logger.Trace("Starting test");
         }
 
-        protected void EndTest(ILogging logger)
+        protected virtual void EndTest(ILogging logger)
         {
             logger.Trace("Ending test");
         }
 
-        protected void StartTrackTime(Stopwatch watch, ILogging logger = null, string message = "")
+        protected virtual void StartTrackTime(Stopwatch watch, ILogging logger = null, string message = "")
         {
             if (!String.IsNullOrEmpty(message))
                 logger.Trace(message);
@@ -242,7 +242,7 @@ namespace IntegrationTests
             watch.Start();
         }
 
-        protected void StopTrackTimeAndLog(Stopwatch watch, ILogging logger)
+        protected virtual void StopTrackTimeAndLog(Stopwatch watch, ILogging logger)
         {
             watch.Stop();
             logger.Trace($"Time: {watch.ElapsedMilliseconds}");

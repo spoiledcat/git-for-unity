@@ -9,7 +9,7 @@ namespace UnitTests
     [TestFixture, Isolated]
     class GitObjectFactoryTests
     {
-        private static readonly SubstituteFactory SubstituteFactory = new SubstituteFactory();
+        private static readonly TestSubstituteFactory SubstituteFactory = new TestSubstituteFactory();
 
         [Test]
         public void ShouldParseNormalFile()

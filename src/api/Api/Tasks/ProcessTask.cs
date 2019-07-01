@@ -528,7 +528,7 @@ namespace Unity.Git
         public virtual string ProcessArguments { get; }
     }
 
-    class FirstNonNullLineProcessTask : ProcessTask<string>
+    public class FirstNonNullLineProcessTask : ProcessTask<string>
     {
         private readonly NPath? fullPathToExecutable;
         private readonly string arguments;

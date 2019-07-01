@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using Unity.Git;
 using NCrunch.Framework;
+using NSubstitute.Core;
 using TestUtils;
 
 namespace UnitTests
@@ -9,12 +10,12 @@ namespace UnitTests
     [TestFixture, Isolated]
     class GitStatusEntryFactoryTests
     {
-        protected SubstituteFactory SubstituteFactory { get; private set; }
+        protected TestSubstituteFactory SubstituteFactory { get; private set; }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void TestFixtureSetup()
         {
-            SubstituteFactory = new SubstituteFactory();
+            SubstituteFactory = new TestSubstituteFactory();
         }
 
         [Test]

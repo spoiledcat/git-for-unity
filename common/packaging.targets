@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
   <PropertyGroup>
     <ApiSourceDir Condition="'$(ApiSourceDir)' == '' ">$(SolutionDir)\src\api</ApiSourceDir>
     <UiSourceDir Condition="'$(UiSourceDir)' == '' ">$(SolutionDir)\src\ui</UiSourceDir>
     <PublishTo Condition="'$(PublishTo)' == '' ">$(SolutionDir)\build\packages</PublishTo>
     <ApiPackageName>com.unity.version-control.git</ApiPackageName>
     <UiPackageName>com.unity.version-control.git.ui</UiPackageName>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <Target Name="Publish">
+  <Target Name="CreatePackage" AfterTargets="AfterBuild">
 
     <CreateItem Include="$(ApiSourceDir)\**\*.*">
       <Output TaskParameter="Include" ItemName="ApiToCopy" />
@@ -22,18 +22,8 @@
     <MakeDir Directories="$(PublishTo)\$(ApiPackageName)" />
     <MakeDir Directories="$(PublishTo)\$(UiPackageName)" />
 
-    <Copy
-      SourceFiles="@(ApiToCopy)"
-      DestinationFiles="@(ApiToCopy->'$(PublishTo)\$(ApiPackageName)\%(RecursiveDir)%(Filename)%(Extension)')"
-      SkipUnchangedFiles="true"
-      />
-
-    <Copy
-      SourceFiles="@(UiToCopy)"
-      DestinationFiles="@(UiToCopy->'$(PublishTo)\$(UiPackageName)\%(RecursiveDir)%(Filename)%(Extension)')"
-      SkipUnchangedFiles="true"
-      />
+    <Copy SourceFiles="@(ApiToCopy)" DestinationFiles="@(ApiToCopy->'$(PublishTo)\$(ApiPackageName)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(UiToCopy)" DestinationFiles="@(UiToCopy->'$(PublishTo)\$(UiPackageName)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
 
   </Target>
-
 </Project>

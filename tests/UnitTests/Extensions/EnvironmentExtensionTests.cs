@@ -3,6 +3,7 @@ using FluentAssertions;
 using Unity.Git;
 using NCrunch.Framework;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using TestUtils;
 
@@ -11,7 +12,7 @@ namespace UnitTests
     [TestFixture, Isolated]
     public class EnvironmentExtensionTests
     {
-        private SubstituteFactory SubstituteFactory { get; } = new SubstituteFactory();
+        private TestSubstituteFactory SubstituteFactory { get; } = new TestSubstituteFactory();
 
         [SetUp]
         public void TestSetup()
@@ -43,7 +44,6 @@ namespace UnitTests
         }
 
         [Test, Sequential]
-        [ExpectedException(ExpectedException = typeof(InvalidOperationException))]
         public void GetRepositoryPathThrowsWhenRepositoryIsChildOfProject(
             [Values(@"c:\UnityProject\UnityProject\Assets")] string repositoryPath,
             [Values(@"c:\UnityProject\UnityProject")]string projectPath,
@@ -53,7 +53,8 @@ namespace UnitTests
             environment.RepositoryPath.Returns(repositoryPath.ToNPath());
             environment.UnityProjectPath.Returns(projectPath.ToNPath());
 
-            environment.GetRepositoryPath(path.ToNPath());
+            Action act = () => environment.GetRepositoryPath(path.ToNPath());
+            act.Should().Throw<InvalidOperationException>();
         }
 
         [Test, Sequential]
@@ -73,7 +74,6 @@ namespace UnitTests
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(InvalidOperationException))]
         public void GetAssetPathShouldThrowWhenRepositoryRootIsChild(
             [Values(@"c:\Projects\UnityProject\Assets")] string repositoryPath,
             [Values(@"c:\Projects\UnityProject")] string projectPath,
@@ -83,7 +83,8 @@ namespace UnitTests
             environment.RepositoryPath.Returns(repositoryPath.ToNPath());
             environment.UnityProjectPath.Returns(projectPath.ToNPath());
 
-            environment.GetAssetPath(path.ToNPath());
+            Action act = () => environment.GetAssetPath(path.ToNPath());
+            act.Should().Throw<InvalidOperationException>();
         }
     }
 }

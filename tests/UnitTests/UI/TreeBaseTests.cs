@@ -342,7 +342,7 @@ namespace UnitTests
             testTreeListener.Received(1).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(1).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -379,7 +379,7 @@ namespace UnitTests
             testTreeListener.Received(2).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(2).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -425,7 +425,7 @@ namespace UnitTests
             testTreeListener.Received(3).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(3).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -474,7 +474,7 @@ namespace UnitTests
             testTreeListener.Received(3).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(3).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -526,7 +526,7 @@ namespace UnitTests
             testTreeListener.Received(4).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(4).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -585,7 +585,7 @@ namespace UnitTests
             testTreeListener.Received(4).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(4).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -639,7 +639,7 @@ namespace UnitTests
             };
             testTree.Load(testTreeData);
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -710,7 +710,7 @@ namespace UnitTests
 
             testTree.Load(testTreeData);
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -849,7 +849,7 @@ namespace UnitTests
             testTreeListener.Received(4).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(4).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -904,7 +904,7 @@ namespace UnitTests
             testTreeListener.Received(4).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(4).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -962,7 +962,7 @@ namespace UnitTests
             testTreeListener.Received(5).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(5).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -1035,7 +1035,7 @@ namespace UnitTests
             testTreeListener.Received(9).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(9).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",
@@ -1133,7 +1133,7 @@ namespace UnitTests
             testTreeListener.Received(9).CreateTreeNode(Args.String, Args.String, Args.Int, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Args.Bool, Arg.Any<TestTreeData?>());
             testTreeListener.Received(9).SetNodeIcon(Arg.Any<TestTreeNode>());
 
-            testTree.CreatedTreeNodes.ShouldAllBeEquivalentTo(new[] {
+            testTree.CreatedTreeNodes.Should().BeEquivalentTo(new[] {
                 new TestTreeNode {
                     Path = "Test Tree",
                     Label = "Test Tree",

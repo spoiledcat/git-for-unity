@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.IO;
+﻿using System.Collections.Specialized;
 using System.Linq;
+using System;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+#if NET35
 using System.Web;
+#endif
 using Unity.Git;
 
 namespace Unity.Git
@@ -77,13 +77,17 @@ namespace Unity.Git
                         while (true)
                         {
                             var context = httpListener.GetContext();
+#if NET35
+                            var queryParts = HttpUtility.ParseQueryString(context.Request.Url.Query);
+#else
+
                             var queryParts = new NameValueCollection();
                             context.Request.Url.Query.Split('&').All(x => {
                                 var parts = x.Split('=');
                                 queryParts.Add(WebUtility.UrlDecode(parts[0]), WebUtility.UrlDecode(parts[1]));
                                 return true;
                             });
-
+#endif
                             var state = queryParts["state"];
                             var code = queryParts["code"];
 

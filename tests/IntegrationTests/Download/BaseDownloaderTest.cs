@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Unity.Git;
-using Unity.Git;
 
 namespace IntegrationTests.Download
 {
@@ -31,27 +30,6 @@ namespace IntegrationTests.Download
             base.TestFixtureTearDown();
             server.Stop();
             ApplicationConfiguration.WebTimeout = ApplicationConfiguration.DefaultWebTimeout;
-        }
-
-        protected void StartTest(out Stopwatch watch, out ILogging logger, [CallerMemberName] string testName = "test")
-        {
-            watch = new Stopwatch();
-            logger = LogHelper.GetLogger(testName);
-            logger.Trace("Starting test");
-        }
-
-        protected void StartTrackTime(Stopwatch watch, ILogging logger = null, string message = "")
-        {
-            if (!String.IsNullOrEmpty(message))
-                logger.Trace(message);
-            watch.Reset();
-            watch.Start();
-        }
-
-        protected void StopTrackTimeAndLog(Stopwatch watch, ILogging logger)
-        {
-            watch.Stop();
-            logger.Trace($"Time: {watch.ElapsedMilliseconds}");
         }
     }
 }

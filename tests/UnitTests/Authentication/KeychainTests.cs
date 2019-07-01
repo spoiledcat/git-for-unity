@@ -6,6 +6,7 @@ using FluentAssertions;
 using Unity.Git;
 using NCrunch.Framework;
 using NSubstitute;
+using NSubstitute.Core;
 using NUnit.Framework;
 using TestUtils;
 
@@ -14,7 +15,7 @@ namespace UnitTests
     [TestFixture, Isolated]
     public class KeychainTests
     {
-        private static readonly SubstituteFactory SubstituteFactory = new SubstituteFactory();
+        private static readonly TestSubstituteFactory SubstituteFactory = new TestSubstituteFactory();
 
         [Test]
         public void ShouldInitializeWhenCacheDoesNotExist()

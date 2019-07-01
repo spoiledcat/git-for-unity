@@ -144,7 +144,7 @@ namespace UnitTests
                 outputProcessor.LineReceived(line);
             }
 
-            results.ShouldAllBeEquivalentTo(expected);
+            results.Should().BeEquivalentTo(expected);
         }
     }
 }

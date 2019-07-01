@@ -220,7 +220,7 @@ namespace IntegrationTests.Download
             StartTrackTime(watch, logger, package.Url);
             var task = await Task.WhenAny(downloadTask.Start().Task, Task.Delay(Timeout));
             StopTrackTimeAndLog(watch, logger);
-            task.ShouldBeEquivalentTo(downloadTask.Task);
+            task.Should().BeEquivalentTo(downloadTask.Task);
 
             var downloadPath = await downloadTask.Task;
             Assert.NotNull(downloadPath);
@@ -237,7 +237,7 @@ namespace IntegrationTests.Download
             StartTrackTime(watch, logger, package.Url);
             task = await Task.WhenAny(downloadTask.Start().Task, Task.Delay(Timeout));
             StopTrackTimeAndLog(watch, logger);
-            task.ShouldBeEquivalentTo(downloadTask.Task);
+            task.Should().BeEquivalentTo(downloadTask.Task);
             downloadPath = await downloadTask.Task;
 
             var md5Sum = downloadPath.CalculateMD5();

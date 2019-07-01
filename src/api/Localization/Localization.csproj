@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\..\</SolutionDir>
+    <ProjectGuid>{F5D69B3F-E2BF-4D32-9DCE-51F3E52D74AF}</ProjectGuid>
+    <AssemblyName>Unity.VersionControl.Git.Localization</AssemblyName>
+    <RootNamespace>Unity.VersionControl.Git</RootNamespace>
+    <IntermediateOutputPath Condition="$(IntermediateOutputPath) == ''">$(SolutionDir)\build\obj</IntermediateOutputPath>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\common\properties.props" />
+  <ItemGroup>
+    <Compile Include="..\..\..\build\obj\Localization.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Localization.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Localization.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>..\..\..\build\obj\Localization.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(SolutionDir)\common\build.targets" />
+</Project>

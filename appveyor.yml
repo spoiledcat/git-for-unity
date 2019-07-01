@@ -5,13 +5,12 @@ environment:
     - node_version: '8'
 
 install:
-- ps: >-
+- ps: |
+    Set-Location $env:appveyor_build_folder
+
     $full_build = Test-Path env:GHFU_KEY
-
     $package = $full_build
-
     git submodule sync
-
     git submodule init
 
     if ($full_build) {
@@ -34,24 +33,16 @@ install:
 
     git submodule update
 
-    nuget restore GitHub.Unity.sln
-
-    Set-Location $env:appveyor_build_folder
+    hMSBuild.bat /t:restore
 
     $version = Get-Content "$($env:appveyor_build_folder)\common\SolutionInfo.cs" | %{ $regex = "const string GitHubForUnityVersion = `"([^`"]*)`""; if ($_ -match $regex) { $matches[1] } }
-
     $env:package_version="$($version).$($env:APPVEYOR_BUILD_NUMBER)"
-
     Update-AppveyorBuild -Version $env:package_version
 
     $message = "Building "
-
     if ($package) { $message += "and packaging "}
-
     if ($full_build) { $message += "(full build)" } else { $message += "(partial build)" }
-
     $message += " version " + $env:package_version + " "
-
     Write-Host $message
 
 assembly_info:
@@ -61,7 +52,7 @@ assembly_info:
 
 configuration: Release
 build:
-  project: GitHub.Unity.sln
+  project: Unity.VersionControl.Git.sln
   verbosity: minimal
 test:
   assemblies:

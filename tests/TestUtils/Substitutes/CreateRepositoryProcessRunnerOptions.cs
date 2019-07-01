@@ -3,7 +3,7 @@ using Unity.Git;
 
 namespace TestUtils
 {
-    class CreateRepositoryProcessRunnerOptions
+    public class CreateRepositoryProcessRunnerOptions
     {
         public Dictionary<GitConfigGetKey, string> GitConfigGetResults { get; set; }
 

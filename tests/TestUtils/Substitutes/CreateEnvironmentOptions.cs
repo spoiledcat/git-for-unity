@@ -3,7 +3,7 @@ using NSubstitute.Core;
 
 namespace TestUtils
 {
-    class CreateEnvironmentOptions
+    public class CreateEnvironmentOptions
     {
         public const string DefaultExtensionFolder = @"c:\GitHubUnity\ExtensionFolder";
         public const string DefaultUserProfilePath = @"c:\GitHubUnity\UserProfile";

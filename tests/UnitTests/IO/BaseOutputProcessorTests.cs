@@ -6,12 +6,12 @@ namespace UnitTests
     class BaseOutputProcessorTests
     {
         protected const string TestRootPath = @"c:\TestSource";
-        protected SubstituteFactory SubstituteFactory { get; private set; }
+        protected TestSubstituteFactory SubstituteFactory { get; private set; }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void TestFixtureSetup()
         {
-            SubstituteFactory = new SubstituteFactory();
+            SubstituteFactory = new TestSubstituteFactory();
         }
     }
 }

@@ -8,7 +8,11 @@ namespace Unity.Git
     {
         public static Task<T> GetCompletedTask<T>(T result)
         {
+#if NET35
+            return TaskEx.FromResult(result);
+#else
             return Task.FromResult(result);
+#endif
         }
 
         public static Task<T> ToTask<T>(this Exception exception)

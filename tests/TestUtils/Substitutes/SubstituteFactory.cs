@@ -7,9 +7,9 @@ using Unity.Git;
 
 namespace TestUtils
 {
-    class SubstituteFactory
+    public class TestSubstituteFactory
     {
-        public SubstituteFactory()
+        public TestSubstituteFactory()
         {}
 
         public IEnvironment CreateEnvironment(CreateEnvironmentOptions createEnvironmentOptions = null)
