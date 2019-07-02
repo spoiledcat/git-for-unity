@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using TestUtils;
 
 namespace UnitTests

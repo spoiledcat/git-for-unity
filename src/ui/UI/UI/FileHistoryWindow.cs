@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class FileHistoryWindow : BaseWindow
     {

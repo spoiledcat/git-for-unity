@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class FileLogAdapter : LogAdapterBase
     {

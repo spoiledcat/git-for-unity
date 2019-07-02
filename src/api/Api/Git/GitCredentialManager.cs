@@ -1,10 +1,10 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Git.Git.Tasks;
+using Unity.VersionControl.Git.Tasks;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class GitCredentialManager : ICredentialManager
     {

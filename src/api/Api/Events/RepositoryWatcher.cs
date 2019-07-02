@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using sfw.net;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public interface IRepositoryWatcher : IDisposable
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public interface ICredential : IDisposable
     {

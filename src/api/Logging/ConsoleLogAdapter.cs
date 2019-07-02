@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class ConsoleLogAdapter : LogAdapterBase
     {

@@ -1,11 +1,11 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public abstract class BaseSettings : ISettings
     {

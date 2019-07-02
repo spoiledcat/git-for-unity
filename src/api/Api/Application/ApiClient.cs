@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Unity.Git.Json;
+using Unity.VersionControl.Git.Json;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class ApiClient : IApiClient
     {

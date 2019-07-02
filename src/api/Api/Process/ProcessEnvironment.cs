@@ -1,8 +1,8 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class ProcessEnvironment : IProcessEnvironment
     {

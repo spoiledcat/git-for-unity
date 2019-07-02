@@ -68,12 +68,12 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using Unity.Git.Json;
+using Unity.VersionControl.Git.Json;
 
 // ReSharper disable LoopCanBeConvertedToQuery
 // ReSharper disable RedundantExplicitArrayCreation
 // ReSharper disable SuggestUseVarKeywordEvident
-namespace Unity.Git.Json
+namespace Unity.VersionControl.Git.Json
 {
     /// <summary>
     /// Represents the json array.
@@ -2154,7 +2154,7 @@ namespace Unity.Git.Json
 
 }
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     using Json;
     

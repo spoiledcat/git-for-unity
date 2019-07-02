@@ -1,7 +1,7 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class Package
     {

@@ -4,7 +4,7 @@
     <TargetFramework>net471</TargetFramework>
     <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\</SolutionDir>
     <ProjectGuid>{08B87D2A-8CF1-4211-B7AA-5209F00F72F8}</ProjectGuid>
-    <RootNamespace>Test.CommandLine</RootNamespace>
+    <RootNamespace>Tests.CommandLine</RootNamespace>
     <AssemblyName>CommandLine</AssemblyName>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>

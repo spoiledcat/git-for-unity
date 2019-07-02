@@ -1,4 +1,4 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     class SettingsView : Subview

@@ -7,7 +7,7 @@ using NSubstitute;
 using NUnit.Framework;
 using TestUtils;
 using TestUtils.Events;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
 namespace IntegrationTests
 {

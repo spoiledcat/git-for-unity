@@ -1,6 +1,6 @@
 using System;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public static class ActionExtensions
     {

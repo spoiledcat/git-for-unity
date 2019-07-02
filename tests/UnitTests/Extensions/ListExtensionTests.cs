@@ -1,6 +1,6 @@
 using System.Linq;
 using FluentAssertions;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using NUnit.Framework;
 
 namespace UnitTests

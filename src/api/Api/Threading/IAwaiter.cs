@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     interface IAwaiter : INotifyCompletion
     {

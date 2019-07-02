@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.Git.UI
+namespace Unity.VersionControl.Git.UI
 {
     [InitializeOnLoad]
     class Menus : ScriptableObject

@@ -1,5 +1,5 @@
 ﻿using System;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System.Threading;
 
 namespace TestUtils

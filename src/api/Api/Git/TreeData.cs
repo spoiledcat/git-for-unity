@@ -1,7 +1,7 @@
 using System;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public interface ITreeData
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
 namespace IntegrationTests
 {

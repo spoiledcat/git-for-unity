@@ -1,6 +1,6 @@
 using System.Threading;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class LinuxDiskUsageTask : ProcessTask<int>
     {

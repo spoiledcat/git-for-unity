@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Unity.Git.Git.Tasks
+namespace Unity.VersionControl.Git.Tasks
 {
     public class GitConfigListTask : ProcessTaskWithListOutput<KeyValuePair<string, string>>
     {

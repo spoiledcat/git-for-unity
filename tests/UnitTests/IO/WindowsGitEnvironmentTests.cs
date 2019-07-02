@@ -5,7 +5,7 @@ using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using Environment = System.Environment;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using TestUtils;
 
 namespace UnitTests

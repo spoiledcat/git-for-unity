@@ -1,4 +1,4 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public static class ProcessTaskExtensions
     {

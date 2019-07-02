@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
 namespace IntegrationTests
 {

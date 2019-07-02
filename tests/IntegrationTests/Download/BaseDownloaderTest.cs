@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
 namespace IntegrationTests.Download
 {

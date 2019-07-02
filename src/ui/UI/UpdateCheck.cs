@@ -2,9 +2,9 @@
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     class GUIPackage

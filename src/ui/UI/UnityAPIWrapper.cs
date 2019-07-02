@@ -3,7 +3,7 @@ using UnityEngine;
 using System.IO;
 using System;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [InitializeOnLoad]
     public class UnityAPIWrapper : ScriptableSingleton<UnityAPIWrapper>

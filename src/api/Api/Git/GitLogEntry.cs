@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     public struct GitLogEntry

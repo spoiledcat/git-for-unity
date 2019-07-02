@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Unity.Git;
-using static Unity.Git.GitInstaller;
+using Unity.VersionControl.Git;
+using static Unity.VersionControl.Git.GitInstaller;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class ApplicationManagerBase : IApplicationManager
     {
@@ -339,7 +339,7 @@ namespace Unity.Git
 
             repositoryManager?.Dispose();
 
-            repositoryManager = Unity.Git.RepositoryManager.CreateInstance(Platform, TaskManager, GitClient, Environment.RepositoryPath);
+            repositoryManager = Unity.VersionControl.Git.RepositoryManager.CreateInstance(Platform, TaskManager, GitClient, Environment.RepositoryPath);
             repositoryManager.Initialize();
             Environment.Repository.Initialize(repositoryManager, TaskManager);
             repositoryManager.Start();

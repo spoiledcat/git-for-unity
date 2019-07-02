@@ -1,6 +1,6 @@
 ﻿#if ENABLE_METRICS
 
-using Unity.Git;
+using Unity.VersionControl.Git;
 using NSubstitute;
 using NUnit.Framework;
 using System;

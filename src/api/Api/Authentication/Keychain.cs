@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     public class Connection

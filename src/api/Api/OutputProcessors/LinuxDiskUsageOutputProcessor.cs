@@ -1,6 +1,6 @@
 using System;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class LinuxDiskUsageOutputProcessor : BaseOutputProcessor<int>
     {

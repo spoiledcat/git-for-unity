@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     class InitProjectView : Subview

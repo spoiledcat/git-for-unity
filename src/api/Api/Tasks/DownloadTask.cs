@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using System.Threading;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public static class WebRequestExtensions
     {

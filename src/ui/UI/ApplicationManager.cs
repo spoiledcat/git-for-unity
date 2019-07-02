@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class ApplicationManager : ApplicationManagerBase
     {

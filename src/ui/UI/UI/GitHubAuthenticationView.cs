@@ -3,7 +3,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEditor;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     class GitHubAuthenticationView : Subview

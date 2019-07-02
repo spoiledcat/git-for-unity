@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class VersionOutputProcessor : BaseOutputProcessor<TheVersion>
     {

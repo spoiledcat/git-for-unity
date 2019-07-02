@@ -10,7 +10,7 @@ using FluentAssertions;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
 namespace IntegrationTests
 {
@@ -34,7 +34,7 @@ namespace IntegrationTests
         [OneTimeSetUp]
         public void OneTimeSetup()
         {
-            Unity.Git.Guard.InUnitTestRunner = true;
+            Unity.VersionControl.Git.Guard.InUnitTestRunner = true;
             LogHelper.LogAdapter = new MultipleLogAdapter(new FileLogAdapter($"..\\{DateTime.UtcNow.ToString("yyyyMMddHHmmss")}-tasksystem-tests.log"));
             //LogHelper.TracingEnabled = true;
             TaskManager = new TaskManager();

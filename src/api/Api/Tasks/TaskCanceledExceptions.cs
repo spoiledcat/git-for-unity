@@ -2,7 +2,7 @@ using System;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     public class DependentTaskFailedException : TaskCanceledException

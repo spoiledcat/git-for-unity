@@ -1,9 +1,9 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Unity.Git.Git.Tasks;
+using Unity.VersionControl.Git.Tasks;
 
 namespace TestUtils
 {

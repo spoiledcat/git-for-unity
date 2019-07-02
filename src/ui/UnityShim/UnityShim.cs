@@ -1,6 +1,6 @@
 using System;
 using UnityEditor;
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public static class UnityShim
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public enum GitRemoteFunction
     {

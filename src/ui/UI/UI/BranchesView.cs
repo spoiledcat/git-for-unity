@@ -2,11 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Git.Helpers;
+using Unity.VersionControl.Git.Helpers;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     class BranchesView : Subview

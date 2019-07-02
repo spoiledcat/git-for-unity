@@ -1,6 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using NCrunch.Framework;
 using NSubstitute.Core;
 using TestUtils;

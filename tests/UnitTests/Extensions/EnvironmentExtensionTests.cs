@@ -1,6 +1,6 @@
 using System;
 using FluentAssertions;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using NCrunch.Framework;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;

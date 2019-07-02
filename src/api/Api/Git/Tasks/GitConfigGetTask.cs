@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 
-namespace Unity.Git.Git.Tasks
+namespace Unity.VersionControl.Git.Tasks
 {
     public class GitConfigGetAllTask : ProcessTaskWithListOutput<string>
     {

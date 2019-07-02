@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Threading;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using NSubstitute;
 using System.Collections.Generic;
 

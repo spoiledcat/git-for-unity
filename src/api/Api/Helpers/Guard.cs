@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     public class InstanceNotInitializedException : InvalidOperationException

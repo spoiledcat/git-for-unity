@@ -1,10 +1,10 @@
-﻿using Unity.Git;
+﻿using Unity.VersionControl.Git;
 using System;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [InitializeOnLoad]
     public class EntryPoint : ScriptableObject

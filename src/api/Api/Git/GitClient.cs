@@ -1,11 +1,11 @@
-﻿using Unity.Git;
+﻿using Unity.VersionControl.Git;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Unity.Git.Git.Tasks;
-using static Unity.Git.GitInstaller;
+using Unity.VersionControl.Git.Tasks;
+using static Unity.VersionControl.Git.GitInstaller;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     /// <summary>
     /// Client that provides access to git functionality

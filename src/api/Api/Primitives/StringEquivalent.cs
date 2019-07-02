@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     public abstract class StringEquivalent<T> : ISerializable where T : StringEquivalent<T>

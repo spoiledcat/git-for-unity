@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public interface IFileSystem
     {

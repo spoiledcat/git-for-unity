@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using NUnit.Framework;
 
 namespace IntegrationTests

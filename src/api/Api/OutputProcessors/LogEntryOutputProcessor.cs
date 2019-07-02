@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class LogEntryOutputProcessor : BaseOutputListProcessor<GitLogEntry>
     {

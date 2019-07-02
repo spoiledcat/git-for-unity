@@ -2,10 +2,10 @@
 using System.IO;
 using System.Threading;
 using Git.ICSharpCode.SharpZipLib.Zip;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System.Collections.Generic;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class ZipHelper : IZipHelper
     {

@@ -1,9 +1,9 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     abstract class Subview : IView
     {

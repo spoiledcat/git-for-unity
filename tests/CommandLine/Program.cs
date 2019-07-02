@@ -5,9 +5,9 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using Mono.Options;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
-namespace TestApp
+namespace Tests.CommandLine
 {
     static class Program
     {

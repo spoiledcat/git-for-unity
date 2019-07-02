@@ -1,4 +1,4 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using NSubstitute.Core;
 
 namespace TestUtils

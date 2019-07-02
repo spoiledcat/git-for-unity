@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using NSubstitute;
 using NUnit.Framework;
 using System.IO;

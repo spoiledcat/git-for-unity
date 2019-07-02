@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 #if NET35
 using System.Web;
 #endif
-using Unity.Git;
+using Unity.VersionControl.Git;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public interface IOAuthCallbackManager
     {

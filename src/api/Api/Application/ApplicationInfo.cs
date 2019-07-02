@@ -1,5 +1,5 @@
 #pragma warning disable 436
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public static partial class ApplicationInfo
     {

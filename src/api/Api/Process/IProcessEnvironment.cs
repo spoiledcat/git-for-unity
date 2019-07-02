@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public interface IProcessEnvironment
     {

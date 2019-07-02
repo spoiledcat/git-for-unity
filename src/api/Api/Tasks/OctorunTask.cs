@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class OctorunResultOutputProcessor : BaseOutputProcessor<OctorunResult>
     {

@@ -1,8 +1,8 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 using System.Text.RegularExpressions;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     public struct TheVersion : IComparable<TheVersion>

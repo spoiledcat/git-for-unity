@@ -2,7 +2,7 @@ using System;
 using System.Security.AccessControl;
 using System.Text.RegularExpressions;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class BranchListOutputProcessor : BaseOutputListProcessor<GitBranch>
     {

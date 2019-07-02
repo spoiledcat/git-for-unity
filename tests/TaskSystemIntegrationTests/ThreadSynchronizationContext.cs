@@ -1,11 +1,11 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class ThreadSynchronizationContext : SynchronizationContext
     {

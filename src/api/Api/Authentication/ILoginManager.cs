@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     /// <summary>
     /// Provides services for logging into a GitHub server.

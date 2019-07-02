@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using System.Collections;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
 public class VersionTests
 {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class CacheContainer : ICacheContainer
     {

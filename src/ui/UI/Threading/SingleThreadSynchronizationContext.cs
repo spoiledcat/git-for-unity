@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using UnityEditor;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class MainThreadSynchronizationContext : SynchronizationContext, IMainThreadSynchronizationContext
     {

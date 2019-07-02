@@ -1,4 +1,4 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 using System.IO;
 using System.Linq;
@@ -7,7 +7,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class Utility : ScriptableObject
     {

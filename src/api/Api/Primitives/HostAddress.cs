@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class HostAddress
     {

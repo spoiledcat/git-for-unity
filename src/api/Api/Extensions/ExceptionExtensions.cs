@@ -6,7 +6,7 @@ using System.Threading;
 using System.Runtime.ExceptionServices;
 #endif
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public static class ExceptionExtensions
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public static class ExceptionExtensions
     {

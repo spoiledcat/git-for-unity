@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class Spinner
     {

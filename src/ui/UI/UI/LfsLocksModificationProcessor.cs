@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class LfsLocksModificationProcessor : UnityEditor.AssetModificationProcessor
     {

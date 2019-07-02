@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
 namespace IntegrationTests
 {

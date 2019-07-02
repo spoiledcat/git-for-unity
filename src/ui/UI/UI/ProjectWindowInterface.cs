@@ -1,12 +1,12 @@
 using System;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class ProjectWindowInterface : AssetPostprocessor
     {

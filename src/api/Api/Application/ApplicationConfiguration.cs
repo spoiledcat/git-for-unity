@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public static class ApplicationConfiguration
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     static class FileSystemExtensions
     {

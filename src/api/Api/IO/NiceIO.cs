@@ -33,7 +33,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [Serializable]
     [DebuggerDisplay("{DebuggerDisplay,nq}")]

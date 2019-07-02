@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Text;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public enum LoginResultCodes
     {

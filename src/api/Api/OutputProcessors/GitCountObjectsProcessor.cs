@@ -1,4 +1,4 @@
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class GitCountObjectsProcessor : BaseOutputProcessor<int>
     {

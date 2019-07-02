@@ -1,6 +1,6 @@
 using sfw.net;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     static class FileEventExtensions
     {

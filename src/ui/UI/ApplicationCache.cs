@@ -1,4 +1,4 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +8,7 @@ using UnityEditor;
 using UnityEngine;
 using Application = UnityEngine.Application;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     sealed class ApplicationCache : ScriptObjectSingleton<ApplicationCache>
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class LfsVersionOutputProcessor : BaseOutputProcessor<TheVersion>
     {

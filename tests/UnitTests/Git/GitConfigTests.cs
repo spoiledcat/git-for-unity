@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using NCrunch.Framework;
 using NUnit.Framework;
 using TestUtils;

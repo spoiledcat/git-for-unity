@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public static class Constants
     {

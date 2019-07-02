@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class DownloadData
     {

@@ -1,11 +1,11 @@
-﻿using Unity.Git;
+﻿using Unity.VersionControl.Git;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class ProcessManager : IProcessManager
     {

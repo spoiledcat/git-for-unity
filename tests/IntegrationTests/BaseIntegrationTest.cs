@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using NCrunch.Framework;
 using NUnit.Framework;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
 namespace IntegrationTests
 {
@@ -113,7 +113,7 @@ namespace IntegrationTests
             DotGitHead = DotGitPath.Combine("HEAD");
             DotGitConfig = DotGitPath.Combine("config");
 
-            RepositoryManager = Unity.Git.RepositoryManager.CreateInstance(Platform, TaskManager, GitClient, repoPath);
+            RepositoryManager = Unity.VersionControl.Git.RepositoryManager.CreateInstance(Platform, TaskManager, GitClient, repoPath);
             RepositoryManager.Initialize();
 
             onRepositoryManagerCreated?.Invoke(RepositoryManager);
@@ -168,7 +168,7 @@ namespace IntegrationTests
         {
             Logger = LogHelper.GetLogger(GetType());
             Factory = new TestUtils.TestSubstituteFactory();
-            Unity.Git.Guard.InUnitTestRunner = true;
+            Unity.VersionControl.Git.Guard.InUnitTestRunner = true;
         }
 
         [OneTimeTearDown]

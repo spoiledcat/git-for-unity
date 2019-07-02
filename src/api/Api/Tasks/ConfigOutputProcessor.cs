@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class ConfigOutputProcessor : BaseOutputListProcessor<KeyValuePair<string, string>>
     {

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.Git;
+using Unity.VersionControl.Git;
 using NUnit.Framework;
 
 namespace UnitTests

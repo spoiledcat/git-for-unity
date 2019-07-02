@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class RemoteListOutputProcessor : BaseOutputListProcessor<GitRemote>
     {

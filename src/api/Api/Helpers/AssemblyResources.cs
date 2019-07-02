@@ -3,7 +3,7 @@ using System.IO;
 using System.Net.NetworkInformation;
 using System.Reflection;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public enum ResourceType
     {
@@ -37,14 +37,14 @@ namespace Unity.Git
             if (resourceType != ResourceType.Icon)
                 asm = typeof(AssemblyResources).Assembly;
 
-            return asm.GetManifestResourceStream($"Unity.Git.{type}{(!string.IsNullOrEmpty(os) ? "." + os : os)}.{resource}");
+            return asm.GetManifestResourceStream($"Unity.VersionControl.Git.{type}{(!string.IsNullOrEmpty(os) ? "." + os : os)}.{resource}");
         }
 
         private static Stream TryGetStream(ResourceType resourceType, string resource, IEnvironment environment)
         {
             /*
                 This function attempts to get files embedded in the callers assembly.
-                Unity.Git which tends to contain logos
+                Unity.VersionControl.Git which tends to contain logos
                 Git.Api which tends to contain application resources
 
                 Each file's name is their physical path in the project.
@@ -68,7 +68,7 @@ namespace Unity.Git
                 return new MemoryStream(possiblePath.ReadAllBytes());
             }
 
-            var basePath = resourceType == ResourceType.Icon ? "Unity.Git" : "Git.Api";
+            var basePath = resourceType == ResourceType.Icon ? "Unity.VersionControl.Git" : "Git.Api";
             possiblePath = environment.ExtensionInstallPath.Parent.Combine(basePath, type, os, resource);
             if (possiblePath.FileExists())
             {
@@ -82,7 +82,7 @@ namespace Unity.Git
         {
             /*
                 This function attempts to get files embedded in the callers assembly.
-                Unity.Git which tends to contain logos
+                Unity.VersionControl.Git which tends to contain logos
                 Git.Api which tends to contain application resources
 
                 Each file's name is their physical path in the project.
@@ -109,7 +109,7 @@ namespace Unity.Git
                 return possiblePath;
             }
 
-            var basePath = resourceType == ResourceType.Icon ? "Unity.Git" : "Git.Api";
+            var basePath = resourceType == ResourceType.Icon ? "Unity.VersionControl.Git" : "Git.Api";
             possiblePath = environment.ExtensionInstallPath.Parent.Combine(basePath, type, os, resource);
             if (possiblePath.FileExists())
             {

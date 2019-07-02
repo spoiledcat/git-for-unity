@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using NSubstitute;
-using Unity.Git;
+using Unity.VersionControl.Git;
 
 namespace TestUtils
 {

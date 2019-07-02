@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public interface IProcessManager
     {

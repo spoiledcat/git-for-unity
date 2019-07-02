@@ -1,10 +1,10 @@
-﻿using Unity.Git;
+﻿using Unity.VersionControl.Git;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public static class Utils
     {

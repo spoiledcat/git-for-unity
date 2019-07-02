@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     static class StreamExtensions
     {

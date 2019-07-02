@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Threading;
-using Unity.Git;
-using Unity.Git.Git.Tasks;
+using Unity.VersionControl.Git;
+using Unity.VersionControl.Git.Tasks;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public class GitInstaller
     {

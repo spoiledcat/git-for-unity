@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Unity.Git.Helpers
+namespace Unity.VersionControl.Git.Helpers
 {
     public static class Validation
     {

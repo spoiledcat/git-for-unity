@@ -1,11 +1,11 @@
-﻿using Unity.Git;
+﻿using Unity.VersionControl.Git;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     public interface IBackedByCache
     {

@@ -1,8 +1,8 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 using System.Threading;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     class UnityLogAdapter : LogAdapterBase
     {

@@ -1,10 +1,10 @@
-using Unity.Git;
+using Unity.VersionControl.Git;
 using System;
 using System.Linq;
 using UnityEditorInternal;
 using UnityEngine;
 
-namespace Unity.Git
+namespace Unity.VersionControl.Git
 {
     [AttributeUsage(AttributeTargets.Class)]
     sealed class LocationAttribute : Attribute

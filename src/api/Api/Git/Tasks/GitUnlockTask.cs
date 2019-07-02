@@ -1,7 +1,7 @@
 using System.Text;
 using System.Threading;
 
-namespace Unity.Git.Git.Tasks
+namespace Unity.VersionControl.Git.Tasks
 {
     public class GitUnlockTask : ProcessTask<string>
     {
