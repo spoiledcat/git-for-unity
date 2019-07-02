@@ -6,6 +6,7 @@
     <RootNamespace>Unity.VersionControl.Git</RootNamespace>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
+  <Import Project="$(SolutionDir)\common\libraries.props" />
   <ItemGroup>
     <ProjectReference Include="..\Localization\Localization.csproj" />
     <ProjectReference Include="..\Logging\Logging.csproj" />

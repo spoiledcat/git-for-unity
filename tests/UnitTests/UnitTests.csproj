@@ -5,12 +5,9 @@
     <ProjectGuid>{69F13D9D-AD56-4EEC-AE10-D528EE23E1A9}</ProjectGuid>
     <RootNamespace>UnitTests</RootNamespace>
     <AssemblyName>UnitTests</AssemblyName>
-    <OutputPath>$(SolutionDir)\build\tests\</OutputPath>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
-  <ItemGroup>
-    <Compile Include="**\*.cs" />
-  </ItemGroup>
+  <Import Project="$(SolutionDir)\common\tests.props" />  
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.7.0" />
     <PackageReference Include="NCrunch.Framework" Version="3.17.0" />

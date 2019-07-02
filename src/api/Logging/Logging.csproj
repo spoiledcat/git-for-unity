@@ -6,6 +6,7 @@
     <RootNamespace>Unity.VersionControl.Git.Logging</RootNamespace>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
+  <Import Project="$(SolutionDir)\common\libraries.props" />
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="SolutionInfo.cs" />
   </ItemGroup>

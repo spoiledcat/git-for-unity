@@ -6,9 +6,9 @@
     <ProjectGuid>{3DD3451C-30FA-4294-A3A9-1E080342F867}</ProjectGuid>
     <RootNamespace>TestWebServer</RootNamespace>
     <AssemblyName>TestWebServer</AssemblyName>
-    <OutputPath>$(SolutionDir)\build\tests\</OutputPath>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
+  <Import Project="$(SolutionDir)\common\tests.props" />  
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.*" />
   </ItemGroup>
@@ -17,7 +17,6 @@
     <ProjectReference Include="$(SolutionDir)\src\api\Logging\Logging.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="**\*.cs" />
     <None Include="files\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

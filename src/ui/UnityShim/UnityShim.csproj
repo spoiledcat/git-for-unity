@@ -6,6 +6,7 @@
     <RootNamespace>Unity.VersionControl.Git</RootNamespace>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
+  <Import Project="$(SolutionDir)\common\libraries.props" />
   <ItemGroup>
     <Reference Include="UnityEditor">
       <HintPath>$(UnityDir)Managed\UnityEditor.dll</HintPath>

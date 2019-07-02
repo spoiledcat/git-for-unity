@@ -6,9 +6,9 @@
     <ProjectGuid>{1A382F40-FD9E-43E1-89C1-320073F35CE9}</ProjectGuid>
     <RootNamespace>TaskSystem.IntegrationTests</RootNamespace>
     <AssemblyName>TaskSystem.IntegrationTests</AssemblyName>
-    <OutputPath>$(SolutionDir)\build\tests\</OutputPath>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
+  <Import Project="$(SolutionDir)\common\tests.props" />  
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.7.0" />
     <PackageReference Include="NSubstitute" Version="4.2.0" />
@@ -18,9 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\src\api\Api\Api.csproj" />
     <ProjectReference Include="..\CommandLine\CommandLine.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="**\*.cs" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

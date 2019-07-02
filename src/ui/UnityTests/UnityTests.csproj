@@ -9,6 +9,7 @@
     <OutputPath>$(SolutionDir)\build\tests\</OutputPath>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
+  <Import Project="$(SolutionDir)\common\tests.props" />  
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.12.0" />
   </ItemGroup>
@@ -31,9 +32,6 @@
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\src\api\Api\Api.csproj" />
     <ProjectReference Include="$(SolutionDir)\src\ui\UI\UI.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="**\*.cs" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\common\build.targets" />
   <Import Project="$(SolutionDir)\common\unityreferences.targets" />

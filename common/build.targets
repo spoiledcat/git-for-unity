@@ -15,5 +15,5 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
     <PackageReference Include="Unity.NETFramework.ReferenceAssemblies.net35" Version="1.0.0" PrivateAssets="All" />
-  </ItemGroup>
+  </ItemGroup>  
 </Project>

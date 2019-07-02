@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Reflection;
-using System.Runtime.ExceptionServices;
 using System.Threading;
+
+#if (!NET35)
+using System.Runtime.ExceptionServices;
+#endif
 
 namespace Unity.Git
 {

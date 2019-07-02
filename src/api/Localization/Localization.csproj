@@ -4,6 +4,12 @@
     <ProjectGuid>{F5D69B3F-E2BF-4D32-9DCE-51F3E52D74AF}</ProjectGuid>
     <AssemblyName>Unity.VersionControl.Git.Localization</AssemblyName>
     <RootNamespace>Unity.VersionControl.Git</RootNamespace>
+    <TargetFramework>net35</TargetFramework>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <LangVersion>latest</LangVersion>
     <IntermediateOutputPath Condition="$(IntermediateOutputPath) == ''">$(SolutionDir)\build\obj</IntermediateOutputPath>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />

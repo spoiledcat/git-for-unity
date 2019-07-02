@@ -6,19 +6,16 @@
     <ProjectGuid>{08B87D2A-8CF1-4211-B7AA-5209F00F72F8}</ProjectGuid>
     <RootNamespace>Test.CommandLine</RootNamespace>
     <AssemblyName>CommandLine</AssemblyName>
-    <OutputPath>$(SolutionDir)\build\tests\</OutputPath>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject />
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
+  <Import Project="$(SolutionDir)\common\tests.props" />  
   <ItemGroup>
     <ProjectReference Include="$(SolutionDir)\src\api\Api\Api.csproj" />
     <ProjectReference Include="$(SolutionDir)\src\api\Logging\Logging.csproj" />
     <ProjectReference Include="..\TestWebServer\TestWebServer.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="**\*.cs" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

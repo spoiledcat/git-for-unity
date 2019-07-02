@@ -35,7 +35,7 @@ install:
 
     hMSBuild.bat /t:restore
 
-    $version = Get-Content "$($env:appveyor_build_folder)\common\SolutionInfo.cs" | %{ $regex = "const string GitHubForUnityVersion = `"([^`"]*)`""; if ($_ -match $regex) { $matches[1] } }
+    $version = Get-Content "$($env:appveyor_build_folder)\common\SolutionInfo.cs" | %{ $regex = "private const string [\w]+Version = `"([^`"]*)`""; if ($_ -match $regex) { $matches[1] } }
     $env:package_version="$($version).$($env:APPVEYOR_BUILD_NUMBER)"
     Update-AppveyorBuild -Version $env:package_version
 
@@ -52,7 +52,7 @@ assembly_info:
 
 configuration: Release
 build:
-  project: Unity.VersionControl.Git.sln
+  project: All.sln
   verbosity: minimal
 test:
   assemblies:

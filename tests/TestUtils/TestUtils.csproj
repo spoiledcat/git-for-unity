@@ -5,12 +5,9 @@
     <ProjectGuid>{66A1D219-F61D-4AE4-9BD7-AAEB97276FFF}</ProjectGuid>
     <RootNamespace>TestUtils</RootNamespace>
     <AssemblyName>TestUtils</AssemblyName>
-    <OutputPath>$(SolutionDir)\build\tests\</OutputPath>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
-  <ItemGroup>
-    <Compile Include="**\*.cs" />
-  </ItemGroup>
+  <Import Project="$(SolutionDir)\common\tests.props" />  
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.7.0" />
     <PackageReference Include="NSubstitute" Version="4.2.0" />
