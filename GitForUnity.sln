@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.705
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logging", "src\api\Logging\Logging.csproj", "{BB6A8EDA-15D8-471B-A6ED-EE551E0B3BA0}"
 EndProject
-Project("{{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization", "src\Localization\Localization.csproj", "{F5D69B3F-E2BF-4D32-9DCE-51F3E52D74AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization", "src\Localization\Localization.csproj", "{F5D69B3F-E2BF-4D32-9DCE-51F3E52D74AF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\api\Api\Api.csproj", "{B389ADAF-62CC-486E-85B4-2D8B078DF76B}"
 EndProject
@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestWebServer", "tests\Test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "packaging", "packaging", "{B50B646C-3B86-4BDA-9F2B-766F96608CE0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PublishPackages", "packaging\PublishPackages\PublishPackages.csproj", "{7DEF4226-7740-457F-9199-34174C49A978}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateUnityPackages", "packaging\CreateUnityPackages\CreateUnityPackages.csproj", "{7DEF4226-7740-457F-9199-34174C49A978}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

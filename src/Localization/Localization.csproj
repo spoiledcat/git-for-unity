@@ -11,7 +11,7 @@
     <RootNamespace>Unity.VersionControl.Git</RootNamespace>
     <AssemblyName>Unity.VersionControl.Git.Localization</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <OutputPath>.</OutputPath>
+    <OutputPath>..\api\Localization\</OutputPath>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
