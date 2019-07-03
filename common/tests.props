@@ -5,6 +5,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
     <LangVersion>latest</LangVersion>
+    <IntermediateOutputPath Condition="$(IntermediateOutputPath) == ''">$(SolutionDir)\build\obj\tests\$(Configuration)</IntermediateOutputPath>
     <OutputPath Condition="$(OutputPath) == ''">$(SolutionDir)\build\tests</OutputPath>
   </PropertyGroup>
 </Project>
