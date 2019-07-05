@@ -1,0 +1,3 @@
+text_eol_crlf.txt text eol=crlf
+text_eol_lf.txt text eol=lf
+text_eol_mix.txt -text

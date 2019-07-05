@@ -1,10 +1,7 @@
 {
-    "name": "Unity.Git.Api",
+    "name": "Unity.VersionControl.Git.Api",
     "references": [
-        "Unity.Git.Logging",
-        "Unity.Git.Localization",
-        "sfw.net",
-        "Mono.Posix"
+        "Unity.VersionControl.Git.Logging"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

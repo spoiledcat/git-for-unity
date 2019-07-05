@@ -1,0 +1,43 @@
+{
+  "name": "unity-package",
+  "version": "1.0.0",
+  "description": "Create a unity package from a source tree",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "test": "ts-mocha -p tsconfig.json --require async-dump.js tests/*.spec.ts"
+  },
+  "dependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/command-line-args": "^5.0.0",
+    "@types/command-line-usage": "^5.0.1",
+    "@types/image-size": "^0.7.0",
+    "@types/js-yaml": "^3.11.2",
+    "@types/lodash.uniqby": "^4.7.4",
+    "@types/md5": "^2.1.33",
+    "@types/minimatch": "^3.0.3",
+    "@types/mocha": "^5.2.7",
+    "@types/tar": "^4.0.0",
+    "@types/tmp": "^0.0.33",
+    "async-file": "^2.0.2",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "command-line-args": "^5.0.2",
+    "command-line-usage": "^5.0.5",
+    "image-thumbnail": "^1.0.4",
+    "js-yaml": "^3.12.0",
+    "lodash.uniqby": "^4.7.0",
+    "md5": "^2.2.1",
+    "minimatch": "^3.0.4",
+    "mocha": "^6.1.4",
+    "rxjs": "^6.5.2",
+    "tar": "^4.4.6",
+    "tmp": "^0.0.33",
+    "ts-mocha": "^2.0.0",
+    "ts-node": "^7.0.1",
+    "tslint-config-prettier": "^1.15.0",
+    "typescript": "^3.0.3"
+  }
+}

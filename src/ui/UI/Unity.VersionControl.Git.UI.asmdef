@@ -1,8 +1,8 @@
 {
-    "name": "Unity.Git.UI",
+    "name": "Unity.VersionControl.Git.UI",
     "references": [
-        "Unity.Git.Api",
-        "Unity.Git.Logging",
+        "Unity.VersionControl.Git.Api",
+        "Unity.VersionControl.Git.Logging",
         "UnityShim"
     ],
     "optionalUnityReferences": [],

@@ -1,8 +1,8 @@
 {
-    "name": "Unity.Git.UnityTests",
+    "name": "Unity.VersionControl.Git.UnityTests",
     "references": [
-        "Unity.Git.UI",
-        "Unity.Git.Api"
+        "Unity.VersionControl.Git.UI",
+        "Unity.VersionControl.Git.Api"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

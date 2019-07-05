@@ -1,5 +1,5 @@
 {
-    "name": "Unity.Git.Logging",
+    "name": "Unity.VersionControl.Git.Logging",
     "references": [],
     "optionalUnityReferences": [],
     "includePlatforms": [
