@@ -10,4 +10,7 @@
     <OutputPath Condition="$(OutputPath) == ''">$(SolutionDir)\build\$(Configuration)</OutputPath>
     <IntermediateOutputPath Condition="$(IntermediateOutputPath) == ''">$(SolutionDir)\build\obj\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="**\*.meta;*.DotSettings;*.ncrunch*;*.asmdef;SolutionInfo.cs" />
+  </ItemGroup>
 </Project>
