@@ -89,6 +89,141 @@ namespace Unity.VersionControl.Git
         event Action<TData> OnData;
     }
 
+    public class TaskData : ITask
+    {
+        public Progress progress;
+
+        public TaskData(string name, long total)
+        {
+            this.Message = name;
+            this.Name = name;
+            this.progress = new Progress(this);
+            this.progress.Total = total;
+        }
+
+        public string Message { get; set; }
+        public string Name { get; set; }
+
+        public void UpdateProgress(long value, long total, string message = null)
+        {
+            progress.UpdateProgress(value, total, Name);
+        }
+
+        bool ITask.Successful => throw new NotImplementedException();
+
+        string ITask.Errors => throw new NotImplementedException();
+
+        Task ITask.Task => throw new NotImplementedException();
+
+        TaskAffinity ITask.Affinity { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        CancellationToken ITask.Token => throw new NotImplementedException();
+
+        TaskBase ITask.DependsOn => throw new NotImplementedException();
+
+        Exception ITask.Exception => throw new NotImplementedException();
+
+        object IAsyncResult.AsyncState => throw new NotImplementedException();
+
+        WaitHandle IAsyncResult.AsyncWaitHandle => throw new NotImplementedException();
+
+        bool IAsyncResult.CompletedSynchronously => throw new NotImplementedException();
+
+        bool IAsyncResult.IsCompleted => throw new NotImplementedException();
+
+        event Action<ITask> ITask.OnStart
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        event Action<ITask, bool, Exception> ITask.OnEnd
+        {
+            add
+            {
+                throw new NotImplementedException();
+            }
+
+            remove
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        ITask ITask.Catch(Action<Exception> handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        ITask ITask.Catch(Func<Exception, bool> handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        ITask ITask.Finally(Action<bool> handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        ITask ITask.Finally(Action<bool, Exception> actionToContinueWith, TaskAffinity affinity)
+        {
+            throw new NotImplementedException();
+        }
+
+        T ITask.Finally<T>(T taskToContinueWith)
+        {
+            throw new NotImplementedException();
+        }
+
+        ITask ITask.GetEndOfChain()
+        {
+            throw new NotImplementedException();
+        }
+
+        ITask ITask.GetTopOfChain(bool onlyCreated)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool ITask.IsChainExclusive()
+        {
+            throw new NotImplementedException();
+        }
+
+        ITask ITask.Progress(Action<IProgress> progressHandler)
+        {
+            throw new NotImplementedException();
+        }
+
+        void ITask.RunSynchronously()
+        {
+            throw new NotImplementedException();
+        }
+
+        ITask ITask.Start()
+        {
+            throw new NotImplementedException();
+        }
+
+        ITask ITask.Start(TaskScheduler scheduler)
+        {
+            throw new NotImplementedException();
+        }
+
+        T ITask.Then<T>(T continuation, TaskRunOptions runOptions, bool taskIsTopOfChain)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
     public class TaskBase : ITask
     {
         public static ITask Default = new TaskBase { Name = "Global" };

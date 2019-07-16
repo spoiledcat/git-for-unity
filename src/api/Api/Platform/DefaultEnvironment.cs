@@ -48,6 +48,7 @@ namespace Unity.VersionControl.Git
                 LogPath = UserCachePath.Combine(logFile);
             }
             LogPath.EnsureParentDirectoryExists();
+            GitDefaultInstallation = new GitInstaller.GitInstallDetails(UserCachePath, IsWindows);
         }
 
         public DefaultEnvironment(ICacheContainer cacheContainer) : this()
@@ -185,6 +186,7 @@ namespace Unity.VersionControl.Git
             }
         }
 
+        public GitInstaller.GitInstallDetails GitDefaultInstallation { get; set; }
 
         public NPath NodeJsExecutablePath
         {
@@ -210,7 +212,7 @@ namespace Unity.VersionControl.Git
         public bool IsWindows { get { return OnWindows; } }
         public bool IsLinux { get { return OnLinux; } }
         public bool IsMac { get { return OnMac; } }
-
+        public bool Is32Bit => IntPtr.Size == 4;
         public static bool OnWindows
         {
             get

@@ -128,7 +128,7 @@ namespace IntegrationTests
         protected void SetupGit(NPath pathToSetupGitInto, string testName)
         {
             var installDetails = new GitInstaller.GitInstallDetails(pathToSetupGitInto, Environment.IsWindows);
-            var gitInstaller = new GitInstaller(Environment, ProcessManager, TaskManager.Token, installDetails);
+            var gitInstaller = new GitInstaller(Environment, ProcessManager, TaskManager.Token, installDetails: installDetails);
             var state = gitInstaller.SetDefaultPaths(new GitInstaller.GitInstallationState());
             Environment.GitInstallationState = state;
             GitClient = new GitClient(Environment, ProcessManager, TaskManager.Token);

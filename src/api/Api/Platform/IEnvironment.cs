@@ -13,6 +13,7 @@ namespace Unity.VersionControl.Git
         string Path { get; set; }
         string NewLine { get; }
         GitInstaller.GitInstallationState GitInstallationState { get; set; }
+        GitInstaller.GitInstallDetails GitDefaultInstallation { get; set; }
         bool IsCustomGitExecutable { get; }
         NPath GitExecutablePath { get; }
         NPath GitInstallPath { get; }
@@ -23,6 +24,7 @@ namespace Unity.VersionControl.Git
         bool IsWindows { get; }
         bool IsLinux { get; }
         bool IsMac { get; }
+        bool Is32Bit { get; }
         string UnityVersion { get; }
         NPath UnityApplication { get; }
         NPath UnityApplicationContents { get; }

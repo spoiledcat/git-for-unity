@@ -64,7 +64,7 @@ namespace IntegrationTests
             ZipHelper.Instance = zipHelper;
             var gitInstaller = new GitInstaller(Environment, ProcessManager, TaskManager.Token, installDetails: installDetails);
 
-            var state = gitInstaller.SetupGitIfNeeded();
+            var state = gitInstaller.RunSynchronously();
             state.Should().NotBeNull();
 
             Assert.AreEqual(gitInstallationPath.Combine(GitInstaller.GitInstallDetails.GitDirectory), state.GitInstallationPath);
@@ -108,9 +108,9 @@ namespace IntegrationTests
             var settings = Substitute.For<ISettings>();
             var settingsRet = gitExecutablePath.ToString();
             settings.Get(Arg.Is<string>(Constants.GitInstallPathKey), Arg.Any<string>()).Returns(settingsRet);
-            var installer = new GitInstaller(Environment, ProcessManager, TaskManager.Token, installDetails);
+            var installer = new GitInstaller(Environment, ProcessManager, TaskManager.Token, installDetails: installDetails);
 
-            var result = installer.SetupGitIfNeeded();
+            var result = installer.RunSynchronously();
             Assert.AreEqual(gitInstallationPath, result.GitInstallationPath);
             Assert.AreEqual(gitLfsInstallationPath, result.GitLfsInstallationPath);
             Assert.AreEqual(gitExecutablePath, result.GitExecutablePath);
@@ -147,8 +147,8 @@ namespace IntegrationTests
             var settings = Substitute.For<ISettings>();
             var settingsRet = gitExecutablePath.ToString();
             settings.Get(Arg.Is<string>(Constants.GitInstallPathKey), Arg.Any<string>()).Returns(settingsRet);
-            var installer = new GitInstaller(Environment, ProcessManager, TaskManager.Token, installDetails);
-            var result = installer.SetupGitIfNeeded();
+            var installer = new GitInstaller(Environment, ProcessManager, TaskManager.Token, installDetails: installDetails);
+            var result = installer.RunSynchronously();
             Assert.AreEqual(gitInstallationPath, result.GitInstallationPath);
             Assert.AreEqual(gitLfsInstallationPath, result.GitLfsInstallationPath);
             Assert.AreEqual(gitExecutablePath, result.GitExecutablePath);
@@ -194,7 +194,7 @@ namespace IntegrationTests
 
             var gitInstaller = new GitInstaller(Environment, ProcessManager, TaskManager.Token, installDetails: installDetails);
 
-            var result = gitInstaller.SetupGitIfNeeded();
+            var result = gitInstaller.RunSynchronously();
             result.Should().NotBeNull();
 
             Assert.AreEqual(gitInstallationPath, result.GitInstallationPath);
@@ -236,7 +236,7 @@ namespace IntegrationTests
 
             var gitInstaller = new GitInstaller(Environment, ProcessManager, TaskManager.Token, installDetails: installDetails);
 
-            state = gitInstaller.SetupGitIfNeeded();
+            state = gitInstaller.RunSynchronously();
             state.Should().NotBeNull();
 
             var gitLfsBasePath = defaultGitInstall.Combine(GitInstaller.GitInstallDetails.GitLfsDirectory);

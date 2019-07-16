@@ -1,78 +1,121 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
-using Unity.VersionControl.Git;
-using Unity.VersionControl.Git.Tasks;
 
 namespace Unity.VersionControl.Git
 {
-    public class GitInstaller
-    {
-        private static readonly ILogging Logger = LogHelper.GetLogger<GitInstaller>();
-        private readonly CancellationToken cancellationToken;
+    using Tasks;
 
+    public class GitInstaller : TaskBase<GitInstaller.GitInstallationState>
+    {
+        private readonly CancellationToken cancellationToken;
         private readonly IEnvironment environment;
         private readonly IProcessManager processManager;
         private readonly GitInstallDetails installDetails;
         private readonly IZipHelper sharpZipLibHelper;
+        private readonly Dictionary<string, TaskData> tasks = new Dictionary<string, TaskData>();
+        private readonly ProgressReporter progressReporter = new ProgressReporter();
 
-        public IProgress Progress { get; } = new Progress(TaskBase.Default);
+        private GitInstallationState currentState;
 
         public GitInstaller(IEnvironment environment, IProcessManager processManager,
             CancellationToken token,
+            GitInstallationState state = null,
             GitInstallDetails installDetails = null)
+            : base(token)
         {
             this.environment = environment;
             this.processManager = processManager;
+            this.currentState = state;
             this.sharpZipLibHelper = ZipHelper.Instance;
             this.cancellationToken = token;
             this.installDetails = installDetails ?? new GitInstallDetails(environment.UserCachePath, environment.IsWindows);
+            progressReporter.OnProgress += progress.UpdateProgress;
         }
 
-        public GitInstallationState SetupGitIfNeeded(GitInstallationState state = null)
+        protected override GitInstallationState RunWithReturn(bool success)
         {
-            var skipSystemProbing = state != null;
-
-            state = VerifyGitSettings(state);
-            if (state.GitIsValid && state.GitLfsIsValid)
+            var ret = base.RunWithReturn(success);
+            try
             {
-                Logger.Trace("Using git install path from settings: {0}", state.GitExecutablePath);
-                state.GitLastCheckTime = DateTimeOffset.Now;
-                return state;
+                ret = SetupGitIfNeeded();
             }
-
-            if (!skipSystemProbing)
+            catch (Exception ex)
             {
-                if (environment.IsMac)
-                    state = FindGit(state);
+                if (!RaiseFaultHandlers(ex))
+                    ThrownException.Rethrow();
             }
+            return ret;
+        }
 
-            state = SetDefaultPaths(state);
-            state = CheckForGitUpdates(state);
+        private GitInstallationState SetupGitIfNeeded()
+        {
+            UpdateTask("Setting up git...", 100);
 
-            if (state.GitIsValid && state.GitLfsIsValid)
+            var skipSystemProbing = currentState != null;
+
+            try
             {
-                state.GitLastCheckTime = DateTimeOffset.Now;
-                return state;
-            }
 
-            state = VerifyZipFiles(state);
-            // on developer builds, prefer local zips over downloading
+                currentState = VerifyGitSettings(currentState);
+                if (currentState.GitIsValid && currentState.GitLfsIsValid)
+                {
+                    Logger.Trace("Using git install path from settings: {0}", currentState.GitExecutablePath);
+                    currentState.GitLastCheckTime = DateTimeOffset.Now;
+                    return currentState;
+                }
+
+                if (!skipSystemProbing)
+                {
+                    if (environment.IsMac)
+                        currentState = FindGit(currentState);
+                }
+
+                currentState = SetDefaultPaths(currentState);
+                currentState = CheckForGitUpdates(currentState);
+
+                if (currentState.GitIsValid && currentState.GitLfsIsValid)
+                {
+                    currentState.GitLastCheckTime = DateTimeOffset.Now;
+                    return currentState;
+                }
+
+                currentState = VerifyZipFiles(currentState);
+                // on developer builds, prefer local zips over downloading
 #if DEVELOPER_BUILD
-            state = GrabZipFromResourcesIfNeeded(state);
-            state = GetZipsIfNeeded(state);
+            currentState = GrabZipFromResourcesIfNeeded(currentState);
+            currentState = GetZipsIfNeeded(currentState);
 #else
-            state = GetZipsIfNeeded(state);
-            state = GrabZipFromResourcesIfNeeded(state);
+                currentState = GetZipsIfNeeded(currentState);
+                currentState = GrabZipFromResourcesIfNeeded(currentState);
 #endif
-            state = ExtractGit(state);
+                currentState = ExtractGit(currentState);
 
-            // if installing from zip failed (internet down maybe?), try to find a usable system git
-            if (!state.GitIsValid && state.GitInstallationPath == installDetails.GitInstallationPath)
-                state = FindGit(state);
-            if (!state.GitLfsIsValid && state.GitLfsInstallationPath == installDetails.GitLfsInstallationPath)
-                state = FindGitLfs(state);
-            state.GitLastCheckTime = DateTimeOffset.Now;
-            return state;
+                // if installing from zip failed (internet down maybe?), try to find a usable system git
+                if (!currentState.GitIsValid && currentState.GitInstallationPath == installDetails.GitInstallationPath)
+                    currentState = FindGit(currentState);
+                if (!currentState.GitLfsIsValid && currentState.GitLfsInstallationPath == installDetails.GitLfsInstallationPath)
+                    currentState = FindGitLfs(currentState);
+                currentState.GitLastCheckTime = DateTimeOffset.Now;
+                return currentState;
+            }
+            finally
+            {
+                UpdateTask("Setting up git...", 100);
+            }
+        }
+
+        private void UpdateTask(string name, long value)
+        {
+            TaskData task = null;
+            if (!tasks.TryGetValue(name, out task))
+            {
+                task = new TaskData(name, value);
+                tasks.Add(name, task);
+            }
+            else
+                task.UpdateProgress(value, task.progress.Total);
+            progressReporter.UpdateProgress(task.progress);
         }
 
         public GitInstallationState VerifyGitSettings(GitInstallationState state = null)
@@ -112,6 +155,7 @@ namespace Unity.VersionControl.Git
             {
                 var gitPath = new FindExecTask("git", cancellationToken)
                     .Configure(processManager, dontSetupGit: true)
+                    .Progress(progressReporter.UpdateProgress)
                     .Catch(e => true)
                     .RunSynchronously();
                 state.GitExecutablePath = gitPath;
@@ -128,6 +172,7 @@ namespace Unity.VersionControl.Git
             {
                 var gitLfsPath = new FindExecTask("git-lfs", cancellationToken)
                     .Configure(processManager, dontSetupGit: true)
+                    .Progress(progressReporter.UpdateProgress)
                     .Catch(e => true)
                     .RunSynchronously();
                 state.GitLfsExecutablePath = gitLfsPath;
@@ -165,6 +210,7 @@ namespace Unity.VersionControl.Git
             }
             var version = new GitVersionTask(cancellationToken)
                 .Configure(processManager, state.GitExecutablePath, dontSetupGit: true)
+                .Progress(progressReporter.UpdateProgress)
                 .Catch(e => true)
                 .RunSynchronously();
             state.GitIsValid = version >= Constants.MinimumGitVersion;
@@ -181,6 +227,7 @@ namespace Unity.VersionControl.Git
             }
             var version = new ProcessTask<TheVersion>(cancellationToken, "version", new LfsVersionOutputProcessor())
                     .Configure(processManager, state.GitLfsExecutablePath, dontSetupGit: true)
+                    .Progress(progressReporter.UpdateProgress)
                     .Catch(e => true)
                     .RunSynchronously();
             state.GitLfsIsValid = version >= Constants.MinimumGitLfsVersion;
@@ -224,26 +271,34 @@ namespace Unity.VersionControl.Git
 
         private GitInstallationState VerifyZipFiles(GitInstallationState state)
         {
-            if (!state.GitIsValid && state.GitPackage != null)
+            UpdateTask("Verifying package files", 100);
+            try
             {
-                state.GitZipExists = installDetails.GitZipPath.FileExists();
-                if (!Utils.VerifyFileIntegrity(installDetails.GitZipPath, state.GitPackage.Md5))
+                if (!state.GitIsValid && state.GitPackage != null)
                 {
-                    installDetails.GitZipPath.DeleteIfExists();
+                    state.GitZipExists = installDetails.GitZipPath.FileExists();
+                    if (!Utils.VerifyFileIntegrity(installDetails.GitZipPath, state.GitPackage.Md5))
+                    {
+                        installDetails.GitZipPath.DeleteIfExists();
+                    }
+                    state.GitZipExists = installDetails.GitZipPath.FileExists();
                 }
-                state.GitZipExists = installDetails.GitZipPath.FileExists();
-            }
 
-            if (!state.GitLfsIsValid && state.GitLfsPackage != null)
-            {
-                state.GitLfsZipExists = installDetails.GitLfsZipPath.FileExists();
-                if (!Utils.VerifyFileIntegrity(installDetails.GitLfsZipPath, state.GitLfsPackage.Md5))
+                if (!state.GitLfsIsValid && state.GitLfsPackage != null)
                 {
-                    installDetails.GitLfsZipPath.DeleteIfExists();
+                    state.GitLfsZipExists = installDetails.GitLfsZipPath.FileExists();
+                    if (!Utils.VerifyFileIntegrity(installDetails.GitLfsZipPath, state.GitLfsPackage.Md5))
+                    {
+                        installDetails.GitLfsZipPath.DeleteIfExists();
+                    }
+                    state.GitLfsZipExists = installDetails.GitLfsZipPath.FileExists();
                 }
-                state.GitLfsZipExists = installDetails.GitLfsZipPath.FileExists();
+                return state;
             }
-            return state;
+            finally
+            {
+                UpdateTask("Verifying package files", 100);
+            }
         }
 
         private GitInstallationState GetZipsIfNeeded(GitInstallationState state)
@@ -252,12 +307,15 @@ namespace Unity.VersionControl.Git
                 return state;
 
             var downloader = new Downloader(environment.FileSystem);
-            downloader.Catch(e =>
+
+            downloader
+                .Progress(progressReporter.UpdateProgress)
+                .Catch(e =>
                 {
                     LogHelper.Trace(e, "Failed to download");
                     return true;
                 });
-            downloader.Progress(p => Progress.UpdateProgress(20 + (long)(20 * p.Percentage), 100, downloader.Message));
+
             if (!state.GitZipExists && !state.GitIsValid && state.GitPackage != null)
                 downloader.QueueDownload(state.GitPackage.Uri, installDetails.ZipPath);
             if (!state.GitLfsZipExists && !state.GitLfsIsValid && state.GitLfsPackage != null)
@@ -266,7 +324,6 @@ namespace Unity.VersionControl.Git
 
             state.GitZipExists = installDetails.GitZipPath.FileExists();
             state.GitLfsZipExists = installDetails.GitLfsZipPath.FileExists();
-            Progress.UpdateProgress(30, 100);
 
             return state;
         }
@@ -296,12 +353,13 @@ namespace Unity.VersionControl.Git
                 var unzipTask = new UnzipTask(cancellationToken, installDetails.GitZipPath,
                         gitExtractPath, sharpZipLibHelper,
                         environment.FileSystem)
+                    .Progress(progressReporter.UpdateProgress)
                     .Catch(e =>
                     {
                         LogHelper.Trace(e, "Failed to unzip " + installDetails.GitZipPath);
                         return true;
                     });
-                unzipTask.Progress(p => Progress.UpdateProgress(40 + (long)(20 * p.Percentage), 100, unzipTask.Message));
+
                 unzipTask.RunSynchronously();
                 var target = state.GitInstallationPath;
                 if (unzipTask.Successful)
@@ -322,12 +380,13 @@ namespace Unity.VersionControl.Git
                 var unzipTask = new UnzipTask(cancellationToken, installDetails.GitLfsZipPath,
                         gitLfsExtractPath, sharpZipLibHelper,
                         environment.FileSystem)
+                    .Progress(progressReporter.UpdateProgress)
                     .Catch(e =>
                     {
                         LogHelper.Trace(e, "Failed to unzip " + installDetails.GitLfsZipPath);
                         return true;
                     });
-                unzipTask.Progress(p => Progress.UpdateProgress(60 + (long)(20 * p.Percentage), 100, unzipTask.Message));
+
                 unzipTask.RunSynchronously();
                 var target = state.GitLfsInstallationPath;
                 if (unzipTask.Successful)
@@ -378,12 +437,8 @@ namespace Unity.VersionControl.Git
             private const string gitZip = "git.zip";
             private const string gitLfsZip = "git-lfs.zip";
 
-            private readonly bool onWindows;
-
             public GitInstallDetails(NPath baseDataPath, bool onWindows)
             {
-                this.onWindows = onWindows;
-
                 ZipPath = baseDataPath.Combine("downloads");
                 ZipPath.EnsureDirectoryExists();
                 GitZipPath = ZipPath.Combine(gitZip);
@@ -405,6 +460,16 @@ namespace Unity.VersionControl.Git
                     GitPackageFeed = packageFeed + $"mac/{GitPackageName}";
                     GitLfsPackageFeed = packageFeed + $"mac/{GitLfsPackageName}";
                 }
+            }
+
+            public GitInstallationState GetDefaults()
+            {
+                return new GitInstallationState {
+                    GitInstallationPath = GitInstallationPath,
+                    GitExecutablePath = GitExecutablePath,
+                    GitLfsInstallationPath = GitLfsInstallationPath,
+                    GitLfsExecutablePath = GitLfsExecutablePath
+                };
             }
 
             public NPath ZipPath { get; }

@@ -33,20 +33,16 @@ namespace Unity.VersionControl.Git
             IFileSystem fileSystem,
             UriString url,
             NPath targetDirectory,
+            string filename = null,
             int retryCount = 0)
             : base(token)
         {
             this.fileSystem = fileSystem;
             RetryCount = retryCount;
             Url = url;
-            Filename = url.Filename;
+            Filename = string.IsNullOrEmpty(filename) ? url.Filename : filename;
             TargetDirectory = targetDirectory;
             this.Name = $"Download {Url}";
-        }
-
-        protected string BaseRunWithReturn(bool success)
-        {
-            return base.RunWithReturn(success);
         }
 
         protected override NPath RunWithReturn(bool success)

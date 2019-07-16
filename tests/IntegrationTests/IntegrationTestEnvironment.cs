@@ -111,6 +111,7 @@ namespace IntegrationTests
         public NPath GitLfsInstallPath => defaultEnvironment.GitLfsInstallPath;
         public NPath GitLfsExecutablePath => defaultEnvironment.GitLfsExecutablePath;
         public GitInstaller.GitInstallationState GitInstallationState { get { return defaultEnvironment.GitInstallationState; } set { defaultEnvironment.GitInstallationState = value; } }
+        public GitInstaller.GitInstallDetails GitDefaultInstallation { get => defaultEnvironment.GitDefaultInstallation; set => defaultEnvironment.GitDefaultInstallation = value; }
 
         public NPath NodeJsExecutablePath { get; set; }
 
@@ -119,6 +120,7 @@ namespace IntegrationTests
         public bool IsWindows => defaultEnvironment.IsWindows;
         public bool IsLinux => defaultEnvironment.IsLinux;
         public bool IsMac => defaultEnvironment.IsMac;
+        public bool Is32Bit => defaultEnvironment.Is32Bit;
 
         public NPath UnityApplication => defaultEnvironment.UnityApplication;
 

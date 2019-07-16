@@ -224,18 +224,10 @@ namespace Unity.VersionControl.Git
         {
             if (resetToBundled)
             {
-                new FuncTask<GitInstaller.GitInstallationState>(TaskManager.Token, () =>
-                    {
-                        var gitInstaller = new GitInstaller(Environment, Manager.ProcessManager, TaskManager.Token);
-                        var state = new GitInstaller.GitInstallationState();
-                        state = gitInstaller.SetDefaultPaths(state);
-                        // on non-windows we only bundle git-lfs
-                        if (!Environment.IsWindows)
-                        {
-                            state.GitExecutablePath = installationState.GitExecutablePath;
-                            state.GitInstallationPath = installationState.GitInstallationPath;
-                        }
-                        state = gitInstaller.SetupGitIfNeeded(state);
+                new FuncTask<GitInstaller.GitInstallationState>(TaskManager.Token, () => {
+                        var state = Environment.GitDefaultInstallation.GetDefaults();
+                        var gitInstaller = new GitInstaller(Environment, Manager.ProcessManager, TaskManager.Token, state);
+                        state = gitInstaller.RunSynchronously();
                         if (state.GitIsValid && state.GitLfsIsValid)
                         {
                             Manager.SetupGit(state);
@@ -267,12 +259,12 @@ namespace Unity.VersionControl.Git
                 var newState = new GitInstaller.GitInstallationState();
                 newState.GitExecutablePath = gitPath.ToNPath();
                 newState.GitLfsExecutablePath = gitLfsPath.ToNPath();
-                var installer = new GitInstaller(Environment, Manager.ProcessManager, TaskManager.Token);
-                installer.Progress.OnProgress += UpdateProgress;
+                var installer = new GitInstaller(Environment, Manager.ProcessManager, TaskManager.Token, newState);
+                installer.Progress(UpdateProgress);
 
                 new FuncTask<GitInstaller.GitInstallationState>(TaskManager.Token, () =>
                     {
-                        return installer.SetupGitIfNeeded(newState);
+                        return installer.RunSynchronously();
                     })
                     .Then((success, state) => 
                     {
@@ -285,7 +277,6 @@ namespace Unity.VersionControl.Git
                     })
                     .FinallyInUI((success, ex, state) =>
                     {
-                        installer.Progress.OnProgress -= UpdateProgress;
                         if (!success)
                         {
                             Logger.Error(ex, ErrorValidatingGitPath);

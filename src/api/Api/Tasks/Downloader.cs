@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
-using Unity.VersionControl.Git;
+using System.Net.Cache;
 
 namespace Unity.VersionControl.Git
 {
@@ -23,7 +23,7 @@ namespace Unity.VersionControl.Git
         public event Action<UriString, Exception> OnDownloadFailed;
 
         private readonly IFileSystem fileSystem;
-        public Downloader(IFileSystem fileSystem)
+        public Downloader(IFileSystem fileSystem = null)
             : base(t =>
             {
                 var dt = t as DownloadTask;
@@ -31,14 +31,14 @@ namespace Unity.VersionControl.Git
                 return new DownloadData(dt.Url, destinationFile);
             })
         {
-            this.fileSystem = fileSystem;
+            this.fileSystem = fileSystem ?? NPath.FileSystem;
             Name = "Downloader";
             Message = "Downloading...";
         }
 
-        public void QueueDownload(UriString url, NPath targetDirectory)
+        public void QueueDownload(UriString url, NPath targetDirectory, string filename = null, int retryCount = 0)
         {
-            var download = new DownloadTask(Token, fileSystem, url, targetDirectory);
+            var download = new DownloadTask(Token, fileSystem, url, targetDirectory, filename, retryCount);
             download.OnStart += t => OnDownloadStart?.Invoke(((DownloadTask)t).Url);
             download.OnEnd += (t, res, s, ex) =>
             {
@@ -59,15 +59,29 @@ namespace Unity.VersionControl.Git
 
             var expectingResume = bytes > 0;
 
+#if !NET35
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+#endif
+
             var webRequest = (HttpWebRequest)WebRequest.Create(url);
 
             if (expectingResume)
             {
+#if NET35
                 // classlib for 3.5 doesn't take long overloads...
                 webRequest.AddRange((int)bytes);
+#else
+				webRequest.AddRange(bytes);
+#endif
             }
 
             webRequest.Method = "GET";
+            webRequest.Accept = "*/*";
+            webRequest.UserAgent = "git-for-unity/2.0";
+            webRequest.CachePolicy = new HttpRequestCachePolicy(HttpRequestCacheLevel.BypassCache);
+            webRequest.ServicePoint.ConnectionLimit = 10;
+            webRequest.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
+            webRequest.AllowAutoRedirect = true;
             webRequest.Timeout = ApplicationConfiguration.WebTimeout;
 
             if (expectingResume)

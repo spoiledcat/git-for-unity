@@ -110,7 +110,7 @@ namespace Unity.VersionControl.Git
 
 
                     var installer = new GitInstaller(Environment, ProcessManager, TaskManager.Token);
-                    installer.Progress.OnProgress += progressReporter.UpdateProgress;
+                    installer.Progress(progressReporter.UpdateProgress);
                     if (state.GitIsValid && state.GitLfsIsValid)
                     {
                         if (firstRun)
@@ -125,7 +125,7 @@ namespace Unity.VersionControl.Git
 
                     if (!state.GitIsValid || !state.GitLfsIsValid)
                     {
-                        state = installer.SetupGitIfNeeded();
+                        state = installer.RunSynchronously();
                     }
 
                     SetupGit(state);
