@@ -4,22 +4,6 @@
   <PropertyGroup>
     <BuildType Condition="Exists('$(SolutionDir)script\src\ApplicationInfo_Local.cs')">Internal</BuildType>
     <BuildDefs>$(BuildDefs);ENABLE_MONO</BuildDefs>
-
-    <UnityDir Condition="$(UnityDir) == '' and Exists('$(SolutionDir)\script\lib\Managed\UnityEditor.dll')">$(SolutionDir)script\lib\</UnityDir>
-    <UnityDir Condition="$(UnityDir) == '' and Exists('$(SolutionDir)\lib\Managed\UnityEditor.dll')">$(SolutionDir)lib\</UnityDir>
-
-    <UnityDir Condition="$(UnityDir) == '' and Exists('\Applications\Unity\Unity.app\Contents\Managed\UnityEditor.dll')">\Applications\Unity\Unity.app\Contents\</UnityDir>
-
-    <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files\Unity\Hub\Editor\2018.4.2f1\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files\Unity\Hub\Editor\2018.4.2f1\Editor\Data\</UnityDir>
-    <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files\Unity\Hub\Editor\2018.4.1f1\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files\Unity\Hub\Editor\2018.4.1f1\Editor\Data\</UnityDir>
-    <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files\Unity\Hub\Editor\2018.4.0f1\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files\Unity\Hub\Editor\2018.4.0f1\Editor\Data\</UnityDir>
-    <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files\Unity\Hub\Editor\2019.1.7f1\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files\Unity\Hub\Editor\2019.1.7f1\Editor\Data\</UnityDir>
-    <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files\Unity\Hub\Editor\2019.1.6f1\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files\Unity\Hub\Editor\2019.1.6f1\Editor\Data\</UnityDir>
-    <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files\Unity\Hub\Editor\2019.1.5f1\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files\Unity\Hub\Editor\2019.1.5f1\Editor\Data\</UnityDir>
-
-    <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files\Unity\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files\Unity\Editor\Data\</UnityDir>
-    <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files (x86)\Unity\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files (x86)\Unity\Editor\Data\</UnityDir>
-
     <BuildConfig Condition=" '$(Configuration)' == 'dev'">Debug</BuildConfig>
     <BuildConfig Condition=" '$(Configuration)' != 'dev'">$(Configuration)</BuildConfig>
   </PropertyGroup>

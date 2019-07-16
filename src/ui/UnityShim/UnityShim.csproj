@@ -7,6 +7,8 @@
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
   <Import Project="$(SolutionDir)\common\libraries.props" />
+  <Import Project="$(SolutionDir)\common\unityreferences.targets" />
+
   <ItemGroup>
     <Reference Include="UnityEditor">
       <HintPath>$(UnityDir)Managed\UnityEditor.dll</HintPath>

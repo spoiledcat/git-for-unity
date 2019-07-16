@@ -7,6 +7,7 @@
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
   <Import Project="$(SolutionDir)\common\libraries.props" />
+  <Import Project="$(SolutionDir)\common\unityreferences.targets" />
   <ItemGroup>
     <ProjectReference Include="..\..\api\Api\Api.csproj" />
     <ProjectReference Include="..\..\api\Logging\Logging.csproj" />
@@ -40,5 +41,4 @@
   </ItemGroup>
 
   <Import Project="$(SolutionDir)\common\build.targets" />
-  <Import Project="$(SolutionDir)\common\unityreferences.targets" />
 </Project>
