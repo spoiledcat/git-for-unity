@@ -1,14 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Unity.VersionControl.Git
 {
-    class UnzipTask : TaskBase<NPath>
+	public class UnzipTask : TaskBase<NPath>
     {
         private readonly string archiveFilePath;
         private readonly NPath extractedPath;
         private readonly IZipHelper zipHelper;
         private readonly IFileSystem fileSystem;
+        private ProgressReporter progressReporter = new ProgressReporter();
+        private Dictionary<string, TaskData> tasks = new Dictionary<string, TaskData>();
+
+        public UnzipTask(NPath archiveFilePath, NPath extractedPath)
+            : this(TaskManager.Instance.Token, archiveFilePath, extractedPath, null, NPath.FileSystem)
+        {}
 
         public UnzipTask(CancellationToken token, NPath archiveFilePath, NPath extractedPath,
             IZipHelper zipHelper, IFileSystem fileSystem)
@@ -19,6 +26,10 @@ namespace Unity.VersionControl.Git
             this.zipHelper = zipHelper ?? ZipHelper.Instance;
             this.fileSystem = fileSystem;
             Name = $"Unzip {archiveFilePath.FileName}";
+            Message = $"Extracting {System.IO.Path.GetFileName(archiveFilePath)}";
+            progressReporter.OnProgress += p => {
+                this.progress.UpdateProgress(p);
+            };
         }
 
         protected NPath BaseRun(bool success)
@@ -56,16 +67,27 @@ namespace Unity.VersionControl.Git
                 try
                 {
                     success = zipHelper.Extract(archiveFilePath, extractedPath, Token,
-                        (value, total) =>
+                        (file, size) => {
+                            var task = new TaskData(file, size);
+                            tasks.Add(file, task);
+                            progressReporter.UpdateProgress(task.progress);
+                        },
+                        (fileRead, fileTotal, file) =>
                         {
-                            UpdateProgress(value, total);
+                            if (tasks.TryGetValue(file, out TaskData task)) {
+                                task.UpdateProgress(fileRead, fileTotal);
+                                progressReporter.UpdateProgress(task.progress);
+                                if (fileRead == fileTotal)
+                                {
+                                    tasks.Remove(file);
+                                }
+                            }
                             return !Token.IsCancellationRequested;
                         });
 
                     if (!success)
                     {
-                        extractedPath.DeleteIfExists();
-
+                        //extractedPath.DeleteIfExists();
                         var message = $"Failed to extract {archiveFilePath} to {extractedPath}";
                         exception = new UnzipException(message);
                     }
@@ -85,7 +107,6 @@ namespace Unity.VersionControl.Git
             return extractedPath;
         }
         protected int RetryCount { get; }
-        public override string Message { get; set; } = "Extracting zip...";
     }
 
     public class UnzipException : Exception {

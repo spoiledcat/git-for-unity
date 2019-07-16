@@ -18,27 +18,25 @@ namespace Unity.VersionControl.Git
 
         public DefaultEnvironment()
         {
-            NPath localAppData;
-            NPath commonAppData;
             if (IsWindows)
             {
-                localAppData = GetSpecialFolder(Environment.SpecialFolder.LocalApplicationData).ToNPath();
-                commonAppData = GetSpecialFolder(Environment.SpecialFolder.CommonApplicationData).ToNPath();
+                LocalAppData = GetSpecialFolder(Environment.SpecialFolder.LocalApplicationData).ToNPath();
+                CommonAppData = GetSpecialFolder(Environment.SpecialFolder.CommonApplicationData).ToNPath();
             }
             else if (IsMac)
             {
-                localAppData = NPath.HomeDirectory.Combine("Library", "Application Support");
+                LocalAppData = NPath.HomeDirectory.Combine("Library", "Application Support");
                 // there is no such thing on the mac that is guaranteed to be user accessible (/usr/local might not be)
-                commonAppData = GetSpecialFolder(Environment.SpecialFolder.ApplicationData).ToNPath();
+                CommonAppData = GetSpecialFolder(Environment.SpecialFolder.ApplicationData).ToNPath();
             }
             else
             {
-                localAppData = GetSpecialFolder(Environment.SpecialFolder.LocalApplicationData).ToNPath();
-                commonAppData = GetSpecialFolder(Environment.SpecialFolder.ApplicationData).ToNPath();
+                LocalAppData = GetSpecialFolder(Environment.SpecialFolder.LocalApplicationData).ToNPath();
+                CommonAppData = GetSpecialFolder(Environment.SpecialFolder.ApplicationData).ToNPath();
             }
 
-            UserCachePath = localAppData.Combine(ApplicationInfo.ApplicationName);
-            SystemCachePath = commonAppData.Combine(ApplicationInfo.ApplicationName);
+            UserCachePath = LocalAppData.Combine(ApplicationInfo.ApplicationName);
+            SystemCachePath = CommonAppData.Combine(ApplicationInfo.ApplicationName);
             if (IsMac)
             {
                 LogPath = NPath.HomeDirectory.Combine("Library/Logs").Combine(ApplicationInfo.ApplicationName).Combine(logFile);
@@ -48,7 +46,7 @@ namespace Unity.VersionControl.Git
                 LogPath = UserCachePath.Combine(logFile);
             }
             LogPath.EnsureParentDirectoryExists();
-            GitDefaultInstallation = new GitInstaller.GitInstallDetails(UserCachePath, IsWindows);
+            GitDefaultInstallation = new GitInstaller.GitInstallDetails(UserCachePath, this);
         }
 
         public DefaultEnvironment(ICacheContainer cacheContainer) : this()
@@ -149,6 +147,9 @@ namespace Unity.VersionControl.Git
         public NPath ExtensionInstallPath { get; set; }
         public NPath UserCachePath { get; set; }
         public NPath SystemCachePath { get; set; }
+        public NPath LocalAppData { get; set; }
+        public NPath CommonAppData { get; set; }
+
         public string Path { get; set; } = Environment.GetEnvironmentVariable(GetEnvironmentVariableKeyInternal("PATH"));
 
         public string NewLine => Environment.NewLine;

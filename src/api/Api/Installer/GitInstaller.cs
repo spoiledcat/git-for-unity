@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Resources;
 using System.Threading;
 
 namespace Unity.VersionControl.Git
@@ -29,7 +30,7 @@ namespace Unity.VersionControl.Git
             this.currentState = state;
             this.sharpZipLibHelper = ZipHelper.Instance;
             this.cancellationToken = token;
-            this.installDetails = installDetails ?? new GitInstallDetails(environment.UserCachePath, environment.IsWindows);
+            this.installDetails = installDetails ?? new GitInstallDetails(environment.UserCachePath, environment);
             progressReporter.OnProgress += progress.UpdateProgress;
         }
 
@@ -81,14 +82,7 @@ namespace Unity.VersionControl.Git
                 }
 
                 currentState = VerifyZipFiles(currentState);
-                // on developer builds, prefer local zips over downloading
-#if DEVELOPER_BUILD
-            currentState = GrabZipFromResourcesIfNeeded(currentState);
-            currentState = GetZipsIfNeeded(currentState);
-#else
                 currentState = GetZipsIfNeeded(currentState);
-                currentState = GrabZipFromResourcesIfNeeded(currentState);
-#endif
                 currentState = ExtractGit(currentState);
 
                 // if installing from zip failed (internet down maybe?), try to find a usable system git
@@ -185,18 +179,10 @@ namespace Unity.VersionControl.Git
 
         public GitInstallationState SetDefaultPaths(GitInstallationState state)
         {
-            if (!state.GitIsValid && environment.IsWindows)
+            if (!state.GitIsValid)
             {
-                state.GitInstallationPath = installDetails.GitInstallationPath;
-                state.GitExecutablePath = installDetails.GitExecutablePath;
+                state = installDetails.GetDefaults();
                 state = ValidateGitVersion(state);
-            }
-
-            if (!state.GitLfsIsValid)
-            {
-                state.GitLfsExecutablePath = installDetails.GitLfsExecutablePath;
-                state.GitLfsInstallationPath = state.GitLfsExecutablePath.Parent;
-                state = ValidateGitLfsVersion(state);
             }
             return state;
         }
@@ -237,35 +223,22 @@ namespace Unity.VersionControl.Git
 
         private GitInstallationState CheckForGitUpdates(GitInstallationState state)
         {
-            if (state.GitInstallationPath == installDetails.GitInstallationPath)
+            if (state.IsCustomGitPath)
+                return state;
+
+            if (state.GitInstallationPath != installDetails.GitInstallationPath)
+                return state;
+
+            state.GitPackage = DugiteReleaseManifest.Load(installDetails.GitManifest, installDetails.GitPackageFeed, environment);
+            if (state.GitPackage == null)
+                return state;
+
+            state.GitIsValid = state.GitVersion >= state.GitPackage.Version;
+            if (!state.GitIsValid)
             {
-                state.GitPackage = Package.Load(environment, installDetails.GitPackageFeed);
-                if (state.GitPackage != null)
-                {
-                    state.GitIsValid = state.GitVersion >= state.GitPackage.Version;
-                    if (state.GitIsValid)
-                    {
-                        state.IsCustomGitPath = state.GitExecutablePath != installDetails.GitExecutablePath;
-                    }
-                    else
-                    {
-                        Logger.Trace($"{installDetails.GitExecutablePath} is out of date");
-                    }
-                }
+                Logger.Trace($"{installDetails.GitExecutablePath} is out of date");
             }
 
-            if (state.GitLfsInstallationPath == installDetails.GitLfsInstallationPath)
-            {
-                state.GitLfsPackage = Package.Load(environment, installDetails.GitLfsPackageFeed);
-                if (state.GitLfsPackage != null)
-                {
-                    state.GitLfsIsValid = state.GitLfsVersion >= state.GitLfsPackage.Version;
-                    if (!state.GitLfsIsValid)
-                    {
-                        Logger.Trace($"{installDetails.GitLfsExecutablePath} is out of date");
-                    }
-                }
-            }
             return state;
         }
 
@@ -274,25 +247,17 @@ namespace Unity.VersionControl.Git
             UpdateTask("Verifying package files", 100);
             try
             {
-                if (!state.GitIsValid && state.GitPackage != null)
-                {
-                    state.GitZipExists = installDetails.GitZipPath.FileExists();
-                    if (!Utils.VerifyFileIntegrity(installDetails.GitZipPath, state.GitPackage.Md5))
-                    {
-                        installDetails.GitZipPath.DeleteIfExists();
-                    }
-                    state.GitZipExists = installDetails.GitZipPath.FileExists();
-                }
+                if (state.GitIsValid || state.GitPackage == null)
+                    return state;
 
-                if (!state.GitLfsIsValid && state.GitLfsPackage != null)
+                var asset = state.GitPackage.DugitePackage;
+                state.GitZipPath = installDetails.ZipPath.Combine(asset.Name);
+                state.GitZipExists = state.GitZipPath.FileExists();
+                if (!Utils.VerifyFileIntegrity(state.GitZipPath, asset.Hash))
                 {
-                    state.GitLfsZipExists = installDetails.GitLfsZipPath.FileExists();
-                    if (!Utils.VerifyFileIntegrity(installDetails.GitLfsZipPath, state.GitLfsPackage.Md5))
-                    {
-                        installDetails.GitLfsZipPath.DeleteIfExists();
-                    }
-                    state.GitLfsZipExists = installDetails.GitLfsZipPath.FileExists();
+                    state.GitZipPath.DeleteIfExists();
                 }
+                state.GitZipExists = state.GitZipPath.FileExists();
                 return state;
             }
             finally
@@ -303,10 +268,12 @@ namespace Unity.VersionControl.Git
 
         private GitInstallationState GetZipsIfNeeded(GitInstallationState state)
         {
-            if (state.GitZipExists && state.GitLfsZipExists)
+            if (state.GitZipExists || state.GitPackage == null)
                 return state;
 
+            var asset = state.GitPackage.DugitePackage;
             var downloader = new Downloader(environment.FileSystem);
+            downloader.QueueDownload(asset.Url, installDetails.ZipPath, asset.Name);
 
             downloader
                 .Progress(progressReporter.UpdateProgress)
@@ -316,47 +283,27 @@ namespace Unity.VersionControl.Git
                     return true;
                 });
 
-            if (!state.GitZipExists && !state.GitIsValid && state.GitPackage != null)
-                downloader.QueueDownload(state.GitPackage.Uri, installDetails.ZipPath);
-            if (!state.GitLfsZipExists && !state.GitLfsIsValid && state.GitLfsPackage != null)
-                downloader.QueueDownload(state.GitLfsPackage.Uri, installDetails.ZipPath);
             downloader.RunSynchronously();
 
-            state.GitZipExists = installDetails.GitZipPath.FileExists();
-            state.GitLfsZipExists = installDetails.GitLfsZipPath.FileExists();
+            state.GitZipExists = state.GitZipPath.FileExists();
 
-            return state;
-        }
-
-        private GitInstallationState GrabZipFromResourcesIfNeeded(GitInstallationState state)
-        {
-            if (!state.GitZipExists && !state.GitIsValid && state.GitInstallationPath == installDetails.GitInstallationPath)
-                AssemblyResources.ToFile(ResourceType.Platform, "git.zip", installDetails.ZipPath, environment);
-            state.GitZipExists = installDetails.GitZipPath.FileExists();
-
-            if (state.GitLfsInstallationPath != installDetails.GitLfsInstallationPath)
-                return state;
-
-            if (!state.GitLfsZipExists && !state.GitLfsIsValid && state.GitLfsInstallationPath == installDetails.GitLfsInstallationPath)
-                AssemblyResources.ToFile(ResourceType.Platform, "git-lfs.zip", installDetails.ZipPath, environment);
-            state.GitLfsZipExists = installDetails.GitLfsZipPath.FileExists();
             return state;
         }
 
         private GitInstallationState ExtractGit(GitInstallationState state)
         {
-            var tempZipExtractPath = NPath.CreateTempDirectory("git_zip_extract_zip_paths");
+            var tempZipExtractPath = NPath.CreateTempDirectory("ghu_extract_git");
 
             if (state.GitZipExists && !state.GitIsValid)
             {
                 var gitExtractPath = tempZipExtractPath.Combine("git").CreateDirectory();
-                var unzipTask = new UnzipTask(cancellationToken, installDetails.GitZipPath,
+                var unzipTask = new UnzipTask(cancellationToken, state.GitZipPath,
                         gitExtractPath, sharpZipLibHelper,
                         environment.FileSystem)
                     .Progress(progressReporter.UpdateProgress)
                     .Catch(e =>
                     {
-                        LogHelper.Trace(e, "Failed to unzip " + installDetails.GitZipPath);
+                        LogHelper.Trace(e, "Failed to unzip " + state.GitZipPath);
                         return true;
                     });
 
@@ -374,31 +321,6 @@ namespace Unity.VersionControl.Git
                 }
             }
 
-            if (state.GitLfsZipExists && !state.GitLfsIsValid)
-            {
-                var gitLfsExtractPath = tempZipExtractPath.Combine("git-lfs").CreateDirectory();
-                var unzipTask = new UnzipTask(cancellationToken, installDetails.GitLfsZipPath,
-                        gitLfsExtractPath, sharpZipLibHelper,
-                        environment.FileSystem)
-                    .Progress(progressReporter.UpdateProgress)
-                    .Catch(e =>
-                    {
-                        LogHelper.Trace(e, "Failed to unzip " + installDetails.GitLfsZipPath);
-                        return true;
-                    });
-
-                unzipTask.RunSynchronously();
-                var target = state.GitLfsInstallationPath;
-                if (unzipTask.Successful)
-                {
-                    Logger.Trace("Moving GitLFS source:{0} target:{1}", gitLfsExtractPath.ToString(), target.ToString());
-
-                    CopyHelper.Copy(gitLfsExtractPath, target);
-
-                    state.GitLfsIsValid = true;
-                }
-            }
-
             tempZipExtractPath.DeleteIfExists();
             return state;
         }
@@ -408,13 +330,12 @@ namespace Unity.VersionControl.Git
             public bool GitIsValid { get; set; }
             public bool GitLfsIsValid { get; set; }
             public bool GitZipExists { get; set; }
-            public bool GitLfsZipExists { get; set; }
+            public NPath GitZipPath { get; set; }
             public NPath GitInstallationPath { get; set; }
             public NPath GitExecutablePath { get; set; }
             public NPath GitLfsInstallationPath { get; set; }
             public NPath GitLfsExecutablePath { get; set; }
-            public Package GitPackage { get; set; }
-            public Package GitLfsPackage { get; set; }
+            public DugiteReleaseManifest GitPackage { get; set; }
             public DateTimeOffset GitLastCheckTime { get; set; }
             public bool IsCustomGitPath { get; set; }
             public TheVersion GitVersion { get; set; }
@@ -423,43 +344,29 @@ namespace Unity.VersionControl.Git
 
         public class GitInstallDetails
         {
-            public const string GitPackageName = "git.json";
-            public const string GitLfsPackageName = "git-lfs.json";
+            public static string GitPackageName { get; } = "embedded-git.json";
 #if DEVELOPER_BUILD
-            private const string packageFeed = "http://localhost:50000/unity/git/";
+            private const string packageFeed = "http://localhost:50000";
 #else
-            private const string packageFeed = "http://github-vs.s3.amazonaws.com/unity/git/";
+            private const string packageFeed = "https://api.github.com/repos/desktop/dugite-native/releases/latest";
 #endif
 
             public const string GitDirectory = "git";
-            public const string GitLfsDirectory = "git-lfs";
 
-            private const string gitZip = "git.zip";
-            private const string gitLfsZip = "git-lfs.zip";
-
-            public GitInstallDetails(NPath baseDataPath, bool onWindows)
+            public GitInstallDetails(NPath baseDataPath, IEnvironment environment)
             {
                 ZipPath = baseDataPath.Combine("downloads");
                 ZipPath.EnsureDirectoryExists();
-                GitZipPath = ZipPath.Combine(gitZip);
-                GitLfsZipPath = ZipPath.Combine(gitLfsZip);
 
                 GitInstallationPath = baseDataPath.Combine(GitDirectory);
-                GitExecutablePath = GitInstallationPath.Combine(onWindows ? "cmd" : "bin", "git" + DefaultEnvironment.ExecutableExt);
+                GitExecutablePath = GitInstallationPath.Combine(environment.IsWindows ? "cmd" : "bin", "git" + DefaultEnvironment.ExecutableExt);
 
-                GitLfsInstallationPath = baseDataPath.Combine(GitLfsDirectory);
-                GitLfsExecutablePath = GitLfsInstallationPath.Combine("git-lfs" + DefaultEnvironment.ExecutableExt);
-
-                if (onWindows)
-                {
-                    GitPackageFeed = packageFeed + $"windows/{GitPackageName}";
-                    GitLfsPackageFeed = packageFeed + $"windows/{GitLfsPackageName}";
-                }
-                else
-                {
-                    GitPackageFeed = packageFeed + $"mac/{GitPackageName}";
-                    GitLfsPackageFeed = packageFeed + $"mac/{GitLfsPackageName}";
-                }
+                GitLfsInstallationPath = GitLfsExecutablePath = GitInstallationPath;
+                if (environment.IsWindows)
+                    GitLfsExecutablePath = GitLfsInstallationPath.Combine(environment.Is32Bit ? "mingw32" : "mingw64");
+                GitLfsExecutablePath = GitLfsExecutablePath.Combine("libexec", "git-core");
+                GitLfsExecutablePath = GitLfsExecutablePath.Combine("git-lfs" + DefaultEnvironment.ExecutableExt);
+                GitManifest = baseDataPath.Combine(GitPackageName);
             }
 
             public GitInstallationState GetDefaults()
@@ -473,14 +380,12 @@ namespace Unity.VersionControl.Git
             }
 
             public NPath ZipPath { get; }
-            public NPath GitZipPath { get; }
-            public NPath GitLfsZipPath { get; }
             public NPath GitInstallationPath { get; }
             public NPath GitLfsInstallationPath { get; }
             public NPath GitExecutablePath { get; }
             public NPath GitLfsExecutablePath { get; }
             public UriString GitPackageFeed { get; set; }
-            public UriString GitLfsPackageFeed { get; set; }
+            public NPath GitManifest { get; set; }
         }
     }
 }

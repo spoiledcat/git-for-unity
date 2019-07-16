@@ -34,6 +34,8 @@ namespace Unity.VersionControl.Git
         NPath RepositoryPath { get; }
         NPath UserCachePath { get; set; }
         NPath SystemCachePath { get; set; }
+        NPath LocalAppData { get; }
+        NPath CommonAppData { get; }
         NPath LogPath { get; }
         IFileSystem FileSystem { get; set; }
         IUser User { get; set; }

@@ -60,7 +60,7 @@ namespace Unity.VersionControl.Git
                 installationState = Environment.GitInstallationState;
                 gitPath = installationState.GitExecutablePath;
                 gitLfsPath = installationState.GitLfsExecutablePath;
-                installDetails = new GitInstaller.GitInstallDetails(Environment.UserCachePath, Environment.IsWindows);
+                installDetails = new GitInstaller.GitInstallDetails(Environment.UserCachePath, Environment);
                 refresh = false;
             }
         }

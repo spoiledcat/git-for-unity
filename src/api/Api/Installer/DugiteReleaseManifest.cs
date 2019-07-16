@@ -66,7 +66,7 @@ namespace Unity.VersionControl.Git
 			{
 				var downloader = new Downloader();
 				downloader.QueueDownload(shaAsset.Url, shaAssetPath.Parent, shaAssetPath.FileName);
-				var shaFile = downloader.RunSynchronously().FirstOrDefault();
+				downloader.RunSynchronously();
 			}
 			zipAsset.Hash = shaAssetPath.ReadAllText();
 			manifest.DugitePackage = zipAsset;

@@ -1,128 +1,195 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using Git.ICSharpCode.SharpZipLib.Zip;
-using Unity.VersionControl.Git;
 using System.Collections.Generic;
 
 namespace Unity.VersionControl.Git
 {
-    class ZipHelper : IZipHelper
-    {
-        private static IZipHelper instance;
+	using ICSharpCode.SharpZipLib;
+	using ICSharpCode.SharpZipLib.GZip;
+	using ICSharpCode.SharpZipLib.Tar;
+	using ICSharpCode.SharpZipLib.Zip;
 
-        public static IZipHelper Instance
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new ZipHelper();
-                return instance;
-            }
-            set { instance = value; }
-        }
+	public interface IZipHelper
+	{
+		bool Extract(string archive, string outFolder, CancellationToken cancellationToken,
+			Action<string, long> onStart, Func<long, long, string, bool> onProgress,
+			Func<string, bool> onFilter = null);
+	}
 
-        public bool Extract(string archive, string outFolder, CancellationToken cancellationToken,
-            Func<long, long, bool> onProgress, Func<string, bool> onFilter = null)
-        {
-            const int chunkSize = 4096; // 4K is optimum
-            ZipFile zf = null;
-            var processed = 0;
-            var totalBytes = 0L;
+	public class ZipHelper : IZipHelper
+	{
+		private static IZipHelper instance;
 
-            try
-            {
-                var fs = File.OpenRead(archive);
-                zf = new ZipFile(fs);
-                long totalSize = 0;
-                var entries = new List<ZipEntry>((int)zf.Count);
+		public static IZipHelper Instance
+		{
+			get
+			{
+				if (instance == null)
+					instance = new ZipHelper();
+				return instance;
+			}
+			set => instance = value;
+		}
 
-                foreach (ZipEntry zipEntry in zf)
-                {
-                    if (zipEntry.IsDirectory)
-                    {
-                        continue; // Ignore directories
-                    }
-                    entries.Add(zipEntry);
-                    totalSize += zipEntry.Size;
-                }
+		public bool Extract(string archive, string outFolder, CancellationToken cancellationToken,
+			Action<string, long> onStart, Func<long, long, string, bool> onProgress, Func<string, bool> onFilter = null)
+		{
 
-                for (var i = 0; i < entries.Count; i++)
-                {
-                    var zipEntry = entries[i];
-                    cancellationToken.ThrowIfCancellationRequested();
+			var destDir = outFolder.ToNPath();
+			destDir.EnsureDirectoryExists();
+			if (archive.EndsWith(".tar.gz") || archive.EndsWith(".tgz"))
+			{
+				var gzipFile = archive.ToNPath();
+                var tempDir = NPath.CreateTempDirectory("unzip");
+                string outFilename = gzipFile.FileNameWithoutExtension;
+                if (archive.EndsWith(".tgz"))
+                    outFilename += ".tar";
+                archive = tempDir.Combine(outFilename);
+				using (var instream = NPath.FileSystem.OpenRead(gzipFile))
+				using (var outstream = NPath.FileSystem.OpenWrite(archive, FileMode.CreateNew))
+				{
+					GZip.Decompress(instream, outstream, false);
+				}
+			}
 
-                    var entryFileName = zipEntry.Name;
-                    if (!onFilter?.Invoke(entryFileName) ?? false)
-                        continue;
-                    // to remove the folder from the entry:- entryFileName = Path.GetFileName(entryFileName);
-                    // Optionally match entrynames against a selection list here to skip as desired.
-                    // The unpacked length is available in the zipEntry.Size property.
+			if (archive.EndsWith(".zip"))
+                return ExtractZip(archive, destDir, cancellationToken, onStart, onProgress, onFilter);
+			return ExtractTar(archive, destDir, cancellationToken, onStart, onProgress, onFilter);
+		}
 
-                    var zipStream = zf.GetInputStream(zipEntry);
+		private bool ExtractZip(string archive, NPath outFolder, CancellationToken cancellationToken,
+			Action<string, long> onStart, Func<long, long, string, bool> onProgress, Func<string, bool> onFilter = null)
+		{
+			ZipFile zf = null;
 
-                    var fullZipToPath = Path.Combine(outFolder, entryFileName);
-                    var directoryName = Path.GetDirectoryName(fullZipToPath);
-                    if (directoryName.Length > 0)
-                    {
-                        Directory.CreateDirectory(directoryName);
-                    }
+			try
+			{
+				var fs = NPath.FileSystem.OpenRead(archive);
+				zf = new ZipFile(fs);
+				List<IArchiveEntry> entries = PreprocessEntries(outFolder, zf, onStart, onFilter);
+				return ExtractArchive(archive, outFolder, cancellationToken, zf, entries, onStart, onProgress, onFilter);
+			}
+			catch (Exception ex)
+			{
+				LogHelper.GetLogger<ZipHelper>().Error(ex);
+				throw;
+			}
+			finally
+			{
+				zf?.Close(); // Ensure we release resources
+			}
+		}
 
-                    try
-                    {
-                        if (NPath.IsUnix)
-                        {
-                           if (zipEntry.ExternalFileAttributes == -2115174400)
-                           {
-                               int fd = Mono.Unix.Native.Syscall.open(fullZipToPath,
-                                                                       Mono.Unix.Native.OpenFlags.O_CREAT | Mono.Unix.Native.OpenFlags.O_TRUNC,
-                                                                        Mono.Unix.Native.FilePermissions.S_IRWXU |
-                                                                        Mono.Unix.Native.FilePermissions.S_IRGRP |
-                                                                        Mono.Unix.Native.FilePermissions.S_IXGRP |
-                                                                        Mono.Unix.Native.FilePermissions.S_IROTH |
-                                                                        Mono.Unix.Native.FilePermissions.S_IXOTH);
-                               Mono.Unix.Native.Syscall.close(fd);
-                           }
-                       }
-                   }
-                   catch (Exception ex)
-                   {
-                        LogHelper.Error(ex, "Error setting file attributes in " + fullZipToPath);
-                   }
+		private bool ExtractTar(string archive, NPath outFolder, CancellationToken cancellationToken,
+			Action<string, long> onStart, Func<long, long, string, bool> onProgress, Func<string, bool> onFilter = null)
+		{
+			TarArchive zf = null;
 
-                    // Unzip file in buffered chunks. This is just as fast as unpacking to a buffer the full size
-                    // of the file, but does not waste memory.
-                    // The "using" will close the stream even if an exception occurs.
-                    var targetFile = new FileInfo(fullZipToPath);
-                    using (var streamWriter = targetFile.OpenWrite())
-                    {
-                        if (!Utils.Copy(zipStream, streamWriter, zipEntry.Size, chunkSize,
-                            progress: (totalRead, timeToFinish) =>
-                            {
-                                totalBytes += totalRead;
-                                return onProgress?.Invoke(totalBytes, totalSize) ?? true;
-                            }))
-                            return false;
-                    }
+			try
+			{
+				List<IArchiveEntry> entries;
+				using (var read = TarArchive.CreateInputTarArchive(NPath.FileSystem.OpenRead(archive)))
+				{
+					entries = PreprocessEntries(outFolder, read, onStart, onFilter);
+				}
+				zf = TarArchive.CreateInputTarArchive(NPath.FileSystem.OpenRead(archive));
+				return ExtractArchive(archive, outFolder, cancellationToken, zf, entries, onStart, onProgress, onFilter);
+			}
+			catch (Exception ex)
+			{
+				LogHelper.GetLogger<ZipHelper>().Error(ex);
+				throw;
+			}
+			finally
+			{
+				zf?.Close(); // Ensure we release resources
+			}
+		}
 
-                    targetFile.LastWriteTime = zipEntry.DateTime;
-                    processed++;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogHelper.GetLogger<ZipHelper>().Error(ex);
-                return false;
-            }
-            finally
-            {
-                if (zf != null)
-                {
-                    //zf.IsStreamOwner = true; // Makes close also shut the underlying stream
-                    zf.Close(); // Ensure we release resources
-                }
-            }
-            return true;
-        }
-    }
+		private static bool ExtractArchive(string archive, NPath outFolder, CancellationToken cancellationToken,
+			IArchive zf, List<IArchiveEntry> entries,
+			Action<string, long> onStart, Func<long, long, string, bool> onProgress, Func<string, bool> onFilter = null)
+		{
+
+			const int chunkSize = 4096; // 4K is optimum
+			foreach (var e in entries)
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+
+				var filename = e.Name;
+				var entry = zf.FindEntry(filename) ?? e;
+				var fullZipToPath = MaybeSetPermissions(outFolder, filename, entry.FileAttributes);
+				var targetFile = new FileInfo(fullZipToPath);
+
+				var stream = zf.GetInputStream(entry);
+				using (var streamWriter = targetFile.OpenWrite())
+				{
+					if (!Utils.Copy(stream, streamWriter, entry.Size, chunkSize,
+						progress: (totalRead, timeToFinish) => {
+							return onProgress?.Invoke(totalRead, entry.Size, filename) ?? true;
+						}))
+						return false;
+				}
+
+				targetFile.LastWriteTime = entry.LastModifiedTime;
+			}
+			return true;
+		}
+
+		private static List<IArchiveEntry> PreprocessEntries(NPath outFolder, IArchive zf, Action<string, long> onStart, Func<string, bool> onFilter)
+		{
+			var entries = new List<IArchiveEntry>();
+
+			foreach (IArchiveEntry entry in zf)
+			{
+				if (entry.IsLink ||
+					entry.IsSymLink)
+					continue;
+
+				if (entry.IsDirectory)
+				{
+					outFolder.Combine(entry.Name).EnsureDirectoryExists();
+					continue; // Ignore directories
+				}
+				if (!onFilter?.Invoke(entry.Name) ?? false)
+					continue;
+
+				entries.Add(entry);
+				onStart(entry.Name, entry.Size);
+			}
+
+			return entries;
+		}
+
+		private static NPath MaybeSetPermissions(NPath destDir, string entryFileName, int mode)
+		{
+			var fullZipToPath = destDir.Combine(entryFileName);
+			fullZipToPath.EnsureParentDirectoryExists();
+			try
+			{
+				if (NPath.IsUnix)
+				{
+					if (mode == -2115174400)
+					{
+						int fd = Mono.Unix.Native.Syscall.open(fullZipToPath,
+							Mono.Unix.Native.OpenFlags.O_CREAT |
+							Mono.Unix.Native.OpenFlags.O_TRUNC,
+							Mono.Unix.Native.FilePermissions.S_IRWXU |
+							Mono.Unix.Native.FilePermissions.S_IRGRP |
+							Mono.Unix.Native.FilePermissions.S_IXGRP |
+							Mono.Unix.Native.FilePermissions.S_IROTH |
+							Mono.Unix.Native.FilePermissions.S_IXOTH);
+						Mono.Unix.Native.Syscall.close(fd);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				LogHelper.Error(ex, "Error setting file attributes in " + fullZipToPath);
+			}
+
+			return fullZipToPath;
+		}
+	}
 }
