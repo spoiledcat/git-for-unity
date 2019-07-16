@@ -8,7 +8,7 @@ namespace IntegrationTests
         {
             base.OnSetup();
             Logger.Trace($"Extracting {TestZipFilePath} to {TestBasePath}");
-            ZipHelper.Instance.Extract(TestZipFilePath, TestBasePath.ToString(), TaskManager.Token, (value, total) => true);
+            ZipHelper.Instance.Extract(TestZipFilePath, TestBasePath.ToString(), TaskManager.Token, (_, __) => { }, (value, total, name) => true);
         }
 
         public override void OnTearDown()

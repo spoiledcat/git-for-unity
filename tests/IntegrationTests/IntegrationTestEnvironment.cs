@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Linq;
+using TestUtils;
 using Unity.VersionControl.Git;
 
 namespace IntegrationTests
@@ -12,23 +13,26 @@ namespace IntegrationTests
         private static readonly ILogging logger = LogHelper.GetLogger<IntegrationTestEnvironment>();
         private readonly bool enableTrace;
 
-        private DefaultEnvironment defaultEnvironment;
+        private readonly DefaultEnvironment defaultEnvironment;
 
         public IntegrationTestEnvironment(ICacheContainer cacheContainer,
             NPath repoPath,
             NPath solutionDirectory,
-            NPath? environmentPath = null,
+            CreateEnvironmentOptions options = null,
             bool enableTrace = false,
             bool initializeRepository = true)
         {
             defaultEnvironment = new DefaultEnvironment(cacheContainer);
 
             defaultEnvironment.FileSystem.SetCurrentDirectory(repoPath);
-            environmentPath = environmentPath ??
-                defaultEnvironment.UserCachePath.EnsureDirectoryExists("IntegrationTests");
+            options = options ?? new CreateEnvironmentOptions(NPath.SystemTemp.Combine(ApplicationInfo.ApplicationName, "IntegrationTests"));
 
-            UserCachePath = environmentPath.Value.Combine("User");
-            SystemCachePath = environmentPath.Value.Combine("System");
+            var environmentPath = options.UserProfilePath;
+
+            LocalAppData = environmentPath.Combine("User");
+            UserCachePath = LocalAppData.Combine("Cache");
+            CommonAppData = environmentPath.Combine("System");
+            SystemCachePath = CommonAppData.Combine("Cache");
 
             var installPath = solutionDirectory.Parent.Parent.Parent.Combine("src", "api", "Api");
 
@@ -132,8 +136,11 @@ namespace IntegrationTests
 
         public NPath ExtensionInstallPath => defaultEnvironment.ExtensionInstallPath;
 
-        public NPath UserCachePath { get { return defaultEnvironment.UserCachePath; } set { defaultEnvironment.UserCachePath = value; } }
-        public NPath SystemCachePath { get { return defaultEnvironment.SystemCachePath; } set { defaultEnvironment.SystemCachePath = value; } }
+        public NPath UserCachePath { get => defaultEnvironment.UserCachePath; set => defaultEnvironment.UserCachePath = value; }
+        public NPath SystemCachePath { get => defaultEnvironment.SystemCachePath; set => defaultEnvironment.SystemCachePath = value; }
+        public NPath LocalAppData { get => defaultEnvironment.LocalAppData; set => defaultEnvironment.LocalAppData = value; }
+        public NPath CommonAppData { get => defaultEnvironment.CommonAppData; set => defaultEnvironment.CommonAppData = value; }
+
         public NPath LogPath => defaultEnvironment.LogPath;
 
         public NPath RepositoryPath => defaultEnvironment.RepositoryPath;

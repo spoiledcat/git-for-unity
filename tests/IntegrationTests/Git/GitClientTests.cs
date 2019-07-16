@@ -26,7 +26,7 @@ namespace IntegrationTests
             InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized);
 
             var result = GitClient.Version().RunSynchronously();
-            var expected = TheVersion.Parse("2.17.0");
+            var expected = TheVersion.Parse("2.21.0");
             result.Major.Should().Be(expected.Major);
             result.Minor.Should().Be(expected.Minor);
             result.Patch.Should().Be(expected.Patch);
@@ -41,7 +41,7 @@ namespace IntegrationTests
             InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized);
 
             var result = GitClient.LfsVersion().RunSynchronously();
-            var expected = TheVersion.Parse("2.4.0");
+            var expected = TheVersion.Parse("2.6.1");
             result.Should().Be(expected);
         }
     }

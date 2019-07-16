@@ -9,9 +9,6 @@ namespace TestUtils
 {
     public class TestSubstituteFactory
     {
-        public TestSubstituteFactory()
-        {}
-
         public IEnvironment CreateEnvironment(CreateEnvironmentOptions createEnvironmentOptions = null)
         {
             createEnvironmentOptions = createEnvironmentOptions ?? new CreateEnvironmentOptions();
@@ -26,6 +23,8 @@ namespace TestUtils
             environment.UnityProjectPath.Returns(createEnvironmentOptions.UnityProjectPath);
             environment.GetSpecialFolder(System.Environment.SpecialFolder.LocalApplicationData).Returns(localAppData);
             environment.GetSpecialFolder(System.Environment.SpecialFolder.ApplicationData).Returns(appData);
+            environment.LocalAppData.Returns(localAppData.ToNPath());
+            environment.CommonAppData.Returns(appData.ToNPath());
             return environment;
         }
 

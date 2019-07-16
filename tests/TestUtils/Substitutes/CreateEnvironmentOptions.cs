@@ -1,17 +1,29 @@
 using Unity.VersionControl.Git;
-using NSubstitute.Core;
 
 namespace TestUtils
 {
     public class CreateEnvironmentOptions
     {
-        public const string DefaultExtensionFolder = @"c:\GitHubUnity\ExtensionFolder";
-        public const string DefaultUserProfilePath = @"c:\GitHubUnity\UserProfile";
-        public const string DefaultUnityProjectPathAndRepositoryPath = @"c:\GitHubUnity\UnityProject";
+        public const string DefaultExtensionFolder = "ExtensionFolder";
+        public const string DefaultUserProfilePath = "UserProfile";
+        public const string DefaultUnityProjectPathAndRepositoryPath = "UnityProject";
 
-        public NPath Extensionfolder { get; set; } = DefaultExtensionFolder.ToNPath();
-        public NPath UserProfilePath { get; set; } = DefaultUserProfilePath.ToNPath();
-        public NPath UnityProjectPath { get; set; } = DefaultUnityProjectPathAndRepositoryPath.ToNPath();
-        public string RepositoryPath { get; set; } = DefaultUnityProjectPathAndRepositoryPath;
+        public CreateEnvironmentOptions(NPath? basePath = null)
+        {
+            NPath path = basePath ?? NPath.SystemTemp.Combine(ApplicationInfo.ApplicationName);
+            path.EnsureDirectoryExists();
+            Extensionfolder = path.Combine(DefaultExtensionFolder);
+            UserProfilePath = path.Combine(DefaultUserProfilePath);
+            UnityProjectPath = path.Combine(DefaultUnityProjectPathAndRepositoryPath);
+            RepositoryPath = path.Combine(DefaultUnityProjectPathAndRepositoryPath);
+            Extensionfolder.EnsureDirectoryExists();
+            UserProfilePath.EnsureDirectoryExists();
+            UnityProjectPath.EnsureDirectoryExists();
+        }
+
+        public NPath Extensionfolder { get; set; }
+        public NPath UserProfilePath { get; set; }
+        public NPath UnityProjectPath { get; set; }
+        public string RepositoryPath { get; set; }
     }
 }
