@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 
 namespace Unity.VersionControl.Git.Tasks
@@ -6,7 +5,6 @@ namespace Unity.VersionControl.Git.Tasks
     public class GitLockTask : ProcessTask<string>
     {
         private const string TaskName = "git lfs lock";
-        private readonly string arguments;
 
         public GitLockTask(string path,
             CancellationToken token, IOutputProcessor<string> processor = null)
@@ -14,11 +12,11 @@ namespace Unity.VersionControl.Git.Tasks
         {
             Name = TaskName;
             Guard.ArgumentNotNullOrWhiteSpace(path, "path");
-            arguments = String.Format("lock \"{0}\"", path);
+            ProcessArguments = $"lfs lock \"{path}\"";
         }
 
-        public override string ProcessArguments => arguments;
-        public override TaskAffinity Affinity { get { return TaskAffinity.Exclusive; } }
+        public override string ProcessArguments { get; }
+        public override TaskAffinity Affinity => TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Locking file...";
     }
 }

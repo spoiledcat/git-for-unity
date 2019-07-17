@@ -453,7 +453,7 @@ namespace Unity.VersionControl.Git
         public ITask<List<GitLock>> ListLocks(bool local, BaseOutputListProcessor<GitLock> processor = null)
         {
             return new GitListLocksTask(local, cancellationToken, processor)
-                .Configure(processManager, environment.GitLfsExecutablePath);
+                .Configure(processManager);
         }
 
         ///<inheritdoc/>
@@ -642,7 +642,7 @@ namespace Unity.VersionControl.Git
             IOutputProcessor<string> processor = null)
         {
             return new GitLockTask(file, cancellationToken, processor)
-                .Configure(processManager, environment.GitLfsExecutablePath);
+                .Configure(processManager);
         }
 
         ///<inheritdoc/>
@@ -650,7 +650,7 @@ namespace Unity.VersionControl.Git
             IOutputProcessor<string> processor = null)
         {
             return new GitUnlockTask(file, force, cancellationToken, processor)
-                .Configure(processManager, environment.GitLfsExecutablePath);
+                .Configure(processManager);
         }
 
         ///<inheritdoc/>

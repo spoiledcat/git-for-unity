@@ -2,6 +2,7 @@ using System.Threading;
 
 namespace Unity.VersionControl.Git.Tasks
 {
+
     public class GitListLocksTask : ProcessTaskWithListOutput<GitLock>
     {
         private const string TaskName = "git lfs locks";
@@ -12,7 +13,7 @@ namespace Unity.VersionControl.Git.Tasks
             : base(token, processor ?? new LocksOutputProcessor())
         {
             Name = TaskName;
-            args = "locks --json";
+            args = "lfs locks --json";
             if (local)
             {
                 args += " --local";

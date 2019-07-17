@@ -75,7 +75,7 @@ namespace Unity.VersionControl.Git
                 }},
             };
 
-            if (cacheContainer == null)
+            if (container == null)
                 return;
 
             cacheContainer = container;
