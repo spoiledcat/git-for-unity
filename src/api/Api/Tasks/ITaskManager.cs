@@ -16,5 +16,10 @@ namespace Unity.VersionControl.Git
         ITask Run(Action action, string message = null);
         ITask RunInUI(Action action);
         event Action<IProgress> OnProgress;
+        /// <summary>
+        /// Call this from the main thread so task manager knows which thread and
+        /// synchronization context should be used
+        /// </summary>
+        void Initialize();
     }
 }

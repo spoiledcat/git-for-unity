@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Cache;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace Unity.VersionControl.Git
 {
@@ -38,7 +41,7 @@ namespace Unity.VersionControl.Git
 
         public void QueueDownload(UriString url, NPath targetDirectory, string filename = null, int retryCount = 0)
         {
-            var download = new DownloadTask(Token, fileSystem, url, targetDirectory, filename, retryCount);
+            var download = new DownloadTask(TaskToken, fileSystem, url, targetDirectory, filename, retryCount);
             download.OnStart += t => OnDownloadStart?.Invoke(((DownloadTask)t).Url);
             download.OnEnd += (t, res, s, ex) =>
             {
@@ -51,16 +54,22 @@ namespace Unity.VersionControl.Git
             Queue(download);
         }
 
-        public static bool Download(ILogging logger, UriString url,
-            Stream destinationStream,
+        public static bool Download(ILogging logger, UriString url, Stream destinationStream,
             Func<long, long, bool> onProgress)
         {
-            long bytes = destinationStream.Length;
+            return DownloadInternal(logger, url, destinationStream, onProgress, false);
+        }
+
+        private static bool DownloadInternal(ILogging logger, UriString url, Stream destinationStream,
+            Func<long, long, bool> onProgress, bool noResume)
+        {
+
+            long bytes = noResume ? 0 : destinationStream.Length;
 
             var expectingResume = bytes > 0;
 
 #if !NET35
-			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 #endif
 
             var webRequest = (HttpWebRequest)WebRequest.Create(url);
@@ -71,7 +80,7 @@ namespace Unity.VersionControl.Git
                 // classlib for 3.5 doesn't take long overloads...
                 webRequest.AddRange((int)bytes);
 #else
-				webRequest.AddRange(bytes);
+                webRequest.AddRange(bytes);
 #endif
             }
 
@@ -99,7 +108,8 @@ namespace Unity.VersionControl.Git
 
                 if (expectingResume && httpStatusCode == HttpStatusCode.RequestedRangeNotSatisfiable)
                 {
-                    return !onProgress(bytes, bytes);
+                    webResponse.Dispose();
+                    return DownloadInternal(logger, url, destinationStream, onProgress, true);
                 }
 
                 if (!(httpStatusCode == HttpStatusCode.OK || httpStatusCode == HttpStatusCode.PartialContent))

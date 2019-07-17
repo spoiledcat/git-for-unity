@@ -51,6 +51,12 @@ namespace Unity.VersionControl.Git
             this.UIScheduler = uiScheduler;
         }
 
+        public void Initialize()
+        {
+            UIScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            ThreadingHelper.SetUIThread();
+        }
+
         public Task Wait()
         {
             return manager.Wait();

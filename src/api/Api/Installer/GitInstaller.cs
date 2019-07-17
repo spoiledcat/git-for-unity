@@ -345,11 +345,7 @@ namespace Unity.VersionControl.Git
         public class GitInstallDetails
         {
             public static string GitPackageName { get; } = "embedded-git.json";
-#if DEVELOPER_BUILD
-            private const string packageFeed = "http://localhost:50000";
-#else
-            private const string packageFeed = "https://api.github.com/repos/desktop/dugite-native/releases/latest";
-#endif
+            private const string packageFeed = "https://api.github.com/repos/github-for-unity/dugite-native/releases/latest";
 
             public const string GitDirectory = "git";
 
@@ -384,7 +380,7 @@ namespace Unity.VersionControl.Git
             public NPath GitLfsInstallationPath { get; }
             public NPath GitExecutablePath { get; }
             public NPath GitLfsExecutablePath { get; }
-            public UriString GitPackageFeed { get; set; }
+            public UriString GitPackageFeed { get; set; } = packageFeed;
             public NPath GitManifest { get; set; }
         }
     }

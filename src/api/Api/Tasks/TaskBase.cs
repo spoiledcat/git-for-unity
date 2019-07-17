@@ -809,12 +809,12 @@ namespace Unity.VersionControl.Git
 
         public new virtual TResult RunSynchronously()
         {
-            RaiseOnStart();
-            Token.ThrowIfCancellationRequested();
-            var previousIsSuccessful = previousSuccess.HasValue ? previousSuccess.Value : (DependsOn?.Successful ?? true);
             TResult ret = default(TResult);
             try
             {
+                RaiseOnStart();
+                Token.ThrowIfCancellationRequested();
+                var previousIsSuccessful = previousSuccess.HasValue ? previousSuccess.Value : (DependsOn?.Successful ?? true);
                 ret = RunWithReturn(previousIsSuccessful);
             }
             finally

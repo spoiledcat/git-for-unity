@@ -9,17 +9,29 @@ namespace Unity.VersionControl.Git
 {
     public class TaskQueue : TPLTask
     {
-        private TaskCompletionSource<bool> aggregateTask = new TaskCompletionSource<bool>();
+        private readonly TaskCompletionSource<bool> aggregateTask = new TaskCompletionSource<bool>();
         private readonly List<ITask> queuedTasks = new List<ITask>();
         private int finishedTaskCount;
+        private readonly CancellationTokenSource cts;
+        private readonly ProgressReporter progressReporter = new ProgressReporter();
 
-        public TaskQueue() : base()
+        private TaskQueue(CancellationTokenSource cts) : base(cts.Token)
+        {
+            this.cts = cts;
+            progressReporter.OnProgress += this.progress.UpdateProgress;
+
+        }
+
+        public TaskQueue() : this(new CancellationTokenSource())
         {
             Initialize(aggregateTask.Task);
         }
 
         public ITask Queue(ITask task)
         {
+            progressReporter.Message = this.Message;
+            task.Progress(progressReporter.UpdateProgress);
+
             // if this task fails, both OnEnd and Catch will be called
             // if a task before this one on the chain fails, only Catch will be called
             // so avoid calling TaskFinished twice by ignoring failed OnEnd calls
@@ -42,6 +54,12 @@ namespace Unity.VersionControl.Git
             }
 
             base.RunSynchronously();
+        }
+
+        public void Cancel()
+        {
+            if (!cts.IsCancellationRequested)
+                cts.Cancel();
         }
 
         protected override void Schedule()
@@ -83,14 +101,25 @@ namespace Unity.VersionControl.Git
                 }
             }
         }
+
+        protected CancellationToken TaskToken => cts.Token;
     }
 
     public class TaskQueue<TTaskResult, TResult> : TPLTask<List<TResult>>
     {
-        private TaskCompletionSource<List<TResult>> aggregateTask = new TaskCompletionSource<List<TResult>>();
+        private readonly TaskCompletionSource<List<TResult>> aggregateTask = new TaskCompletionSource<List<TResult>>();
         private readonly List<ITask<TTaskResult>> queuedTasks = new List<ITask<TTaskResult>>();
+        private readonly Func<ITask<TTaskResult>, TResult> resultConverter;
+        private readonly CancellationTokenSource cts;
+        private readonly ProgressReporter progressReporter = new ProgressReporter();
+
         private int finishedTaskCount;
-        private Func<ITask<TTaskResult>, TResult> resultConverter;
+
+        private TaskQueue(CancellationTokenSource cts) : base()
+        {
+            this.cts = cts;
+            progressReporter.OnProgress += this.progress.UpdateProgress;
+        }
 
         /// <summary>
         /// If <typeparamref name="TTaskResult"/> is not assignable to <typeparamref name="TResult"/>, you must pass a
@@ -98,7 +127,7 @@ namespace Unity.VersionControl.Git
         /// conversion to string, you still need to pass in a converter)
         /// </summary>
         /// <param name="resultConverter"></param>
-        public TaskQueue(Func<ITask<TTaskResult>, TResult> resultConverter = null) : base()
+        public TaskQueue(Func<ITask<TTaskResult>, TResult> resultConverter = null) : this(new CancellationTokenSource())
         {
             // this excludes implicit operators - that requires using reflection to figure out if
             // the types are convertible, and I'd rather not do that
@@ -116,10 +145,13 @@ namespace Unity.VersionControl.Git
         /// to convert the result of the task to something else
         /// </summary>
         /// <param name="task"></param>
-        /// 
+        ///
         /// <returns></returns>
         public ITask<TTaskResult> Queue(ITask<TTaskResult> task)
         {
+            progressReporter.Message = this.Message;
+            task.Progress(progressReporter.UpdateProgress);
+
             // if this task fails, both OnEnd and Catch will be called
             // if a task before this one on the chain fails, only Catch will be called
             // so avoid calling TaskFinished twice by ignoring failed OnEnd calls
@@ -131,17 +163,31 @@ namespace Unity.VersionControl.Git
 
         public override List<TResult> RunSynchronously()
         {
-            if (queuedTasks.Any())
+            try
             {
-                foreach (var task in queuedTasks)
-                    task.Start();
-            }
-            else
-            {
-                aggregateTask.TrySetResult(new List<TResult>());
-            }
+                if (queuedTasks.Any())
+                {
+                    foreach (var task in queuedTasks)
+                        task.Start();
+                }
+                else
+                {
+                    aggregateTask.TrySetResult(new List<TResult>());
+                }
 
-            return base.RunSynchronously();
+                return base.RunSynchronously();
+            }
+            catch (Exception)
+            {
+                Cancel();
+                throw;
+            }
+        }
+
+        public void Cancel()
+        {
+            if (!cts.IsCancellationRequested)
+                cts.Cancel();
         }
 
         protected override void Schedule()
@@ -188,13 +234,15 @@ namespace Unity.VersionControl.Git
                 }
             }
         }
+
+        protected CancellationToken TaskToken => cts.Token;
     }
 
     public class TPLTask : TaskBase
     {
         private Task task;
 
-        protected TPLTask() : base()
+        protected TPLTask(CancellationToken token) : base(token)
         {}
 
         public TPLTask(Task task)
@@ -239,8 +287,9 @@ namespace Unity.VersionControl.Git
     {
         private Task<T> task;
 
-        protected TPLTask() : base()
-        { }
+        protected TPLTask() : base() {}
+        protected TPLTask(CancellationToken token) : base(token)
+        {}
 
         public TPLTask(Task<T> task)
             : base()
@@ -337,7 +386,7 @@ namespace Unity.VersionControl.Git
         protected Action<bool, Exception, T> CallbackWithException { get; }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="token"></param>
         /// <param name="action"></param>
@@ -353,7 +402,7 @@ namespace Unity.VersionControl.Git
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="token"></param>
         /// <param name="action"></param>

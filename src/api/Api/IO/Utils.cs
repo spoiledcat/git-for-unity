@@ -1,8 +1,6 @@
-﻿using Unity.VersionControl.Git;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 
 namespace Unity.VersionControl.Git
 {
@@ -24,6 +22,7 @@ namespace Unity.VersionControl.Git
             long timeToFinish = 0;
             Stopwatch watch = null;
             bool success = true;
+            totalSize = totalSize < 0 ? 0 : totalSize;
 
             bool trackProgress = totalSize > 0 && progress != null;
             if (trackProgress)
@@ -34,7 +33,7 @@ namespace Unity.VersionControl.Git
                 if (trackProgress)
                     watch.Start();
 
-                bytesRead = source.Read(buffer, 0, totalRead + chunkSize > totalSize ? (int)(totalSize - totalRead) : chunkSize);
+                bytesRead = source.Read(buffer, 0, totalSize > 0 && totalRead + chunkSize > totalSize ? (int)(totalSize - totalRead) : chunkSize);
 
                 if (trackProgress)
                     watch.Stop();
@@ -77,15 +76,47 @@ namespace Unity.VersionControl.Git
 
             if (totalRead > 0)
                 destination.Flush();
-
             return success;
         }
-        public static bool VerifyFileIntegrity(NPath file, string md5)
+        public static bool VerifyFileIntegrity(NPath file, string hash)
         {
             if (!file.IsInitialized || !file.FileExists())
                 return false;
-            var actual = file.CalculateMD5();
-            return md5.Equals(actual, StringComparison.InvariantCultureIgnoreCase);
+            string actual = null;
+            if (hash.Length == 32)
+                actual = file.ToMD5();
+            else
+                actual = file.ToSha256();
+            return hash.Equals(actual, StringComparison.InvariantCultureIgnoreCase);
         }
+
+        private static string ToMD5(this NPath path)
+        {
+            byte[] computeHash;
+            using (var hash = System.Security.Cryptography.MD5.Create())
+            {
+                using (var stream = NPath.FileSystem.OpenRead(path))
+                {
+                    computeHash = hash.ComputeHash(stream);
+                }
+            }
+
+            return BitConverter.ToString(computeHash).Replace("-", string.Empty).ToLower();
+        }
+
+        private static string ToSha256(this NPath path)
+        {
+            byte[] computeHash;
+            using (var hash = System.Security.Cryptography.SHA256.Create())
+            {
+                using (var stream = NPath.FileSystem.OpenRead(path))
+                {
+                    computeHash = hash.ComputeHash(stream);
+                }
+            }
+
+            return BitConverter.ToString(computeHash).Replace("-", string.Empty).ToLower();
+        }
+
     }
 }

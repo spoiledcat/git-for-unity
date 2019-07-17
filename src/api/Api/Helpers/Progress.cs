@@ -44,7 +44,7 @@ namespace Unity.VersionControl.Git
 				else
 					tasks[prog.Task] = prog;
 
-				if (prog.Percentage == 1f)
+				if (prog.Percentage.Approximately(1f))
 				{
 					tasks.Remove(prog.Task);
 					totalDone += prog.Total;

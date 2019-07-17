@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Boo.Lang;
 
 namespace Unity.VersionControl.Git
 {
@@ -23,14 +24,31 @@ namespace Unity.VersionControl.Git
 
         public static string GetExceptionMessageShort(this Exception ex)
         {
-            var message = ex.ToString();
-            var inner = ex.InnerException;
-            while (inner != null)
-            {
-                message += Environment.NewLine + inner.ToString();
-                inner = inner.InnerException;
-            }
+	        var exceptions = new List<Exception> { ex };
+	        var inner = ex.InnerException;
+	        while (inner != null)
+	        {
+		        exceptions.Add(inner);
+		        inner = inner.InnerException;
+	        }
+
+	        var message = string.Join(Environment.NewLine, exceptions.Select(x => x.Message));
+	        message += Environment.NewLine + exceptions.Last().StackTrace;
             return message;
+        }
+
+        public static string GetExceptionMessageOnly(this Exception ex)
+        {
+	        var exceptions = new List<Exception> { ex };
+	        var inner = ex.InnerException;
+	        while (inner != null)
+	        {
+		        exceptions.Add(inner);
+		        inner = inner.InnerException;
+	        }
+
+	        var message = string.Join(Environment.NewLine, exceptions.Select(x => x.Message));
+	        return message;
         }
     }
 }

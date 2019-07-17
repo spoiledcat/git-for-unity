@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -42,7 +43,7 @@ namespace Unity.VersionControl.Git
             Url = url;
             Filename = string.IsNullOrEmpty(filename) ? url.Filename : filename;
             TargetDirectory = targetDirectory;
-            this.Name = $"Download {Url}";
+            this.Name = $"Downloading {Url}";
         }
 
         protected override NPath RunWithReturn(bool success)
@@ -84,13 +85,13 @@ namespace Unity.VersionControl.Git
                 try
                 {
                     Logger.Trace($"Download of {Url} to {Destination} Attempt {attempts + 1} of {RetryCount + 1}");
-
+                    var progressMessage = $"Downloading {Filename}";
                     using (var destinationStream = fileSystem.OpenWrite(partialFile, FileMode.Append))
                     {
                         result = Downloader.Download(Logger, Url, destinationStream,
                             (value, total) =>
                             {
-                                UpdateProgress(value, total);
+                                UpdateProgress(value, total, progressMessage);
                                 return !Token.IsCancellationRequested;
                             });
                     }
@@ -110,7 +111,7 @@ namespace Unity.VersionControl.Git
             if (!result)
             {
                 Token.ThrowIfCancellationRequested();
-                throw new DownloadException("Error downloading file", exception);
+                throw new DownloadException($"Error downloading {Url}", exception);
             }
 
             return Destination;

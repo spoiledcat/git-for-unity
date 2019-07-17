@@ -75,6 +75,9 @@ namespace Unity.VersionControl.Git
                 }},
             };
 
+            if (cacheContainer == null)
+                return;
+
             cacheContainer = container;
             cacheContainer.CacheInvalidated += CacheHasBeenInvalidated;
             cacheContainer.CacheUpdated += (cacheType, offset) =>
