@@ -40,17 +40,16 @@ test:
     - DoNotRunOnAppVeyor
 on_success:
 - ps: |
-      # save commit
-      Add-Content $commitfile $appveyor_repo_commit
+    # save commit
+    Add-Content $commitfile $appveyor_repo_commit
 
-      Write-Output "Zipping $sourcedir to $zipfile"
-      7z a $zipfile $sourcedir
+    Write-Output "Zipping $sourcedir to $zipfile"
+    7z a $zipfile $sourcedir
 
-      Write-Output "Uploading $zipfile"
-      Push-AppveyorArtifact $zipfile -DeploymentName source
-      Push-AppveyorArtifact $packagefile -DeploymentName package
-      Push-AppveyorArtifact "$($packagefile).md5" -DeploymentName package
-    }
+    Write-Output "Uploading $zipfile"
+    Push-AppveyorArtifact $zipfile -DeploymentName source
+    Push-AppveyorArtifact $packagefile -DeploymentName package
+    Push-AppveyorArtifact "$($packagefile).md5" -DeploymentName package
 on_finish:
 - ps: |
     Set-Location $env:appveyor_build_folder
