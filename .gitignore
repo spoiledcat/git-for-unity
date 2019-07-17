@@ -303,5 +303,5 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
-downloads
-embedded-git.json
+/downloads
+/embedded-git.json
