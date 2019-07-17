@@ -748,7 +748,7 @@ namespace IntegrationTests
                 .Then(() => runOrder.Add("OnFailure"), runOptions: TaskRunOptions.OnFailure)
                 .Finally((s, e) => { }, TaskAffinity.Concurrent);
 
-            await task.StartAndSwallowException();
+            await task.StartAwait(_ => { });
 
             CollectionAssert.AreEqual(
                 new string[] { typeof(InvalidOperationException).Name },
