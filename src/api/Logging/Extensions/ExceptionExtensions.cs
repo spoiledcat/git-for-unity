@@ -1,6 +1,6 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using Boo.Lang;
 
 namespace Unity.VersionControl.Git
 {
@@ -32,7 +32,7 @@ namespace Unity.VersionControl.Git
 		        inner = inner.InnerException;
 	        }
 
-	        var message = string.Join(Environment.NewLine, exceptions.Select(x => x.Message));
+	        var message = string.Join(Environment.NewLine, exceptions.Select(x => x.Message).ToArray());
 	        message += Environment.NewLine + exceptions.Last().StackTrace;
             return message;
         }
@@ -47,7 +47,7 @@ namespace Unity.VersionControl.Git
 		        inner = inner.InnerException;
 	        }
 
-	        var message = string.Join(Environment.NewLine, exceptions.Select(x => x.Message));
+	        var message = string.Join(Environment.NewLine, exceptions.Select(x => x.Message).ToArray());
 	        return message;
         }
     }

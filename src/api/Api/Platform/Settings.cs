@@ -16,9 +16,7 @@ namespace Unity.VersionControl.Git
         public abstract void Rename(string oldKey, string newKey);
         public abstract void Set<T>(string key, T value);
         public abstract void Unset(string key);
-        public NPath SettingsPath { get; set; }
-
-        protected virtual string SettingsFileName { get; set; }
+        public NPath SettingsPath { get; protected set; }
     }
 
     public class JsonBackedSettings : BaseSettings
@@ -46,7 +44,7 @@ namespace Unity.VersionControl.Git
 
         public override void Initialize()
         {
-            cachePath = SettingsPath.Combine(SettingsFileName);
+            cachePath = SettingsPath;
             LoadFromCache(cachePath);
         }
 
@@ -232,10 +230,8 @@ namespace Unity.VersionControl.Git
 
         public LocalSettings(IEnvironment environment)
         {
-            SettingsPath = environment.UnityProjectPath.Combine(RelativeSettingsPath);
+            SettingsPath = environment.UnityProjectPath.Combine(RelativeSettingsPath, settingsFileName);
         }
-
-        protected override string SettingsFileName { get { return settingsFileName; } }
     }
 
     public class UserSettings : JsonBackedSettings
@@ -245,12 +241,12 @@ namespace Unity.VersionControl.Git
 
         public UserSettings(IEnvironment environment)
         {
-            SettingsPath = environment.UserCachePath;
+            SettingsPath = environment.UserCachePath.Combine(settingsFileName);
         }
 
         public override void Initialize()
         {
-            var cachePath = SettingsPath.Combine(settingsFileName);
+            var cachePath = SettingsPath;
             if (!cachePath.FileExists())
             {
                 var oldSettings = SettingsPath.Combine(oldSettingsFileName);
@@ -259,8 +255,6 @@ namespace Unity.VersionControl.Git
             }
             base.Initialize();
         }
-
-        protected override string SettingsFileName { get { return settingsFileName; } }
     }
 
     public class SystemSettings : JsonBackedSettings
@@ -270,12 +264,12 @@ namespace Unity.VersionControl.Git
 
         public SystemSettings(IEnvironment environment)
         {
-            SettingsPath = environment.SystemCachePath;
+            SettingsPath = environment.SystemCachePath.Combine(settingsFileName);
         }
 
         public override void Initialize()
         {
-            var cachePath = SettingsPath.Combine(settingsFileName);
+            var cachePath = SettingsPath;
             if (!cachePath.FileExists())
             {
                 var oldSettings = SettingsPath.Combine(oldSettingsFileName);
@@ -284,7 +278,5 @@ namespace Unity.VersionControl.Git
             }
             base.Initialize();
         }
-
-        protected override string SettingsFileName { get { return settingsFileName; } }
     }
 }

@@ -108,7 +108,7 @@ namespace Unity.VersionControl.Git
 
                 if (expectingResume && httpStatusCode == HttpStatusCode.RequestedRangeNotSatisfiable)
                 {
-                    webResponse.Dispose();
+                    webResponse.Close();
                     return DownloadInternal(logger, url, destinationStream, onProgress, true);
                 }
 

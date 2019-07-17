@@ -306,14 +306,14 @@ namespace UnitTests
                     new GitStatusEntry(@"Assets/Assets.Test.dll", TestRootPath + @"\Assets/Assets.Test.dll", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                     new GitStatusEntry(@"Assets/Assets.Test.dll.meta", TestRootPath + @"\Assets/Assets.Test.dll.meta", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                     new GitStatusEntry(@"blah.txt", TestRootPath + @"\blah.txt", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
-                    new GitStatusEntry(@"Plugins/Unity.VersionControl.Git.dll", TestRootPath + @"\Plugins/Unity.VersionControl.Git.dll", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
-                    new GitStatusEntry(@"Plugins/Unity.VersionControl.Git.dll.meta", TestRootPath + @"\Plugins/Unity.VersionControl.Git.dll.meta", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
-                    new GitStatusEntry(@"Plugins/Unity.VersionControl.Git.dll.mdb", TestRootPath + @"\Plugins/Unity.VersionControl.Git.dll.mdb", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
-                    new GitStatusEntry(@"Plugins/Unity.VersionControl.Git.dll.mdb.meta", TestRootPath + @"\Plugins/Unity.VersionControl.Git.dll.mdb.meta", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                     new GitStatusEntry(@"Plugins/Unity.Git2.dll", TestRootPath + @"\Plugins/Unity.Git2.dll", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                     new GitStatusEntry(@"Plugins/Unity.Git2.dll.meta", TestRootPath + @"\Plugins/Unity.Git2.dll.meta", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                     new GitStatusEntry(@"Plugins/Unity.Git2.dll.mdb", TestRootPath + @"\Plugins/Unity.Git2.dll.mdb", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                     new GitStatusEntry(@"Plugins/Unity.Git2.dll.mdb.meta", TestRootPath + @"\Plugins/Unity.Git2.dll.mdb.meta", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
+                    new GitStatusEntry(@"Plugins/Unity.VersionControl.Git.dll", TestRootPath + @"\Plugins/Unity.VersionControl.Git.dll", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
+                    new GitStatusEntry(@"Plugins/Unity.VersionControl.Git.dll.meta", TestRootPath + @"\Plugins/Unity.VersionControl.Git.dll.meta", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
+                    new GitStatusEntry(@"Plugins/Unity.VersionControl.Git.dll.mdb", TestRootPath + @"\Plugins/Unity.VersionControl.Git.dll.mdb", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
+                    new GitStatusEntry(@"Plugins/Unity.VersionControl.Git.dll.mdb.meta", TestRootPath + @"\Plugins/Unity.VersionControl.Git.dll.mdb.meta", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                 }
             });
         }
@@ -324,7 +324,7 @@ namespace UnitTests
 
             GitStatus? result = null;
             var outputProcessor = new GitStatusOutputProcessor(gitObjectFactory);
-            outputProcessor.OnEntry += status => { result = status; };
+            outputProcessor.OnEntry += status => result = status;
 
             foreach (var line in lines)
             {

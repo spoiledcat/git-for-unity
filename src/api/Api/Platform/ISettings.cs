@@ -9,6 +9,6 @@ namespace Unity.VersionControl.Git
         void Set<T>(string key, T value);
         void Unset(string key);
         void Rename(string oldKey, string newKey);
-        NPath SettingsPath { get; set; }
+        NPath SettingsPath { get; }
     }
 }

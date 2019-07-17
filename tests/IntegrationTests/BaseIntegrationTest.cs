@@ -99,7 +99,7 @@ namespace IntegrationTests
         {
             InitializeEnvironment(repoPath, enableEnvironmentTrace, true);
             InitializePlatform(repoPath, enableEnvironmentTrace: enableEnvironmentTrace, testName: testName);
-            SetupGit(Environment.LocalAppData, testName);
+            SetupGit(Environment.UserCachePath, testName);
 
             DotGitPath = repoPath.Combine(".git");
 

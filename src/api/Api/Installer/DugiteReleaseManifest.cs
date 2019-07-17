@@ -60,7 +60,7 @@ namespace Unity.VersionControl.Git
             var manifest = path.ReadAllText().FromJson<DugiteReleaseManifest>(true, false);
             var (zipAsset, shaAsset) = manifest.GetAsset(environment);
             var shaAssetPath = environment.UserCachePath.Combine("downloads", shaAsset.Name);
-            if (!shaAssetPath.FileExists())
+                if (!shaAssetPath.FileExists())
             {
                 var downloader = new Downloader();
                 downloader.QueueDownload(shaAsset.Url, shaAssetPath.Parent, shaAssetPath.FileName);
