@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Schedulers;
 using FluentAssertions;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using Unity.VersionControl.Git;
 
@@ -736,19 +735,21 @@ namespace IntegrationTests
                 .Catch(_ => { });
             await task.StartAwait(_ => { });
         }
+    }
 
+    [TestFixture]
+    class TaskOnFailure : BaseTest
+    {
         [Test]
-        // Currently failing in appveyor but not locally, needs investigating
-        [Category("DoNotRunOnAppVeyor")]
         public async Task TaskOnFailureGetsCalledWhenExceptionHappensUpTheChain()
         {
             var runOrder = new List<string>();
             var exceptions = new List<Exception>();
             var task = new ActionTask(Token, _ => { throw new InvalidOperationException(); })
-                .Then(_ => { runOrder.Add("1"); })
-                .Catch(ex => exceptions.Add(ex))
-                .Then(() => runOrder.Add("OnFailure"), runOptions: TaskRunOptions.OnFailure)
-                .Finally((s, e) => { }, TaskAffinity.Concurrent);
+                       .Then(_ => { runOrder.Add("1"); })
+                       .Catch(ex => exceptions.Add(ex))
+                       .Then(() => runOrder.Add("OnFailure"), runOptions: TaskRunOptions.OnFailure)
+                       .Finally((s, e) => { }, TaskAffinity.Concurrent);
 
             await task.StartAwait(_ => { });
 
@@ -928,6 +929,15 @@ namespace IntegrationTests
             }, callOrder);
         }
 
+        private T LogAndReturnResult<T>(List<string> callOrder, string msg, T result)
+        {
+            callOrder.Add(msg);
+            return result;
+        }
+    }
+
+    class TaskDependencies : BaseTest
+    {
         [Test]
         public async Task RunningDifferentTasksDependingOnPreviousResult()
         {
@@ -948,16 +958,16 @@ namespace IntegrationTests
                 }) { Name = "Failing" });
 
             taskStart.Then(new ActionTask(Token, () =>
-            {
-                callOrder.Add("on failure");
-            }) { Name = "On Failure" }, runOptions: TaskRunOptions.OnFailure)
-            .Then(taskEnd, taskIsTopOfChain: true);
+                     {
+                         callOrder.Add("on failure");
+                     }) { Name = "On Failure" }, runOptions: TaskRunOptions.OnFailure)
+                     .Then(taskEnd, taskIsTopOfChain: true);
 
             taskStart.Then(new ActionTask(Token, () =>
-            {
-                callOrder.Add("on success");
-            }) { Name = "On Success" }, runOptions: TaskRunOptions.OnSuccess)
-            .Then(taskEnd, taskIsTopOfChain: true);
+                     {
+                         callOrder.Add("on success");
+                     }) { Name = "On Success" }, runOptions: TaskRunOptions.OnSuccess)
+                     .Then(taskEnd, taskIsTopOfChain: true);
 
             await final.StartAndSwallowException();
 
@@ -968,12 +978,6 @@ namespace IntegrationTests
                 "on failure",
                 "chain completed"
             }.Join(","), callOrder.Join(","));
-        }
-
-        private T LogAndReturnResult<T>(List<string> callOrder, string msg, T result)
-        {
-            callOrder.Add(msg);
-            return result;
         }
     }
 
