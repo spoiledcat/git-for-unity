@@ -35,10 +35,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Installer\DugiteReleaseManifest.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Compile Condition=" '$(Buildtype)' == 'Internal'" Include="$(SolutionDir)\script\src\ApplicationInfo_Local.cs">
       <Link>Properties\ApplicationInfo_Local.cs</Link>
     </Compile>
