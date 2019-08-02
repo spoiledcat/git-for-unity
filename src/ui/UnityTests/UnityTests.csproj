@@ -15,24 +15,8 @@
     <PackageReference Include="NUnit" Version="3.12.0" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="UnityEditor">
-      <HintPath>$(UnityDir)Managed\UnityEditor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>$(UnityDir)Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEditor.TestRunner">
-      <HintPath>$(UnityDir)UnityExtensions\Unity\TestRunner\Editor\UnityEditor.TestRunner.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TestRunner">
-      <HintPath>$(UnityDir)UnityExtensions\Unity\TestRunner\UnityEngine.TestRunner.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\src\api\Api\Api.csproj" />
-    <ProjectReference Include="$(SolutionDir)\src\ui\UI\UI.csproj" />
+    <ProjectReference Include="..\..\api\Api\Api.csproj" />
+    <ProjectReference Include="..\UI\UI.csproj" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

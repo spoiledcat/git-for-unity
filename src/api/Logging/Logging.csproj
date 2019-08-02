@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
+    <TargetFrameworks>net35;net471</TargetFrameworks>
     <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\..\</SolutionDir>
     <ProjectGuid>{BB6A8EDA-15D8-471B-A6ED-EE551E0B3BA0}</ProjectGuid>
     <AssemblyName>Unity.VersionControl.Git.Logging</AssemblyName>
