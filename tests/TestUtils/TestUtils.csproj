@@ -14,7 +14,7 @@
     <PackageReference Include="NUnit" Version="3.12.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\api\Api\Api.csproj" />
+    <ProjectReference Include="..\..\src\com.unity.git.api\Api\Api.csproj" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

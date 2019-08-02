@@ -13,22 +13,22 @@
     <PackageReference Include="Newtonsoft.Json" Version="11.0.*" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\api\Api\Api.csproj" />
-    <ProjectReference Include="..\..\src\api\Logging\Logging.csproj" />
+    <ProjectReference Include="..\..\src\com.unity.git.api\Api\Api.csproj" />
+    <ProjectReference Include="..\..\src\com.unity.git.api\Logging\Logging.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="files\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\src\api\Api\PlatformResources\windows\git-lfs.zip">
+    <None Include="..\..\src\com.unity.git.api\Api\PlatformResources\windows\git-lfs.zip">
       <Link>files\unity\git\windows\git-lfs.zip</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\src\api\Api\PlatformResources\windows\git.zip">
+    <None Include="..\..\src\com.unity.git.api\Api\PlatformResources\windows\git.zip">
       <Link>files\unity\git\windows\git.zip</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="..\..\src\api\Api\PlatformResources\mac\git-lfs.zip">
+    <None Include="..\..\src\com.unity.git.api\Api\PlatformResources\mac\git-lfs.zip">
       <Link>files\unity\git\mac\git-lfs.zip</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

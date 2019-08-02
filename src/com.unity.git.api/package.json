@@ -1,5 +1,5 @@
 {
-	"name": "com.unity.version-control.git",
+	"name": "com.unity.git.api",
 	"displayName": "Git for Unity Core",
 	"version": "2.0.0-preview",
 	"unity": "2018.4",

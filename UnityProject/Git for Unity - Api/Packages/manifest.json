@@ -5,6 +5,6 @@
     "com.unity.modules.imgui": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",
     "com.unity.modules.ui": "1.0.0",
-    "com.unity.version-control.git": "file:../../../src/api"
+    "com.unity.git.api": "file:../../../src/com.unity.git.api"
   }
 }
