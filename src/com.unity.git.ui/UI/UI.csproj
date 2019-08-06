@@ -16,15 +16,6 @@
     <Reference Include="Mono.Posix">
       <HintPath>..\..\com.unity.git.api\Mono.Posix\Mono.Posix.dll</HintPath>
     </Reference>
-
-    <Reference Include="UnityEditor">
-      <HintPath>$(UnityDir)Managed\UnityEditor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>$(UnityDir)Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
@@ -41,4 +32,12 @@
   </ItemGroup>
 
   <Import Project="$(SolutionDir)\common\build.targets" />
+
+  <!-- copy source files to packman package folder -->
+  <PropertyGroup>
+    <PackageSourceDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</PackageSourceDir>
+    <PackageName>com.unity.git.ui</PackageName>
+  </PropertyGroup>
+
+  <Import Project="$(SolutionDir)\common\packaging.targets" Condition=" '$(TargetFramework)' == 'net35' " />
 </Project>

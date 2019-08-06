@@ -1,4 +1,6 @@
 #pragma warning disable 436
+using Unity.VersionControl.Git;
+
 namespace Unity.VersionControl.Git
 {
     public static partial class ApplicationInfo
@@ -33,7 +35,7 @@ namespace Unity.VersionControl.Git
         public static string ClientSecret { get; private set; } = "";
 #endif
 
-        public static string Version { get { return System.AssemblyVersionInformation.Version; } }
+        public static string Version { get; } =  ThisAssembly.GetInformationalVersion();
 
         static partial void SetClientData();
 
@@ -41,5 +43,31 @@ namespace Unity.VersionControl.Git
         {
             SetClientData();
         }
+    }
+}
+
+internal static partial class ThisAssembly {
+    public static string GetInformationalVersion()
+    {
+        try
+        {
+            var attr = System.Attribute.GetCustomAttribute(typeof(ThisAssembly).Assembly, typeof(System.Reflection.AssemblyInformationalVersionAttribute)) as System.Reflection.AssemblyInformationalVersionAttribute;
+            if (attr != null)
+                return attr.InformationalVersion;
+            var basePath = Platform.Instance?.Environment.ExtensionInstallPath ?? NPath.Default;
+            if (!basePath.IsInitialized)
+                return "0";
+            var version = basePath.Parent.Combine("version.json").ReadAllText().FromJson<VersionJson>(true);
+            return TheVersion.Parse(version.version).Version;
+        }
+        catch
+        {
+            return "0";
+        }
+    }
+
+    public class VersionJson
+    {
+        public string version;
     }
 }

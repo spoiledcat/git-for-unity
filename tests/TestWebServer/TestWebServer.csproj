@@ -33,5 +33,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

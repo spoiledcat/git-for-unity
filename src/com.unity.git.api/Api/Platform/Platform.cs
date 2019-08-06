@@ -18,6 +18,7 @@ namespace Unity.VersionControl.Git
         {
             Environment = environment;
             GitEnvironment = new ProcessEnvironment(environment);
+            Instance = this;
         }
 
         public IPlatform Initialize(IProcessManager processManager, ITaskManager taskManager)
@@ -34,6 +35,7 @@ namespace Unity.VersionControl.Git
             return this;
         }
 
+        public static IPlatform Instance { get; private set; }
         public IEnvironment Environment { get; private set; }
         public IProcessEnvironment GitEnvironment { get; private set; }
         public ICredentialManager CredentialManager { get; private set; }

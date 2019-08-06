@@ -5,12 +5,8 @@ environment:
 
 install:
 - ps: |
-    $version = Get-Content "$($env:appveyor_build_folder)\common\SolutionInfo.cs" | %{ $regex = "private const string [\w]+Version = `"([^`"]*)`""; if ($_ -match $regex) { $matches[1] } }
-    $env:package_version="$($version).$($env:APPVEYOR_BUILD_NUMBER)"
-    Update-AppveyorBuild -Version $env:package_version
-    $message = "Building "
-    $message += " version " + $env:package_version + " "
-    Write-Host $message
+    $version = ([xml](Get-Content version.json)).package.metadata.version
+    Update-AppveyorBuild -Version $version
 
     $destdir = Join-Path $env:appveyor_build_folder 'lib'
     $destfile = Join-Path $destdir 'deps.zip'
@@ -22,10 +18,8 @@ install:
 
     nuget restore GitForUnity.sln
 
-assembly_info:
-  patch: false
-  file: common\SolutionInfo.cs
-  assembly_informational_version: "{version}"
+    $patchNumber = $env:APPVEYOR_BUILD_NUMBER
+    scripts\Set-Version.ps1 $patchNumber
 
 configuration: Release
 build:
@@ -42,6 +36,9 @@ test:
 on_success:
 - ps: |
 
+    $longVersion = $GitAssemblyInformationalVersion
+    $shortVersion = $GitBuildVersion
+
     # save commit
     $commitfile="$sourcedir\commit"
     Add-Content $commitfile $appveyor_repo_commit
@@ -50,8 +47,8 @@ on_success:
     $gitpackage="com.unity.version-control.git"
     $gituipackage="com.unity.version-control.git.ui"
 
-    $gitzip="$($env:appveyor_build_folder)\$gitpackage-$($env:package_version).zip"
-    $gituizip="$($env:appveyor_build_folder)\$gituipackage-$($env:package_version).zip"
+    $gitzip="$($env:appveyor_build_folder)\$gitpackage-$longVersion.zip"
+    $gituizip="$($env:appveyor_build_folder)\$gituipackage-$longVersion.zip"
 
     $sourcedir="$packageDir\$gitpackage"
     Write-Output "Zipping $sourcedir to $gitzip"
@@ -62,7 +59,7 @@ on_success:
     7z a $gituizip $sourcedir
 
     $sourcedir="$($env:appveyor_build_folder)\build\Release"
-    $dllzip="$($env:appveyor_build_folder)\binaries-$($env:package_version).zip"
+    $dllzip="$($env:appveyor_build_folder)\binaries-$longVersion.zip"
     Write-Output "Zipping $sourcedir to $dllzip"
     7z a $dllzip $sourcedir
 

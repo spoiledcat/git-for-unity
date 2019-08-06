@@ -6,8 +6,10 @@
     <AssemblyName>Unity.VersionControl.Git</AssemblyName>
     <RootNamespace>Unity.VersionControl.Git</RootNamespace>
   </PropertyGroup>
+
   <Import Project="$(SolutionDir)\common\properties.props" />
   <Import Project="$(SolutionDir)\common\libraries.props" />
+
   <ItemGroup>
     <ProjectReference Include="..\..\Localization\Localization.csproj" />
     <ProjectReference Include="..\Logging\Logging.csproj" />
@@ -48,4 +50,26 @@
   </ItemGroup>
 
   <Import Project="$(SolutionDir)\common\build.targets" />
+
+  <!-- copy source files to packman package folder -->
+  <PropertyGroup>
+    <PackageSourceDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</PackageSourceDir>
+    <PackageName>com.unity.git.api</PackageName>
+  </PropertyGroup>
+
+  <Import Project="$(SolutionDir)\common\packaging.targets" Condition=" '$(TargetFramework)' == 'net35' " />
+
+  <Import Project="$(SolutionDir)\common\nativelibraries.props" />
+
+  <!-- copy native libraries to unity package project folder -->
+  <Target
+    Name="CopyNativeLibrariesToUnityPackageProject"
+    Condition=" '$(TargetFramework)' == 'net35' "
+    Inputs="@(NativeLibraries"
+    Outputs="@(NativeLibraries->'$(PackageProjectPath)\%(RecursiveDir)%(Filename)%(Extension)')"
+  >
+    <Copy SourceFiles="@(NativeLibraries)" DestinationFiles="@(NativeLibraries->'$(PackageProjectPath)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+
+  </Target>
+
 </Project>

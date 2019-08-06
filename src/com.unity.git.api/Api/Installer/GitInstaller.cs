@@ -285,7 +285,7 @@ namespace Unity.VersionControl.Git
 
             downloader.RunSynchronously();
 
-            state.GitZipExists = state.GitZipPath.FileExists();
+            state.GitZipExists = state.GitZipPath.IsInitialized && state.GitZipPath.FileExists();
 
             return state;
         }

@@ -17,5 +17,4 @@
     <ProjectReference Include="..\..\src\com.unity.git.api\Logging\Logging.csproj" />
     <ProjectReference Include="..\TestWebServer\TestWebServer.csproj" />
   </ItemGroup>
-  <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

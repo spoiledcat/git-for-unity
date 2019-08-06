@@ -18,5 +18,4 @@
     <ProjectReference Include="..\..\com.unity.git.api\Api\Api.csproj" />
     <ProjectReference Include="..\UI\UI.csproj" />
   </ItemGroup>
-  <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>
