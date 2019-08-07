@@ -12,6 +12,11 @@
     <ProjectReference Include="..\..\com.unity.git.api\Api\Api.csproj" />
     <ProjectReference Include="..\..\com.unity.git.api\Logging\Logging.csproj" />
     <ProjectReference Include="..\UnityShim\UnityShim.csproj" />
+    <ProjectReference Include="..\..\Localization\Localization.csproj" Condition="'$(MSBuildRuntimeType)' != 'Core'"/>
+    <Reference Include="Unity.VersionControl.Git.Localization.dll" Condition="'$(MSBuildRuntimeType)' == 'Core'">
+      <HintPath>..\..\com.unity.git.api\Localization\Unity.VersionControl.Git.Localization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
 
     <Reference Include="Mono.Posix">
       <HintPath>..\..\com.unity.git.api\Mono.Posix\Mono.Posix.dll</HintPath>

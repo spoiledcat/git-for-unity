@@ -11,11 +11,17 @@
   <Import Project="$(SolutionDir)\common\libraries.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Localization\Localization.csproj" />
+    <ProjectReference Include="..\..\Localization\Localization.csproj" Condition="'$(MSBuildRuntimeType)' != 'Core'"/>
+    <Reference Include="Unity.VersionControl.Git.Localization.dll" Condition="'$(MSBuildRuntimeType)' == 'Core'">
+      <HintPath>..\Localization\Unity.VersionControl.Git.Localization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+
     <ProjectReference Include="..\Logging\Logging.csproj" />
 
     <Reference Include="Mono.Posix">
       <HintPath>..\Mono.Posix\Mono.Posix.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="sfw.net">
       <HintPath>..\sfw\sfw.net.dll</HintPath>
