@@ -55,5 +55,4 @@
   <Target Name="BeforeBuild">
   </Target>
 -->
-  <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

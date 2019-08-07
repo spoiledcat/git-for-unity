@@ -31,13 +31,11 @@
     <EmbeddedResource Include="IconsAndLogos\*.png" />
   </ItemGroup>
 
-  <Import Project="$(SolutionDir)\common\build.targets" />
-
   <!-- copy source files to packman package folder -->
   <PropertyGroup>
     <PackageSourceDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</PackageSourceDir>
     <PackageName>com.unity.git.ui</PackageName>
   </PropertyGroup>
 
-  <Import Project="$(SolutionDir)\common\packaging.targets" Condition=" '$(TargetFramework)' == 'net35' " />
+  <Import Project="$(SolutionDir)\common\packaging.targets" Condition=" '$(TargetFramework)' == 'net471' " />
 </Project>

@@ -23,5 +23,4 @@
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="SolutionInfo.cs" />
   </ItemGroup>
-  <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>
