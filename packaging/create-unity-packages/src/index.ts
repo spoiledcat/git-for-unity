@@ -79,7 +79,7 @@ class TreeWalker {
 		return ret.toPromise();
 	}
 
-	public async preparePackage(packageName: string) {
+	public async preparePackage(packageName: string, version: string) {
 
 		const tmpAssetStorePackage = await this.getTempDir();
 		const tmpUnityPackage = await this.getTempDir();
@@ -90,7 +90,7 @@ class TreeWalker {
 
 		let promises : Promise<void>[] = [];
 		await this.walk().forEach(f => {
-			promises.push(this.packageFile(packageName, tmpAssetStorePackage, f)
+			promises.push(this.packageFile(packageName, tmpAssetStorePackage, f, version)
 				.then(async entry => {
 					if (entry.thefile && entry.targetasset && p.basename(entry.thefile) === 'package.json') {
 						packageJson = await asyncfile.readTextFile(entry.targetasset);
@@ -139,7 +139,7 @@ class TreeWalker {
 		return { thefile, targetasset };
 	}
 
-	private async packageFile(packageName: string, tmp: string, f: FileEntry) {
+	private async packageFile(packageName: string, tmp: string, f: FileEntry, version: string) {
 		if (f.isDir) return {};
 
 		const thefile = f.file.substr(0, f.file.lastIndexOf('.'));
@@ -167,7 +167,7 @@ class TreeWalker {
 
 		await copyFile(metafile, targetmeta);
 		if (!isDir) {
-			await this.packageFileByType(p.extname(thefile), thefile, targetdir, targetasset);
+			await this.packageFileByType(p.extname(thefile), thefile, targetdir, targetasset, version);
 		}
 
 		return { thefile, targetasset };
@@ -190,8 +190,8 @@ class TreeWalker {
 		)
 	}
 
-	private static handlers : {[key: string] : (file: string, targetdir: string, targetasset: string) => Promise<boolean>} = {
-		async ['.png'](file: string, targetdir: string) {
+	private static handlers : {[key: string] : (file: string, targetdir: string, targetasset: string, version: string) => Promise<boolean>} = {
+		async ['.png'](file: string, targetdir: string, version: string) {
 			const targetpreview = p.join(targetdir, 'preview.png');
 			const size = sizeOf(file);
 			if (size.width > 128) {			
@@ -202,10 +202,11 @@ class TreeWalker {
 			// let the default handling code copy the original asset
 			return false;
 		},
-		async ['.json'](file: string, targetdir: string, targetasset: string) {
+		async ['.json'](file: string, targetdir: string, targetasset: string, version: string) {
 			if (p.basename(file) !== 'package.json') return false;
 
 			const json = JSON.parse(await asyncfile.readTextFile(file));
+			json['version'] = version;
 			let deps = json['dependencies'];
 			for (let k in deps) {
 				let dep = deps[k];
@@ -251,10 +252,10 @@ class TreeWalker {
 		}
 	};
 
-	private async packageFileByType(extension: string, file: string, targetdir: string, targetasset: string) {
+	private async packageFileByType(extension: string, file: string, targetdir: string, targetasset: string, version: string) {
 		let handled = false;
 		if (TreeWalker.handlers[extension])
-			handled = await TreeWalker.handlers[extension](file, targetdir, targetasset);
+			handled = await TreeWalker.handlers[extension](file, targetdir, targetasset, version);
 		if (!handled) {
 			await copyFile(file, targetasset);
 		}
@@ -348,7 +349,7 @@ const options = commandLineArgs(optionDefinitions);
 		await asyncfile.mkdirp(targetPath);
 	}
 
-	const { assetStorePackage, unityPackage, packageJson } = await new TreeWalker(sourcePath, ignores).preparePackage(packageName);
+	const { assetStorePackage, unityPackage, packageJson } = await new TreeWalker(sourcePath, ignores).preparePackage(packageName, version);
 	const packageManifest: { [key: string]: string } = {
 		[p.basename(unityPackageZipPath)]: JSON.parse(packageJson)
 	};
