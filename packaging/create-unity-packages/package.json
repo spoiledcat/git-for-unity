@@ -6,6 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "ts-node src/index.ts",
+    "multi": "ts-node src/multipackage.ts",
     "test": "ts-mocha -p tsconfig.json --require async-dump.js tests/*.spec.ts"
   },
   "dependencies": {

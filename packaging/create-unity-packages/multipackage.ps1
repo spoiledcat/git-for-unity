@@ -17,15 +17,23 @@
 
 Param(
     [string]
-    $PathToPackage,
-    [string]
     $OutputFolder,
     [string]
     $PackageName,
     [string]
     $Version,
     [string]
-    $Ignores,
+    $Path1,
+    [string]
+    $Extras1,
+    [string]
+    $Ignores1,
+    [string]
+    $Path2,
+    [string]
+    $Extras2,
+    [string]
+    $Ignores2,
     [switch]
     $Trace = $false
 )
@@ -41,7 +49,7 @@ Push-Location $scriptsDirectory
 
 try {
 
-Run-Command -Fatal { & node ..\yarn.js start --path "$PathToPackage" --out "$OutputFolder" --name "$PackageName" --version "$Version" --ignores "$Ignores" }
+Run-Command -Fatal { & node ..\yarn.js run multi --out "$OutputFolder" --name "$PackageName" --version "$Version" --path1 "$Path1" --extras1 "$Extras1" --ignores1 "$Ignores1" --path2 "$Path2" --extras2 "$Extras2" --ignores2 "$Ignores2" }
 
 } finally {
     Pop-Location

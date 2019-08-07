@@ -270,12 +270,22 @@ const optionDefinitions = [
 		description: 'Display this usage guide.',
 	},
 	{
-		name: 'path',
+		name: 'path1',
 		typeLabel: '{underline directory}',
 		description: 'Path to the source assets to be packaged',
 	},
 	{
-		name: 'extras',
+		name: 'path2',
+		typeLabel: '{underline directory}',
+		description: 'Path to the source assets to be packaged',
+	},
+	{
+		name: 'extras1',
+		typeLabel: '{underline directory}',
+		description: 'Path to extra files to also be packages',
+	},
+	{
+		name: 'extras2',
 		typeLabel: '{underline directory}',
 		description: 'Path to extra files to also be packages',
 	},
@@ -295,8 +305,11 @@ const optionDefinitions = [
 		description: 'Where to save the zip and md5 files',
 	},
 	{
-		name: 'ignores',
-		typeLabel: '{underline ignores}',
+		name: 'ignores1',
+		description: 'Path to file with globs of things to ignore, like a .gitignore or an .npmignore',
+	},
+	{
+		name: 'ignores2',
 		description: 'Path to file with globs of things to ignore, like a .gitignore or an .npmignore',
 	},
 ];
@@ -314,29 +327,10 @@ const sections = [
 
 const options = commandLineArgs(optionDefinitions);
 
-(async () => {
-
-	if (!options.path
-		|| !(await asyncfile.exists(options.path))
-		|| !options.name
-		|| !options.out
-	) {
-		console.error(commandLineUsage(sections));
-		process.exit(-1);
-	}
-
-	let sourcePath: string = p.resolve(options.path);
-	const targetPath: string = p.resolve(options.out);
-	const extrasPath: string | undefined = options.extras ? p.resolve(options.extras) : undefined;
-	const packageName: string = options.name;
-	const version: string = options.version || "0.0.0";
-	const suffix: string = options.suffix || "";
-	const assetStoreZipPath: string = p.join(targetPath, `${packageName}-${version}.unitypackage`);
-	const assetStoreZipMd5Path: string = p.join(targetPath, `${packageName}-${version}.unitypackage.md5`);
-	const unityPackageZipPath: string = p.join(targetPath, `${packageName}-${version}.tgz`);
-	const unityPackageZipMd5Path: string = p.join(targetPath, `${packageName}-${version}.tgz.md5`);
-	const unityPackageManifest: string = p.join(targetPath, `packages.json`);
-	const ignoreFile = options.ignores;
+async function doPackage(path: any, ignoreFile: any, extras: any, targetPath: string, version: string, suffix: string) {
+	let sourcePath: string = p.resolve(path);
+    const extrasPath: string | undefined = extras ? p.resolve(extras) : undefined;
+    const packageName = p.basename(sourcePath);
 
 	let ignores: string[] = [];
 
@@ -363,13 +357,62 @@ const options = commandLineArgs(optionDefinitions);
 	}
 
 	const { assetStorePackage, unityPackage, packageJson } = await new TreeWalker(sourcePath, ignores).preparePackage(packageName, version);
-	const packageManifest: { [key: string]: string } = {
-		[p.basename(unityPackageZipPath)]: JSON.parse(packageJson)
-	};
-	
+
+    return { targetPath, packageJson, assetStorePackage, unityPackage };
+}
+
+(async () => {
+
+	if (!options.path1
+        || !(await asyncfile.exists(options.path1))
+        || !options.path2
+		|| !(await asyncfile.exists(options.path2))
+		|| !options.name
+		|| !options.out
+	) {
+		console.error(commandLineUsage(sections));
+		process.exit(-1);
+	}
+
+	const packageName: string = options.name;
+	const version: string = options.version || "0.0.0";
+    const suffix: string = options.suffix || "";
+    const targetPath: string = p.resolve(options.out);
+    const assetStoreZipPath: string = p.join(targetPath, `${packageName}-${version}.unitypackage`);
+	const assetStoreZipMd5Path: string = p.join(targetPath, `${packageName}-${version}.unitypackage.md5`);
+	const unityPackageZipPath: string = p.join(targetPath, `${packageName}-${version}.tgz`);
+	const unityPackageZipMd5Path: string = p.join(targetPath, `${packageName}-${version}.tgz.md5`);
+	const unityPackageManifest: string = p.join(targetPath, `packages.json`);
+
+    let packageJson1 : string;
+    let assetStorePackage1 : string;
+    let unityPackage1 : string;
+    let packageJson2 : string;
+    let assetStorePackage2 : string;
+    let unityPackage2 : string;
+
+    {
+        let { packageJson, assetStorePackage, unityPackage } = await doPackage(options.path1, options.ignores1, options.extras1, targetPath, version, suffix);
+        packageJson1 = packageJson;
+        assetStorePackage1 = assetStorePackage;
+        unityPackage1 = unityPackage;
+    }
+
+    {
+        let { packageJson, assetStorePackage, unityPackage } = await doPackage(options.path2, options.ignores2, options.extras2, targetPath, version, suffix);
+        packageJson2 = packageJson;
+        assetStorePackage2 = assetStorePackage;
+        unityPackage2 = unityPackage;
+    }
+
+    const combined = await TreeWalker.getTempDir();
+    
+    await TreeWalker.copy(assetStorePackage1, combined);
+    await TreeWalker.copy(assetStorePackage2, combined);
+
 	await asyncfile
 		.mkdirp(p.dirname(assetStoreZipPath))
-		.then(() => new TreeWalker(assetStorePackage).createTar())
+		.then(() => new TreeWalker(combined).createTar())
 		.then(tar => tar.pipe(asyncfile.createWriteStream(assetStoreZipPath)).on('finish', async () =>
 			{
 				console.log(`Finalizing ${assetStoreZipPath}...`)
@@ -379,18 +422,18 @@ const options = commandLineArgs(optionDefinitions);
 			})
 	);
 
-	await asyncfile
-		.mkdirp(p.dirname(unityPackageZipPath))
-		.then(() => new TreeWalker(unityPackage).createTar())
-		.then(tar => tar.pipe(asyncfile.createWriteStream(unityPackageZipPath)).on('finish', async () =>
-			{
-				console.log(`Finalizing ${unityPackageZipPath}...`)
-				const hash = md5(await asyncfile.readFile(unityPackageZipPath));
-				await asyncfile.writeTextFile(unityPackageZipMd5Path, hash);
-				await asyncfile.writeTextFile(unityPackageManifest, JSON.stringify(packageManifest));
-				console.log(`${unityPackageZipPath}, ${unityPackageZipMd5Path}, ${unityPackageManifest} created`);
-			})
-);
+	// await asyncfile
+	// 	.mkdirp(p.dirname(unityPackageZipPath))
+	// 	.then(() => new TreeWalker(unityPackage).createTar())
+	// 	.then(tar => tar.pipe(asyncfile.createWriteStream(unityPackageZipPath)).on('finish', async () =>
+	// 		{
+	// 			console.log(`Finalizing ${unityPackageZipPath}...`)
+	// 			const hash = md5(await asyncfile.readFile(unityPackageZipPath));
+	// 			await asyncfile.writeTextFile(unityPackageZipMd5Path, hash);
+	// 			await asyncfile.writeTextFile(unityPackageManifest, JSON.stringify(packageManifest));
+	// 			console.log(`${unityPackageZipPath}, ${unityPackageZipMd5Path}, ${unityPackageManifest} created`);
+	// 		})
+    //);
 
 
 })();
