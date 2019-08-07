@@ -121,8 +121,8 @@ class TreeWalker {
 			return {};
 		}
 
-		if (!isDir)
-			console.log(`Packaging ${p.relative(this.path, thefile)}`);
+		// if (!isDir)
+		// 	console.log(`Packaging ${p.relative(this.path, thefile)}`);
 
 		const metafile = f.file;
 		const targetdir = p.join(tmp, "package", p.relative(this.path, isDir ? thefile : p.dirname(thefile)));
@@ -151,8 +151,8 @@ class TreeWalker {
 			return {};
 		}
 
-		if (!isDir)
-			console.log(`Packaging ${p.relative(this.path, thefile)}`);
+		// if (!isDir)
+		// 	console.log(`Packaging ${p.relative(this.path, thefile)}`);
 
 		const meta = await asyncfile.readTextFile(metafile);
 
