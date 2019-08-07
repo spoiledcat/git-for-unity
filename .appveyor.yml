@@ -5,9 +5,6 @@ environment:
 
 install:
 - ps: |
-    $version = ([xml](Get-Content version.json)).package.metadata.version
-    Update-AppveyorBuild -Version $version
-
     $destdir = Join-Path $env:appveyor_build_folder 'lib'
     $destfile = Join-Path $destdir 'deps.zip'
     Set-Location $destdir
