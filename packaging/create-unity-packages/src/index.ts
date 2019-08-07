@@ -311,7 +311,7 @@ const options = commandLineArgs(optionDefinitions);
 (async () => {
 
 	if (!options.path
-		|| !await asyncfile.exists(options.path)
+		|| !(await asyncfile.exists(options.path))
 		|| !options.name
 		|| !options.out
 	) {
