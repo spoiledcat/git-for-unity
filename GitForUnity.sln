@@ -29,10 +29,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandLine", "tests\Comman
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestWebServer", "tests\TestWebServer\TestWebServer.csproj", "{3DD3451C-30FA-4294-A3A9-1E080342F867}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "packaging", "packaging", "{B50B646C-3B86-4BDA-9F2B-766F96608CE0}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateUnityPackages", "packaging\CreateUnityPackages\CreateUnityPackages.csproj", "{7DEF4226-7740-457F-9199-34174C49A978}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

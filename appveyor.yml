@@ -44,8 +44,8 @@ on_success:
     Add-Content $commitfile $appveyor_repo_commit
 
     $packageDir="$($env:appveyor_build_folder)\build\packages"
-    $gitpackage="com.unity.version-control.git"
-    $gituipackage="com.unity.version-control.git.ui"
+    $gitpackage="com.unity.git.api"
+    $gituipackage="com.unity.git.ui"
 
     $gitzip="$($env:appveyor_build_folder)\$gitpackage-$longVersion.zip"
     $gituizip="$($env:appveyor_build_folder)\$gituipackage-$longVersion.zip"

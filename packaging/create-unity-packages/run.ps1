@@ -22,6 +22,10 @@ Param(
     $OutputFolder,
     [string]
     $PackageName,
+    [string]
+    $Version,
+    [string]
+    $Ignores,
     [switch]
     $Trace = $false
 )
@@ -35,7 +39,11 @@ if ($Trace) {
 
 Push-Location $scriptsDirectory
 
-Run-Command -Fatal { & node ..\yarn.js install --prefer-offline }
-Run-Command -Fatal { & node ..\yarn.js start --path $PathToPackage --out $OutputFolder --file $PackageName }
+try {
 
-Pop-Location
+Run-Command -Fatal { & node ..\yarn.js install --prefer-offline }
+Run-Command -Fatal { & node ..\yarn.js start --path "$PathToPackage" --out "$OutputFolder" --name "$PackageName" --version "$Version" --ignores "$Ignores" }
+
+} finally {
+    Pop-Location
+}
