@@ -12,7 +12,6 @@ public class ScriptException : System.Exception
 "@
 } catch {}
 
-
 New-Module -ScriptBlock {
     $rootDirectory = Split-Path ($PSScriptRoot)
     $scriptsDirectory = Join-Path $rootDirectory "scripts"

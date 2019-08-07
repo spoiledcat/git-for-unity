@@ -14,7 +14,7 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 $source = Get-Content -Raw $PSScriptRoot\TheVersion.cs
 Add-Type -TypeDefinition "$source"
 
-$versionFile = "$rootDirectory\src\com.github.ui\version.json"
+$versionFile = "$rootDirectory\src\com.unity.git.ui\version.json"
 $versionjson = Get-Content $versionFile | ConvertFrom-Json
 
 $version = $versionjson.version

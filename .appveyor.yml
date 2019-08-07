@@ -13,7 +13,7 @@ install:
 
     Set-Location $env:appveyor_build_folder
 
-    nuget restore GitForUnity.sln
+    nuget restore
 
     $patchNumber = $env:APPVEYOR_BUILD_NUMBER
     scripts\Set-Version.ps1 $patchNumber
