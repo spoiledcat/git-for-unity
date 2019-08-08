@@ -33,8 +33,8 @@ test:
 on_success:
 - ps: |
 
-    $longVersion = $GitAssemblyInformationalVersion
-    $shortVersion = $GitBuildVersion
+    $longVersion = $(GitAssemblyInformationalVersion)
+    $shortVersion = $(GitBuildVersion)
 
     # save commit
     $commitfile="$sourcedir\commit"
