@@ -43,14 +43,14 @@ on_success:
 
     $packagename=$gitpackage
     $sourcedir="$packageDir\$packagename"
-    $extrasdir="$($env:appveyor_build_folder)\src\git-for-unity\extras\$packagename"
+    $extrasdir="$($env:appveyor_build_folder)\src\extras\$packagename"
     $ignorefile="$sourcedir\.npmignore"
     $baseinstall=""
     packaging\create-unity-packages\run.ps1 $artifactDir $packagename $version $sourcedir $extrasdir $ignorefile $baseinstall
 
     $packagename=$gituipackage
     $sourcedir="$packageDir\$packagename"
-    $extrasdir="$($env:appveyor_build_folder)\src\git-for-unity\extras\$packagename"
+    $extrasdir=""
     $ignorefile="$sourcedir\.npmignore"
     $baseinstall=""
     packaging\create-unity-packages\run.ps1 $artifactDir $packagename $version $sourcedir $extrasdir $ignorefile $baseinstall
