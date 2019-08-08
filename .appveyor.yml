@@ -34,8 +34,6 @@ test:
 on_success:
 - ps: |
 
-    Get-ChildItem env:
-
     $version = $env:APPVEYOR_BUILD_VERSION
 
     $artifactDir="$($env:appveyor_build_folder)\artifacts"
