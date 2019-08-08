@@ -43,4 +43,18 @@
   </PropertyGroup>
 
   <Import Project="$(SolutionDir)\common\packaging.targets" Condition=" '$(TargetFramework)' == 'net471' " />
+
+  <Import Project="$(SolutionDir)\common\nativelibraries.props" />
+
+  <!-- copy native libraries to output path  -->
+  <Target Name="CopyNativeLibrariesToOutput"
+    AfterTargets="AfterBuild"
+    Inputs="@(NativeLibraries"
+    Outputs="@(NativeLibraries->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')"
+  >
+
+    <Copy SourceFiles="@(NativeLibraries)" DestinationFiles="@(NativeLibraries->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+
+  </Target>
+
 </Project>

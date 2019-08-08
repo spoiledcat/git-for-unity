@@ -1,16 +1,9 @@
 <#
 .SYNOPSIS
-    Packages a build of GitHub for Unity
+    Takes a bunch of previously prepared folders with unity package assets and creates a package out of them
+    Call the run script to prepare folders for this
 .DESCRIPTION
     Packages a build of GitHub for Unity
-.PARAMETER PathToPackage
-    Path to the Package folder that contains all the binaries and meta files
-    <root>\unity\PackageProject
-.PARAMETER OutputFolder
-    Folder to put the package files
-.PARAMETER PackageName
-    Name of the package (usually github-for-unity-[version]). The script will add
-    the appropriate extensions to the generated files.
 #>
 
 [CmdletBinding()]
@@ -44,7 +37,7 @@ if (!(Test-Path 'node_modules')) {
 }
 write-output $env:NODE_OPTIONS
 
-Run-Command -Fatal { & node --max-old-space-size=4096 ..\yarn.js run multi --out "$OutputFolder" --name "$PackageName" --version "$Version" $Paths }
+Run-Command -Fatal { & node ..\yarn.js run multi -o "$OutputFolder" -n "$PackageName" -v "$Version" $Paths }
 
 } finally {
     Pop-Location
