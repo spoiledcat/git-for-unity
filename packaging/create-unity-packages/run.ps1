@@ -41,6 +41,9 @@ Push-Location $scriptsDirectory
 
 try {
 
+if (!Test-Path 'node_modules') {
+	Run-Command -Fatal { & node ..\yarn.js install }
+}
 Run-Command -Fatal { & node ..\yarn.js start --path "$PathToPackage" --out "$OutputFolder" --name "$PackageName" --version "$Version" --ignores "$Ignores" }
 
 } finally {
