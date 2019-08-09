@@ -24,18 +24,8 @@ Param(
 	$Name,
 	[string]
 	$Version,
-	[string]
-	$Extra,
-	[string]
-	$Ignore,
-	[string]
-	$BaseInstall,
 	[switch]
-	$Skip,
-	[switch]
-	$SkipUnity,
-	[switch]
-	$SkipPackman,
+	$Unity = $false,
 	[switch]
 	$Trace = $false
 )
@@ -55,21 +45,12 @@ try {
 		Run-Command -Fatal { & node ..\yarn.js install --prefer-offline }
 	}
 
-	$noPackage = ""
-	$noUnity = ""
-	$noPackman = ""
-
-	if ($Skip) {
-		$noPackage = "-k"
-	}
-	if ($SkipUnity) {
-		$noUnity = "-u"
-	}
-	if ($SkipPackman) {
-		$noPackman = "-p"
+	$doUnity = ""
+	if ($Unity) {
+		$doUnity = "-u"
 	}
 
-	Run-Command -Fatal { & node ..\yarn.js start -o $Out -n $Name -v $Version -s $Source -i $Ignore -e $Extra -t $BaseInstall $noPackage $noUnity $noPackman }
+	Run-Command -Fatal { & node ..\yarn.js run zip -s $Source -o $Out -n $Name -v $Version $doUnity }
 
 } finally {
 	Pop-Location

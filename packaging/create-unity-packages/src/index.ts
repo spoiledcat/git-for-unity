@@ -1,198 +1,125 @@
 #!/usr/bin/env node_modules/.bin/ts-node
 
 import * as asyncfile from 'async-file';
-import * as md5 from 'md5';
 import * as commandLineArgs from 'command-line-args';
 import * as commandLineUsage from 'command-line-usage';
 import * as p from 'path';
-import { Ignores, FileEntry } from './RecursiveReaddir';
 import { readAllLines } from './read-lines';
-import { FileTreeWalker, createAssetStorePackageTree, createPackmanPackageTree, createTar, packageThings, prepare } from './TreeWalker';
+import { FileTreeWalker } from './TreeWalker';
+import { optionDefinitions, sections, ParsedOptions } from './cmdlineoptions';
+import { PackageFile, PackageType, PackageFileList } from './packager';
+import { UnityPackager } from './unityPackager';
+import { PackmanPackager } from './packmanPackager';
 
-const optionDefinitions = [
-	{
-		name: 'help',
-		alias: 'h',
-		description: 'Display this usage guide.',
-	},
-	{
-		name: 'out',
-		alias: 'o',
-		typeLabel: '{underline directory}',
-		description: 'Where to save the zip and md5 files',
-	},
-	{
-		name: 'name',
-		alias: 'n',
-		type: String,
-		multiple: true, 
-		description: 'Name of the package',
-	},
-	{
-		name: 'version',
-		alias: 'v',
-		type: String,
-		multiple: true, 
-		description: 'Version of the package',
-	},
-	{
-		name: 'src',
-		alias: 's',
-		multiple: true, 
-		type: String,
-		description: 'Path(s) to the source assets to be packaged. If you pass more than one, you must pass an equal amount to extras, ignores, installPath and project',
-	},
-	{
-		name: 'extras',
-		alias: 'e',
-		multiple: true, 
-		type: String,
-		description: 'Path to extra files to also be packaged (recursively',
-	},
-	{
-		name: 'ignores',
-		alias: 'i',
-		multiple: true, 
-		type: String,
-		description: 'Path to file with globs of things to ignore, like a .gitignore or an .npmignore',
-	},
-	{
-		name: 'installPath',
-		alias: 't',
-		multiple: true, 
-		type: String,
-		description: 'Installation path for unity packages (set in the meta files)',
-	},
-	{
-		name: 'project',
-		alias: 'u',
-		type: Boolean,
-		multiple: true, 
-		description: 'Set if the source is a Unity project',
-	},
-	{
-		name: 'skip',
-		alias: 'k',
-		type: Boolean,
-		description: 'Skip packaging and just copy the files to the outpath'
+async function validateOptionPath(options: commandLineArgs.CommandLineOptions, argName: string, optional: boolean = false) {
+
+	if (optional && !options[argName]) return undefined;
+
+	validateOption(options, argName);
+
+	if (!(await asyncfile.exists(options[argName]))) {
+		console.error(`Bad parameter ${argName}: ${options[argName]} does not exist`);
+		console.error(commandLineUsage(sections));
+		process.exit(-1);
 	}
-];
+	return p.resolve(options[argName]);
+}
 
-const sections = [
+function validateOption(options: commandLineArgs.CommandLineOptions, argName: string, optional: boolean = false) {
+	if (!options[argName])
 	{
-		header: 'Unity packager',
-		content: 'Takes a Unity (packman) package source tree, and packages it into a .unitypackage or a packman zip package',
-	},
-	{
-		header: 'Options',
-		optionList: optionDefinitions,
-	},
-];
+		console.error(`Missing argument: ${argName}`);
+		console.error(commandLineUsage(sections));
+		process.exit(-1);
+	}
+	return options[argName] as string;
+}
+
+async function parseCommandLine() : Promise<ParsedOptions> {
+	const options = commandLineArgs(optionDefinitions);
+	const extras = await validateOptionPath(options, "extras", true);
+	const ignoreFile = await validateOptionPath(options, "ignores", true);
+
+	const parsed : ParsedOptions = {
+		packageName: validateOption(options, "name"),
+		sourcePath: (await validateOptionPath(options, "src"))!,
+		targetPath: validateOption(options, "out"),
+		version: validateOption(options, "version"),
+		baseInstallationPath: validateOption(options, "installPath", true),
+		skipPackaging: options.skip === true,
+		ignores: [],
+		doUnityPackage: !options.skipUnity,
+		doPackmanPackage: !options.skipPackman,
+	};
+
+	if (extras) {
+		let combinedSourcesPath = await FileTreeWalker.getTempDir();
+		await FileTreeWalker.copy(parsed.sourcePath, combinedSourcesPath);
+		await FileTreeWalker.copy(extras, combinedSourcesPath);
+		parsed.sourcePath = combinedSourcesPath;
+	}
+
+	if (ignoreFile) {
+		const ignoreData = await asyncfile.readTextFile(ignoreFile);
+		parsed.ignores = await readAllLines(ignoreData);
+	}
+
+	parsed.targetPath = p.resolve(parsed.targetPath);
+	if (!await asyncfile.exists(parsed.targetPath)) {
+		await asyncfile.mkdirp(parsed.targetPath);
+	}
+
+	return parsed;
+}
 
 (async () => {
 
-	const options = commandLineArgs(optionDefinitions);
-
-	if (!options.name)
-	{
-		console.error("Missing argument: name");
-		console.error(commandLineUsage(sections));
-		process.exit(-1);
-	}
+	const parsed = await parseCommandLine();
 	
-	if (!options.out)
-	{
-		console.error("Missing argument: out");
-		console.error(commandLineUsage(sections));
-		process.exit(-1);
+	const tmpPackmanSourceTree = parsed.skipPackaging ? p.join(parsed.targetPath, 'package', parsed.packageName) : await FileTreeWalker.getTempDir();
+	const tmpUnitySourceTree = parsed.skipPackaging ? p.join(parsed.targetPath, "unitypackage") : await FileTreeWalker.getTempDir();
+
+	const packmanPackager = new PackmanPackager();
+	const unityPackager = new UnityPackager();
+
+	const packageJson = await packmanPackager.prepare(parsed.sourcePath, parsed.version, parsed.ignores, tmpPackmanSourceTree);
+
+	if (parsed.doUnityPackage) {
+		await unityPackager.prepareSource(tmpPackmanSourceTree, tmpUnitySourceTree, parsed.baseInstallationPath);
 	}
 
-	if (!options.version)
-	{
-		console.error("Missing argument: version");
-		console.error(commandLineUsage(sections));
-		process.exit(-1);
-	}
-	if (!options.src)
-	{
-		console.error("Missing argument: src");
-		console.error(commandLineUsage(sections));
-		process.exit(-1);
-	}
+	console.log(tmpPackmanSourceTree);
+	console.log(tmpUnitySourceTree);
 
-	const packageNames: string[] = options.name;
-	const versions: string[] = options.version || [];
-	const sourcePaths: string[] = options.src || [];
-	const extraPaths: string[] = options.extras || [];
-	const ignoreFiles: string[] = options.ignores || [];
-	const projectFlags: boolean[] = options.project || [];
-	const installPaths: string[] = options.installPath || [];
+	const packages: PackageFileList = {};
+	if (parsed.skipPackaging) {
+		if (parsed.doPackmanPackage)
+			packages[PackageType.Source] = { type: PackageType.Source, path: tmpPackmanSourceTree };
+		if (parsed.doUnityPackage)
+			packages[PackageType.Source] = { type: PackageType.Source, path: tmpUnitySourceTree };
+	} else {
+		if (parsed.doPackmanPackage) {
+			let files = await packmanPackager.package(tmpPackmanSourceTree, parsed.targetPath, parsed.packageName, parsed.version);
+			files.map(x => packages[x.type] = x);
 
-	const skipPackaging: boolean = options.skip || false;
+			if (packageJson) {
+				const packmanPackageManifest: string = p.join(parsed.targetPath, `packages.json`);
+				let packageManifest: { [key: string]: string } | undefined = undefined;
+					packageManifest = {
+					[p.basename(p.basename(packages[PackageType.PackmanPackage].path))]: JSON.parse(await asyncfile.readTextFile(packageJson))
+				};
+				await asyncfile.writeTextFile(packmanPackageManifest, JSON.stringify(packageManifest));
+				packages[PackageType.Manifest] = { type: PackageType.Manifest, path: packmanPackageManifest};
+			}
+		}
 
-	if (packageNames.length > 1) {
-		if (packageNames.length != extraPaths.length ||
-			packageNames.length != sourcePaths.length || 
-			packageNames.length != versions.length || 
-			packageNames.length != ignoreFiles.length || 
-			packageNames.length != projectFlags.length || 
-			packageNames.length != installPaths.length
-		)
-		{
-			console.error(`Invalid number of arguments, should be equal to ${packageNames.length}`);
-			console.error(commandLineUsage(sections));
-			process.exit(-1);
+		if (parsed.doUnityPackage) {
+			let files = await unityPackager.package(tmpUnitySourceTree, parsed.targetPath, parsed.packageName, parsed.version);
+			files.map(x => packages[x.type] = x);
 		}
 	}
 
-	const targetPath: string = p.resolve(options.out);
-
-	const packages : {[key:number] : { assetStorePath: string, packmanPackagePath: string, packmanPackageManifest: string | undefined } } = [];
-
-	for (let i = 0; i < packageNames.length; i++)
-	{
-		let sourcePath = sourcePaths[i];
-		if (!(await asyncfile.exists(sourcePath)))
-		{
-			console.error(`${sourcePath} does not exist`);
-			console.error(commandLineUsage(sections));
-			process.exit(-1);
-		}
-
-		sourcePath = p.resolve(sourcePath);
-		const packageName: string = packageNames[i];
-		const version: string = versions[i] || "0.0.0";
-		const baseInstallationPath: string = installPaths[i] || p.join('Packages', packageName);
-		const extrasPath: string | undefined = extraPaths[i] ? p.resolve(extraPaths[i]) : undefined;
-		const ignoreFile = ignoreFiles[i] || undefined;
-		const isUnityProject: boolean = projectFlags[i] || false;
-	
-		let result = await prepare(packageName, version, targetPath, sourcePath, baseInstallationPath, extrasPath, ignoreFile, isUnityProject);
-
-		if (skipPackaging) {
-
-			let targetDir1 = p.join(targetPath, `${packageName}-${version}`, 'unitypackage');
-			await asyncfile.mkdirp(targetDir1);
-			FileTreeWalker.copy(result.assetStorePath, targetDir1);
-			let targetDir2 = p.join(targetPath, `${packageName}-${version}`);
-			await asyncfile.mkdirp(targetDir2);
-			FileTreeWalker.copy(result.packmanPackagePath, targetDir2);
-			packages[i] = { assetStorePath: targetDir1, packmanPackagePath: targetDir2, packmanPackageManifest: undefined };
-
-		} else {
-			packages[i] = await packageThings(packageName, version, targetPath, result.packageJson, result.assetStorePath, result.packmanPackagePath);
-		}
-	}
-
-
-	for (let i = 0; i < packageNames.length; i++) {
-		const packageName: string = packageNames[i];
-		const version: string = versions[i] || "0.0.0";
-		const result = packages[i];
-
-		console.log(`${packageName} ${version} ${result.assetStorePath} ${result.packmanPackagePath} ${result.packmanPackageManifest || ''} `);
-	}
- 
+	console.log(JSON.stringify(packages));
 })();
 
 
