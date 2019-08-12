@@ -9,8 +9,7 @@ build:
   interpreter: powershell
   commands:
     - scripts\Set-Version.ps1 -BumpPatch -NewVersion $($env:YAMATO_JOB_ID)
-    - & { & .\hMSBuild.bat /t:restore }
-    - & { & .\hMSBuild.bat }
+    - .\Build.ps1
     - .\Create-Packages.ps1 $($env:GitAssemblyInformationalVersion)
   artifacts:
     packages:
