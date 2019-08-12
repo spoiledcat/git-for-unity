@@ -7,6 +7,7 @@ build:
   interpreter: powershell
   commands:
     - |
+      Get-ChildItem Env:
       scripts\Get-Deps.ps1
       scripts\Set-Version.ps1 -BumpPatch -NewVersion $($env:YAMATO_JOB_ID)
       scripts\Build.ps1
