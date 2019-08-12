@@ -20,7 +20,7 @@ build:
       Pop-Location
 
       Write-Output "Packaging version $($version.AssemblyInformationalVersion)"
-      scripts\Create-Packages.ps1 $($version.AssemblyInformationalVersion)
+      scripts\Create-Packages.ps1 $($version.AssemblyInformationalVersion) -Verbose
 
   triggers:
     branches:

@@ -11,11 +11,10 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 
 & {
 	Trap {
-		Write-Output "Setting version failed"
+		Write-Output "Build failed"
 		Write-Output "Error: $_"
-		exit 0
+		exit -1
 	}
-
 
 	Run-Command -Fatal { .\hMSBuild.bat /t:restore /verbosity:minimal }
 	Run-Command -Fatal { .\hMSBuild.bat /verbosity:minimal }

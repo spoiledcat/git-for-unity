@@ -1,3 +1,4 @@
+[CmdletBinding()]
 Param(
 	[string]
 	$NewVersion = ''
@@ -16,9 +17,6 @@ Param(
 	,
 	[switch]
 	$Trace = $false
-	,
-	[switch]
-	$Verbose = $false
 )
 
 Set-StrictMode -Version Latest
@@ -33,9 +31,7 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 		exit 0
 	}
 
-	if ($Verbose) {
-		Write-Output "Set-Version: NewVersion: $NewVersion BumpMajor: $BumpMajor BumpMinor: $BumpMinor BumpPatch: $BumpPatch BumpBuild: $BumpBuild"
-	}
+	Write-Verbose "Set-Version: NewVersion: $NewVersion BumpMajor: $BumpMajor BumpMinor: $BumpMinor BumpPatch: $BumpPatch BumpBuild: $BumpBuild"
 
 	if ($NewVersion -eq '') {
 		if (!$BumpMajor -and !$BumpMinor -and !$BumpPatch -and !$BumpBuild){
@@ -54,9 +50,7 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 	}
 
 	function Write-Version([string]$versionFile, [TheVersion]$version, [bool]$verbose) {
-		if ($verbose) {
-			Write-Output "Writing version $version to $versionFile "
-		}
+		Write-Verbose "Writing version $version to $versionFile "
 		$versionjson = Get-Content $versionFile | ConvertFrom-Json
 		$versionjson.version = $version.Version
 		ConvertTo-Json $versionjson | Set-Content $versionFile
@@ -73,71 +67,49 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 		[string]$newValue,
 		[bool]$verbose)
 	{
-		if ($verbose) {
-			Write-Output "Reading $versionFile"
-		}
+		Write-Verbose "Reading $versionFile"
 
 		$versionjson = Get-Content $versionFile | ConvertFrom-Json
 		$version = $versionjson.version
 		$parsed = [TheVersion]::Parse("$version")
 
-		if ($verbose) {
-			Write-Output "Read version $parsed"
-		}
+		Write-Verbose "Read version $parsed"
 
 		if ($bumpMajor) {
 			if ($newValue -ne '') {
-				if ($verbose) {
-					Write-Output "Setting major part $newValue"
-				}
+				Write-Verbose "Setting major part $newValue"
 				$newVersion = $parsed.SetMajor($newValue)
 			} else {
-				if ($verbose) {
-					Write-Output "Bumping major part"
-				}
+				Write-Verbose "Bumping major part"
 				$newVersion = $parsed.bumpMajor()
 			}
 		} elseif ($bumpMinor) {
 			if ($newValue -ne '') {
-				if ($verbose) {
-					Write-Output "Setting minor part $newValue"
-				}
+				Write-Verbose "Setting minor part $newValue"
 				$newVersion = $parsed.SetMinor($newValue)
 			} else {
-				if ($verbose) {
-					Write-Output "Bumping minor part"
-				}
+				Write-Verbose "Bumping minor part"
 				$newVersion = $parsed.BumpMinor()
 			}
 		} elseif ($bumpPatch) {
 			if ($newValue -ne '') {
-				if ($verbose) {
-					Write-Output "Setting patch part $newValue"
-				}
+				Write-Verbose "Setting patch part $newValue"
 				$newVersion = $parsed.SetPatch($newValue)
 			} else {
-				if ($verbose) {
-					Write-Output "Bumping patch part"
-				}
+				Write-Verbose "Bumping patch part"
 				$newVersion = $parsed.BumpPatch()
 			}
 		} elseif ($bumpBuild) {
 			if ($newValue -ne '') {
-				if ($verbose) {
-					Write-Output "Setting build part $newValue"
-				}
+				Write-Verbose "Setting build part $newValue"
 				$newVersion = $parsed.SetBuild($newValue)
 			} else {
-				if ($verbose) {
-					Write-Output "Bumping build part"
-				}
+				Write-Verbose "Bumping build part"
 				$newVersion = $parsed.BumpBuild()
 			}
 		}
 
-		if ($verbose) {
-			Write-Output "Writing version $($newVersion.Version) to $versionFile "
-		}
+		Write-Verbose "Writing version $($newVersion.Version) to $versionFile "
 		$versionjson.version = $newVersion.Version
 		ConvertTo-Json $versionjson | Set-Content $versionFile
 	}

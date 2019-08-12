@@ -37,9 +37,7 @@ Param(
 	[switch]
 	$SkipPackman,
 	[switch]
-	$Trace = $false,
-	[string]
-	$Nothing
+	$Trace = $false
 )
 
 Set-StrictMode -Version Latest

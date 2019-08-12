@@ -11,9 +11,7 @@ Param(
     [string]
     $Version,
     [switch]
-    $Trace = $false,
-    [switch]
-    $Verbose = $false
+    $Trace = $false
 )
 
 Set-StrictMode -Version Latest
@@ -23,33 +21,40 @@ if ($Trace) {
 
 . $PSScriptRoot\helpers.ps1 | out-null
 
+& {
+    Trap {
+        Write-Output "Creating packages failed"
+        Write-Output "Error: $_"
+        exit -1
+    }
 
-$artifactDir="$rootDirectory\artifacts"
-$tmpDir="$rootDirectory\tmp"
-$packageDir="$rootDirectory\build\packages"
-$srcDir="$rootDirectory\src"
-$packagingScriptsDir="$rootDirectory\packaging\create-unity-packages"
+    if ($Version -eq '') {
+        Die -1 "You need to pass the -Version parameter"
+    }
 
-$pkgName="com.unity.git.api"
-$pkgSrcDir="$packageDir\$pkgName"
-$extrasDir="$srcDir\extras\$pkgName"
-$ignorefile="$srcDir\$pkgName\.npmignore"
-$baseInstall="Packages\$pkgName"
-$outDir=$artifactDir
+    $artifactDir="$rootDirectory\artifacts"
+    $tmpDir="$rootDirectory\tmp"
+    $packageDir="$rootDirectory\build\packages"
+    $srcDir="$rootDirectory\src"
+    $packagingScriptsDir="$rootDirectory\packaging\create-unity-packages"
 
-if ($Verbose) {
-    Write-Output "$packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall"
+    $pkgName="com.unity.git.api"
+    $pkgSrcDir="$packageDir\$pkgName"
+    $extrasDir="$srcDir\extras\$pkgName"
+    $ignorefile="$srcDir\$pkgName\.npmignore"
+    $baseInstall="Packages\$pkgName"
+    $outDir=$artifactDir
+
+    Write-Verbose "$packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall"
+    Run-Command -Fatal -Quiet { & $packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall }
+
+    $pkgName="com.unity.git.ui"
+    $pkgSrcDir="$packageDir\$pkgName"
+    $extrasDir="$srcDir\extras\$pkgName"
+    $ignorefile="$srcDir\$pkgName\.npmignore"
+    $baseInstall="Packages\$pkgName"
+    $outDir=$artifactDir
+
+    Write-Verbose "$packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall"
+    Run-Command -Fatal { & $packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall }
 }
-Run-Command -Fatal -Quiet { & $packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall }
-
-$pkgName="com.unity.git.ui"
-$pkgSrcDir="$packageDir\$pkgName"
-$extrasDir="$srcDir\extras\$pkgName"
-$ignorefile="$srcDir\$pkgName\.npmignore"
-$baseInstall="Packages\$pkgName"
-$outDir=$artifactDir
-
-if ($Verbose) {
-    Write-Output "$packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall"
-}
-Run-Command -Fatal { & $packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall }
