@@ -36,6 +36,8 @@ on_success:
 
     $version = $env:APPVEYOR_BUILD_VERSION
 
+    Write-Output "Packaging version $($env:GitAssemblyInformationalVersion) ($version)"
+
     $artifactDir="$($env:appveyor_build_folder)\artifacts"
     $tmpdir="tmp"
     $packageDir="$($env:appveyor_build_folder)\build\packages"
