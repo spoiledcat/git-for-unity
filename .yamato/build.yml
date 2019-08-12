@@ -14,9 +14,13 @@ build:
       scripts\Get-Deps.ps1
       scripts\Build.ps1
 
-      Get-ChildItem Env:
-      Write-Output "Do we have a version? $env:GitAssemblyInformationalVersion"
-      scripts\Create-Packages.ps1 $env:GitAssemblyInformationalVersion
+      dotnet tool install --tool-path . nbgv
+      Push-Location src\com.unity.git.api
+      $version = ..\..\nbgv get-version -f json | ConvertFrom-Json
+      Pop-Location
+
+      Write-Output "Packaging version $($version.AssemblyInformationalVersion)"
+      scripts\Create-Packages.ps1 $($version.AssemblyInformationalVersion)
 
   triggers:
     branches:

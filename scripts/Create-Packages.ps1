@@ -11,7 +11,9 @@ Param(
     [string]
     $Version,
     [switch]
-    $Trace = $false
+    $Trace = $false,
+    [switch]
+    $Verbose = $false
 )
 
 Set-StrictMode -Version Latest
@@ -35,6 +37,9 @@ $ignorefile="$srcDir\$pkgName\.npmignore"
 $baseInstall="Packages\$pkgName"
 $outDir=$artifactDir
 
+if ($Verbose) {
+    Write-Output "$packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall"
+}
 Run-Command -Fatal -Quiet { & $packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall }
 
 $pkgName="com.unity.git.ui"
@@ -44,4 +49,7 @@ $ignorefile="$srcDir\$pkgName\.npmignore"
 $baseInstall="Packages\$pkgName"
 $outDir=$artifactDir
 
+if ($Verbose) {
+    Write-Output "$packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall"
+}
 Run-Command -Fatal { & $packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall }
