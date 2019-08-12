@@ -13,7 +13,10 @@ build:
 
       scripts\Get-Deps.ps1
       scripts\Build.ps1
-      scripts\Create-Packages.ps1 $($env:GitAssemblyInformationalVersion)
+
+      Get-ChildItem Env:
+      Write-Output "Do we have a version? $env:GitAssemblyInformationalVersion"
+      scripts\Create-Packages.ps1 $env:GitAssemblyInformationalVersion
 
   triggers:
     branches:
