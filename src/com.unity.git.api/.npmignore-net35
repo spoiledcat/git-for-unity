@@ -3,6 +3,8 @@ git*.zip*
 *.ncrunch*
 .npmignore
 .npmignore-net35
+Api/version.json
+Api/version.json.meta
 
 # some directories we don't want
 obj/
