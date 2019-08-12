@@ -6,16 +6,7 @@ environment:
 install:
 - ps: Install-Product node 8 x64
 - ps: |
-    $destdir = Join-Path $env:appveyor_build_folder 'lib'
-    $destfile = Join-Path $destdir 'deps.zip'
-    Set-Location $destdir
-    Invoke-WebRequest "https://ghfvs-installer.github.com/dependencies/deps.zip" -OutFile $destfile
-    &'7z' -bb3 x 'deps.zip'
-
-    Set-Location $env:appveyor_build_folder
-
-    nuget restore
-
+    scripts\Get-Deps.ps1
     scripts\Set-Version.ps1 -BumpPatch -NewVersion $env:APPVEYOR_BUILD_NUMBER
 
 configuration: Release
@@ -37,24 +28,7 @@ on_success:
 
     Write-Output "Packaging version $($env:GitAssemblyInformationalVersion) ($version)"
 
-    $artifactDir="$($env:appveyor_build_folder)\artifacts"
-    $tmpdir="tmp"
-    $packageDir="$($env:appveyor_build_folder)\build\packages"
-    $srcdir="$($env:appveyor_build_folder)\src"
-
-    $packagename="com.unity.git.api"
-    $sourcedir="$packageDir\$packagename"
-    $extrasdir="$srcdir\extras\$packagename"
-    $ignorefile="$srcdir\$packagename\.npmignore"
-    $baseinstall="Packages\$packagename"
-    packaging\create-unity-packages\run.ps1 $sourcedir $artifactDir $packagename $version $extrasdir $ignorefile $baseinstall
-
-    $packagename="com.unity.git.ui"
-    $sourcedir="$packageDir\$packagename"
-    $extrasdir="$srcdir\extras\$packagename"
-    $ignorefile="$srcdir\$packagename\.npmignore"
-    $baseinstall="Packages\$packagename"
-    packaging\create-unity-packages\run.ps1 $sourcedir $artifactDir $packagename $version $extrasdir $ignorefile $baseinstall
+    scripts\Create-Packages.ps1 $version
 
     # save commit
     $commitfile="$sourcedir\commit"

@@ -7,7 +7,7 @@ Param(
 Set-StrictMode -Version Latest
 if ($Trace) { Set-PSDebug -Trace 1 }
 
-. $PSScriptRoot\scripts\helpers.ps1 | out-null
+. $PSScriptRoot\helpers.ps1 | out-null
 
 & {
 	Trap {

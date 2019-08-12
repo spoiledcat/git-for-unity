@@ -305,3 +305,4 @@ sysinfo.txt
 *.unitypackage
 /downloads
 /embedded-git.json
+lib/deps.zip
