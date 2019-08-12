@@ -7,13 +7,18 @@ build:
   interpreter: powershell
   commands:
     - |
-      $version = $env:YAMATO_JOB_ID
-      Write-Output "Building $version"
+      #$version = $env:YAMATO_JOB_ID
+      #Write-Output "Building $version"
+      #scripts\Set-Version.ps1 $version -BumpPatch -Verbose
+
       scripts\Get-Deps.ps1
-      scripts\Set-Version.ps1 $version -BumpPatch -Verbose
       scripts\Build.ps1
       scripts\Create-Packages.ps1 $($env:GitAssemblyInformationalVersion)
 
+  triggers:
+    branches:
+      only:
+      - "/.*/"
   artifacts:
     packages:
       paths:
