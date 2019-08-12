@@ -14,9 +14,6 @@ Param(
 	[switch]
 	$BumpBuild = $false
 	,
-	[int]
-	$BuildNumber = -1
-	,
 	[switch]
 	$Trace = $false
 )
@@ -57,38 +54,38 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 
 	function Set-Version([string]$versionFile, [string]$newValue) {
 		$parsed = [TheVersion]::Parse("$newValue")
-		Write-Version versionFile $parsed
+		Write-Version $versionFile $parsed
 	}
 
 	function Bump-Version([string]$versionFile,
 		[bool]$bumpMajor, [bool] $bumpMinor,
 		[bool]$bumpPatch, [bool] $bumpBuild,
-		[int]$newValue = -1)
+		[string]$newValue = '')
 	{
 		$versionjson = Get-Content $versionFile | ConvertFrom-Json
 		$version = $versionjson.version
 		$parsed = [TheVersion]::Parse("$version")
 
 		if ($bumpMajor) {
-			if ($newValue -ge 0) {
+			if ($newValue -ne '') {
 				$newVersion = $parsed.SetMajor($newValue)
 			} else {
 				$newVersion = $parsed.bumpMajor()
 			}
 		} elseif ($bumpMinor) {
-			if ($newValue -ge 0) {
+			if ($newValue -ne '') {
 				$newVersion = $parsed.SetMinor($newValue)
 			} else {
 				$newVersion = $parsed.BumpMinor()
 			}
 		} elseif ($bumpPatch) {
-			if ($newValue -ge 0) {
+			if ($newValue -ne '') {
 				$newVersion = $parsed.SetPatch($newValue)
 			} else {
 				$newVersion = $parsed.BumpPatch()
 			}
 		} elseif ($bumpBuild) {
-			if ($newValue -ge 0) {
+			if ($newValue -ne '') {
 				$newVersion = $parsed.SetBuild($newValue)
 			} else {
 				$newVersion = $parsed.BumpBuild()
@@ -99,7 +96,7 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 		ConvertTo-Json $versionjson | Set-Content $versionFile
 	}
 
-	if ($NewVersion -ne '') {
+	if ($NewVersion -ne '' -and !($BumpMajor -or $BumpMinor -or $BumpPatch -or $BumpBuild)) {
 		$versionFile = "$rootDirectory\src\com.unity.git.ui\version.json"
 		Set-Version $versionFile $NewVersion
 
@@ -107,10 +104,10 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 		Set-Version $versionFile $NewVersion
 	} else {
 		$versionFile = "$rootDirectory\src\com.unity.git.ui\version.json"
-		Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $BuildNumber
+		Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion
 
 		$versionFile = "$rootDirectory\src\com.unity.git.api\version.json"
-		Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $BuildNumber
+		Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion
 	}
 
 }
