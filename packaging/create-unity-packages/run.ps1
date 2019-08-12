@@ -52,7 +52,7 @@ Push-Location $scriptsDirectory
 try {
 
 	if (!(Test-Path 'node_modules')) {
-		Run-Command -Fatal { & node ..\yarn.js install --prefer-offline }
+		Run-Command -Fatal { & node ..\yarn.js -s install --prefer-offline }
 	}
 
 	$noPackage = ""
@@ -69,7 +69,7 @@ try {
 		$noPackman = "-p"
 	}
 
-	Run-Command -Fatal { & node ..\yarn.js start -o $Out -n $Name -v $Version -s $Source -i $Ignore -e $Extra -t $BaseInstall $noPackage $noUnity $noPackman }
+	Run-Command -Fatal { & node ..\yarn.js -s start -o $Out -n $Name -v $Version -s $Source -i $Ignore -e $Extra -t $BaseInstall $noPackage $noUnity $noPackman }
 
 } finally {
 	Pop-Location

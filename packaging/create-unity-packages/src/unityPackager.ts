@@ -24,7 +24,7 @@ export class UnityPackager extends Packager {
     }
 
     public async prepareSource(sourcePath: string, outputPath: string, baseInstallationPath?: string) {
-        super.prepare(sourcePath, '', [entry => !entry.isDir && p.extname(entry.file) !== '.meta'], outputPath, baseInstallationPath);
+        await super.prepare(sourcePath, '', [entry => !entry.isDir && p.extname(entry.file) !== '.meta'], outputPath, baseInstallationPath);
     }
 
     public async package(sourcePath: string, targetPath: string, packageName: string, version: string) : Promise<PackageFile[]>{
@@ -33,7 +33,7 @@ export class UnityPackager extends Packager {
         const packageMd5Path: string = p.join(targetPath, `${packageName}-${version}.unitypackage.md5`);
 
         await asyncfile
-            .mkdirp(p.dirname(packagePath))
+            .mkdirp(targetPath)
             .then(() => createZip(sourcePath, packagePath))
             .then(async () => {
                 const hash = md5(await asyncfile.readFile(packagePath));

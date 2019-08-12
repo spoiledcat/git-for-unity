@@ -23,16 +23,24 @@ export enum PackageType {
 export type PackageFile = { type: PackageType, path: string, md5Path?: string };
 export type PackageFileList = { [key: number] : PackageFile };
 
-export async function createTar(walker: FileTreeWalker, relativeTargetPath?: string) {
-    return archiver('tar', { gzip: true }).directory(walker.path, relativeTargetPath || false);
+export async function createTar(sourcePath: string, archiveFile: string, relativeTargetPath?: string) {
+    return new Promise<void>(async (resolve, reject) => {
+        const arch = archiver('tar', { gzip: true }).directory(sourcePath + '/', relativeTargetPath || false);
+        arch.pipe(asyncfile.createWriteStream(archiveFile))
+            .on('close', () => resolve());
+        arch.finalize();
+    });
+    //return archiver('tar', { gzip: true }).directory(walker.path, relativeTargetPath || false);
 }
 
-export async function createZip(sourcePath: string, zipFile: string, relativeTargetPath?: string) {
+export async function createZip(sourcePath: string, archiveFile: string, relativeTargetPath?: string) {
+    // console.log(`Zipping ${sourcePath + '/'} with relative ${relativeTargetPath || false}`);
+    //return archiver('zip').directory(sourcePath + '/', relativeTargetPath || false);
     return new Promise<void>(async (resolve, reject) => {
-        const zip = archiver('zip').directory(sourcePath + '/', relativeTargetPath || false);
-        zip.pipe(asyncfile.createWriteStream(zipFile))
+        const arch = archiver('zip').directory(sourcePath + '/', relativeTargetPath || false);
+        arch.pipe(asyncfile.createWriteStream(archiveFile))
             .on('close', () => resolve());
-        zip.finalize();
+        arch.finalize();
     });
 }
 
@@ -115,8 +123,9 @@ async function jsonHandler (baseSourcePath: string, sourceFile: string,
     baseTargetPath: string, targetFile: string,
     baseInstallationPath: string, version: string) : Promise<boolean>
 {
+    if (p.basename(sourceFile) !== 'package.json') return false;
+
     const relativeSourcePath = p.relative(baseSourcePath, sourceFile);
-    if (p.basename(sourceFile) !== 'package.json' || relativeSourcePath === '') return false;
 
     const json = JSON.parse(await asyncfile.readTextFile(sourceFile));
     // set package.json version to equal the passed in version

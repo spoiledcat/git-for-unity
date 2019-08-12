@@ -13,9 +13,9 @@ const patternMatcher = (pattern: string): IgnoreFunction => {
   return (file: FileEntry) => {
     const minimatcher = new minimatch.Minimatch(pattern, { matchBase: true, dot: true });
     const ret = (!minimatcher.negate || !file.isDir) && minimatcher.match(file.file);
-    if (ret) {
-      console.log(`Ignoring ${file.file} because ${pattern}`);
-    }
+    // if (ret) {
+    //   console.log(`Ignoring ${file.file} because ${pattern}`);
+    // }
     return ret;
   };
 };

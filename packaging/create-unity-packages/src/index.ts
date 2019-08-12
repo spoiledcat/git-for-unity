@@ -10,6 +10,7 @@ import { optionDefinitions, sections, ParsedOptions } from './cmdlineoptions';
 import { PackageFile, PackageType, PackageFileList } from './packager';
 import { UnityPackager } from './unityPackager';
 import { PackmanPackager } from './packmanPackager';
+import { pluck, map } from 'rxjs/operators';
 
 async function validateOptionPath(options: commandLineArgs.CommandLineOptions, argName: string, optional: boolean = false) {
 
@@ -87,9 +88,6 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 	if (parsed.doUnityPackage) {
 		await unityPackager.prepareSource(tmpPackmanSourceTree, tmpUnitySourceTree, parsed.baseInstallationPath);
 	}
-
-	console.log(tmpPackmanSourceTree);
-	console.log(tmpUnitySourceTree);
 
 	const packages: PackageFileList = {};
 	if (parsed.skipPackaging) {

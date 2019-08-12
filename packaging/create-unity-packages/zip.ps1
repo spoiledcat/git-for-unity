@@ -42,7 +42,7 @@ Push-Location $scriptsDirectory
 try {
 
 	if (!(Test-Path 'node_modules')) {
-		Run-Command -Fatal { & node ..\yarn.js install --prefer-offline }
+		Run-Command -Fatal { & node ..\yarn.js -s install --prefer-offline }
 	}
 
 	$doUnity = ""
@@ -50,7 +50,7 @@ try {
 		$doUnity = "-u"
 	}
 
-	Run-Command -Fatal { & node ..\yarn.js run zip -s $Source -o $Out -n $Name -v $Version $doUnity }
+	Run-Command -Fatal { & node ..\yarn.js -s run zip -s $Source -o $Out -n $Name -v $Version $doUnity }
 
 } finally {
 	Pop-Location

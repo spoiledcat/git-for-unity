@@ -20,17 +20,11 @@ export class PackmanPackager extends Packager {
         const zipMd5Path: string = p.join(targetPath, `${packageName}-${version}.zip.md5`);
 
         await asyncfile
-            .mkdirp(p.dirname(tgzPath))
-            .then(() => createTar(new FileTreeWalker(sourcePath), 'package'))
-            .then(async archiver => {
-                archiver
-                    .pipe(asyncfile.createWriteStream(tgzPath))
-                    .on('close', async () =>
-                    {
-                        const hash = md5(await asyncfile.readFile(tgzPath));
-                        await asyncfile.writeTextFile(tgzMd5Path, hash);
-                    });
-                await archiver.finalize();
+            .mkdirp(targetPath)
+            .then(() => createTar(sourcePath, tgzPath, 'package'))
+            .then(async () => {
+                const hash = md5(await asyncfile.readFile(tgzPath));
+                await asyncfile.writeTextFile(tgzMd5Path, hash);
             }
         );
 
