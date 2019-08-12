@@ -1,0 +1,18 @@
+{% metadata_file configuration.yml %}
+---
+build:
+  name: Build
+  agent:
+    type: Unity::VM
+    image: industrial/win10-dotnet-builder:latest
+    flavor: m1.large
+  interpreter: powershell
+  commands:
+    - scripts\Set-Version.ps1 -BumpBuild -NewVersion $($env:YAMATO_JOB_ID)
+    - & { & .\hMSBuild.bat /t:restore }
+    - & { & .\hMSBuild.bat }
+    - .\Create-Packages.ps1 $($env:GitAssemblyInformationalVersion)
+  artifacts:
+    packages:
+      paths:
+        - "artifacts/**/*"
