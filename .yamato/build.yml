@@ -7,9 +7,10 @@ build:
   interpreter: powershell
   commands:
     - |
-      Get-ChildItem Env:
+      $version = $env:YAMATO_JOB_ID
+      Write-Output "Building $version"
       scripts\Get-Deps.ps1
-      scripts\Set-Version.ps1 -BumpPatch -NewVersion $($env:YAMATO_JOB_ID)
+      scripts\Set-Version.ps1 $version -BumpPatch -Verbose
       scripts\Build.ps1
       scripts\Create-Packages.ps1 $($env:GitAssemblyInformationalVersion)
 

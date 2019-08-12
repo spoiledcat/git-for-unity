@@ -16,6 +16,9 @@ Param(
 	,
 	[switch]
 	$Trace = $false
+	,
+	[switch]
+	$Verbose = $false
 )
 
 Set-StrictMode -Version Latest
@@ -28,6 +31,10 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 		Write-Output "Setting version failed"
 		Write-Output "Error: $_"
 		exit 0
+	}
+
+	if ($Verbose) {
+		Write-Output "Set-Version: NewVersion: $NewVersion BumpMajor: $BumpMajor BumpMinor: $BumpMinor BumpPatch: $BumpPatch BumpBuild: $BumpBuild"
 	}
 
 	if ($NewVersion -eq '') {
@@ -46,68 +53,106 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 		$parsed
 	}
 
-	function Write-Version([string]$versionFile, [TheVersion]$version) {
+	function Write-Version([string]$versionFile, [TheVersion]$version, [bool]$verbose) {
+		if ($verbose) {
+			Write-Output "Writing version $version to $versionFile "
+		}
 		$versionjson = Get-Content $versionFile | ConvertFrom-Json
 		$versionjson.version = $version.Version
 		ConvertTo-Json $versionjson | Set-Content $versionFile
 	}
 
-	function Set-Version([string]$versionFile, [string]$newValue) {
+	function Set-Version([string]$versionFile, [string]$newValue, [bool]$verbose) {
 		$parsed = [TheVersion]::Parse("$newValue")
-		Write-Version $versionFile $parsed
+		Write-Version $versionFile $parsed $verbose
 	}
 
 	function Bump-Version([string]$versionFile,
 		[bool]$bumpMajor, [bool] $bumpMinor,
 		[bool]$bumpPatch, [bool] $bumpBuild,
-		[string]$newValue = '')
+		[string]$newValue,
+		[bool]$verbose)
 	{
+		if ($verbose) {
+			Write-Output "Reading $versionFile"
+		}
+
 		$versionjson = Get-Content $versionFile | ConvertFrom-Json
 		$version = $versionjson.version
 		$parsed = [TheVersion]::Parse("$version")
 
+		if ($verbose) {
+			Write-Output "Read version $parsed"
+		}
+
 		if ($bumpMajor) {
 			if ($newValue -ne '') {
+				if ($verbose) {
+					Write-Output "Setting major part $newValue"
+				}
 				$newVersion = $parsed.SetMajor($newValue)
 			} else {
+				if ($verbose) {
+					Write-Output "Bumping major part"
+				}
 				$newVersion = $parsed.bumpMajor()
 			}
 		} elseif ($bumpMinor) {
 			if ($newValue -ne '') {
+				if ($verbose) {
+					Write-Output "Setting minor part $newValue"
+				}
 				$newVersion = $parsed.SetMinor($newValue)
 			} else {
+				if ($verbose) {
+					Write-Output "Bumping minor part"
+				}
 				$newVersion = $parsed.BumpMinor()
 			}
 		} elseif ($bumpPatch) {
 			if ($newValue -ne '') {
+				if ($verbose) {
+					Write-Output "Setting patch part $newValue"
+				}
 				$newVersion = $parsed.SetPatch($newValue)
 			} else {
+				if ($verbose) {
+					Write-Output "Bumping patch part"
+				}
 				$newVersion = $parsed.BumpPatch()
 			}
 		} elseif ($bumpBuild) {
 			if ($newValue -ne '') {
+				if ($verbose) {
+					Write-Output "Setting build part $newValue"
+				}
 				$newVersion = $parsed.SetBuild($newValue)
 			} else {
+				if ($verbose) {
+					Write-Output "Bumping build part"
+				}
 				$newVersion = $parsed.BumpBuild()
 			}
 		}
 
+		if ($verbose) {
+			Write-Output "Writing version $($newVersion.Version) to $versionFile "
+		}
 		$versionjson.version = $newVersion.Version
 		ConvertTo-Json $versionjson | Set-Content $versionFile
 	}
 
 	if ($NewVersion -ne '' -and !($BumpMajor -or $BumpMinor -or $BumpPatch -or $BumpBuild)) {
 		$versionFile = "$rootDirectory\src\com.unity.git.ui\version.json"
-		Set-Version $versionFile $NewVersion
+		Set-Version $versionFile $NewVersion $Verbose
 
 		$versionFile = "$rootDirectory\src\com.unity.git.api\version.json"
-		Set-Version $versionFile $NewVersion
+		Set-Version $versionFile $NewVersion $Verbose
 	} else {
 		$versionFile = "$rootDirectory\src\com.unity.git.ui\version.json"
-		Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion
+		Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion $Verbose
 
 		$versionFile = "$rootDirectory\src\com.unity.git.api\version.json"
-		Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion
+		Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion $Verbose
 	}
-
 }
