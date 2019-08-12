@@ -8,7 +8,7 @@ build:
     flavor: m1.large
   interpreter: powershell
   commands:
-    - scripts\Set-Version.ps1 -BumpBuild -NewVersion $($env:YAMATO_JOB_ID)
+    - scripts\Set-Version.ps1 -BumpPatch -NewVersion $($env:YAMATO_JOB_ID)
     - & { & .\hMSBuild.bat /t:restore }
     - & { & .\hMSBuild.bat }
     - .\Create-Packages.ps1 $($env:GitAssemblyInformationalVersion)
