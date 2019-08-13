@@ -8,6 +8,9 @@ test_{{ platform.name }}_{{ editor.version }}:
     type: {{ platform.type }}
     image: {{ platform.image }}
     flavor: {{ platform.flavor}}
+  dependencies:
+    - .yamato/build.yml#build
+
   commands:
     - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
 {% for package in packages %}
@@ -15,11 +18,12 @@ test_{{ platform.name }}_{{ editor.version }}:
       {{ platform.command }}
       upm-ci package test -u {{ editor.version }} --package-path {{ package.path }}
 {% endfor %}
-  logs:
-    paths:
-      - "upm-ci~/test-results/**/*"
-  dependencies:
-    - .yamato/build.yml#build
+
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+
 {% endfor %}
 {% endfor %}
 
