@@ -52,8 +52,15 @@ namespace Unity.VersionControl.Git
         private void ListenToUnityExit()
         {
             EditorApplicationQuit = (UnityAction)Delegate.Combine(EditorApplicationQuit, new UnityAction(Dispose));
+
+            // clean up when entering play mode
+#if UNITY_2017_2_OR_NEWER
+            EditorApplication.playModeStateChanged += change => {
+                if (change == PlayModeStateChange.EnteredPlayMode)
+#else
             EditorApplication.playmodeStateChanged += () => {
                 if (EditorApplication.isPlayingOrWillChangePlaymode && !EditorApplication.isPlaying)
+#endif
                 {
                     Dispose();
                 }
