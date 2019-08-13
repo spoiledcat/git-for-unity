@@ -1,14 +1,4 @@
-{% metadata_file .yamato_config/configuration.yml %}
 build:
-  name: Build
-  triggers:
-    branches:
-      only:
-        - "/.*/"
-  dependencies:
-    - .yamato/build.yml#build_windows
-
-build_windows:
   name: Build on Windows
   agent:
     type: Unity::VM
@@ -35,3 +25,10 @@ build_windows:
       Copy-Item "artifacts\*.tgz" "upm-ci~\packages\"
       Copy-Item "artifacts\packages.json" "upm-ci~\packages\"
 
+  artifacts:
+    packages:
+      paths:
+        - "upm-ci~/packages/**/*"
+    sources:
+      paths:
+        - "PackageSources/**/*"
