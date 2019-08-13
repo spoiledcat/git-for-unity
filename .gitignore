@@ -200,7 +200,6 @@ _pkginfo.txt
 # Others
 ClientBin/
 ~$*
-*~
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
@@ -309,3 +308,4 @@ nbgv.exe
 .store
 .Editor
 PackageSources/
+upm-ci~/
