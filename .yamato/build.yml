@@ -1,5 +1,15 @@
+{% metadata_file .yamato_config/configuration.yml %}
 build:
   name: Build
+  triggers:
+    branches:
+      only:
+        - "/.*/"
+  dependencies:
+    - .yamato/build.yml#build_windows
+
+build_windows:
+  name: Build on Windows
   agent:
     type: Unity::VM
     image: core-kaunas/win10-vs2017-dotnetcore:latest
@@ -25,14 +35,3 @@ build:
       Copy-Item "artifacts\*.tgz" "upm-ci~\packages\"
       Copy-Item "artifacts\packages.json" "upm-ci~\packages\"
 
-  triggers:
-    branches:
-      only:
-      - "/.*/"
-  artifacts:
-    packages:
-      paths:
-        - "upm-ci~/packages/**/*"
-    sources:
-      paths:
-        - "PackageSources/**/*"

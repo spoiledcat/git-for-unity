@@ -1,3 +1,7 @@
+upm_linux:
+  type: Unity::VM
+  image: package-ci/ubuntu:latest
+  flavor: m1.large
 test_editors:
   - version: 2019.1
 test_platforms:
