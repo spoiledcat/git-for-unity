@@ -57,9 +57,17 @@
 
   <!-- copy source files to packman package folder -->
   <PropertyGroup>
-    <PackageSourceDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\'))</PackageSourceDir>
+    <PackageSourceDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</PackageSourceDir>
     <PackageName>com.unity.git.api</PackageName>
   </PropertyGroup>
+  <ItemGroup>
+    <VersionFiles Include="$(IntermediateOutputPath)\$(AssemblyName).Version.cs">
+      <Project>Api</Project>
+    </VersionFiles>
+    <VersionFiles Include="$(IntermediateOutputPath)\$(RootNamespace).Logging.Version.cs">
+      <Project>Logging</Project>
+    </VersionFiles>
+  </ItemGroup>
 
   <Import Project="$(SolutionDir)\common\packaging.targets" Condition=" '$(TargetFramework)' == 'net471' " />
 </Project>

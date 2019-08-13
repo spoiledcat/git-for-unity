@@ -7,11 +7,9 @@ Api/version.json
 Api/version.json.meta
 
 # some directories we don't want
-obj/
+obj/**
 obj.meta
-node_modules/
+node_modules/**
 node_modules.meta
-UnityTests/
-UnityTests.meta
 Third Party Notices - net35.md
 Third Party Notices - net35.md.meta

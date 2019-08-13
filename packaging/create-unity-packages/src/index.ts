@@ -10,6 +10,7 @@ import { optionDefinitions, sections, ParsedOptions } from './cmdlineoptions';
 import { PackageType, PackageFileList, PackageFile } from './packager';
 import { UnityPackager } from './unityPackager';
 import { PackmanPackager } from './packmanPackager';
+import { UpmPackager } from './upmPackager';
 
 async function validateOptionPath(options: commandLineArgs.CommandLineOptions, argName: string, optional: boolean = false) {
 
@@ -53,8 +54,10 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 		skipPackaging: options.skip === true,
 		ignores: [],
 		doUnityPackage: !options.skipUnity,
-		doPackmanPackage: !options.skipPackman,
-		tmpPath: (await validateOptionPath(options, 'tmp', true))
+		doPackmanPackage: !options.skipPackage,
+		doUpmPackage: !options.skipUpm,
+		tmpPath: (await validateOptionPath(options, 'tmp', true)),
+		other: []
 	};
 
 	if (extras) {
@@ -81,38 +84,18 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 
 	const parsed = await parseCommandLine();
 
-	let tmpBuildDir = parsed.tmpPath || `build/tmp`;
+	let tmpBuildDir = parsed.tmpPath || p.join(p.dirname(parsed.targetPath), 'obj');
 	if (!p.isAbsolute(tmpBuildDir)) {
 		tmpBuildDir = p.resolve(tmpBuildDir);
 	}
-	tmpBuildDir = p.join(tmpBuildDir, parsed.packageName);
 
-	if (!parsed.tmpPath) {
-		console.warn(`--tmp arg not specified, reusing ${tmpBuildDir}.`);
-	}
+	parsed.tmpPath = tmpBuildDir;
 
-	if (!parsed.skipPackaging) {
-		if (await asyncfile.exists(tmpBuildDir)) {
-			await asyncfile.delete(tmpBuildDir);
-		}
-	}
-
-	const tmpPackmanSourceTree = parsed.skipPackaging ? p.join(parsed.targetPath, 'package', parsed.packageName) : tmpBuildDir;
-
-	if (!(await asyncfile.exists(tmpPackmanSourceTree))) {
-		await asyncfile.mkdirp(tmpPackmanSourceTree);
-	}
-
-	const tmpUnitySourceTree = parsed.skipPackaging ? p.join(parsed.targetPath, "unitypackage") : await FileTreeWalker.getTempDir();
+	console.log(parsed);
 
 	const packmanPackager = new PackmanPackager();
+	const upmPackager = new UpmPackager();
 	const unityPackager = new UnityPackager();
-
-	const packageJson = await packmanPackager.prepare(parsed.sourcePath, parsed.version, parsed.ignores, tmpPackmanSourceTree);
-
-	if (parsed.doUnityPackage) {
-		await unityPackager.prepareSource(tmpPackmanSourceTree, tmpUnitySourceTree, parsed.baseInstallationPath);
-	}
 
 	let packages: { [key: string] : any, manifest?: PackageFile } = {};
 	const manifest: string = p.join(parsed.targetPath, `manifest.json`);
@@ -120,43 +103,76 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 		packages = JSON.parse(await asyncfile.readTextFile(manifest));
 	}
 
-	if (parsed.skipPackaging) {
-		if (parsed.doPackmanPackage)
-			packages[PackageType.Source].push({ type: PackageType.Source, path: tmpPackmanSourceTree });
-		if (parsed.doUnityPackage)
-			packages[PackageType.Source].push({ type: PackageType.Source, path: tmpUnitySourceTree });
-	} else {
+	if (parsed.doPackmanPackage || parsed.doUnityPackage) {
+		const tmpPackmanSourceTree = p.join(parsed.skipPackaging ? parsed.targetPath : tmpBuildDir, 'package', parsed.packageName);
+
+		// unity and package use the same source
+		await packmanPackager.prepare(parsed.sourcePath, parsed.version, parsed.ignores, tmpPackmanSourceTree);
+
+		if (parsed.doUnityPackage) {
+			const tmpUnitySourceTree = parsed.skipPackaging ? p.join(parsed.targetPath, "unitypackage") : await FileTreeWalker.getTempDir();
+
+			await unityPackager.prepareSource(tmpPackmanSourceTree, tmpUnitySourceTree, parsed.baseInstallationPath);
+
+			if (parsed.skipPackaging) {
+				packages[PackageType.Source].push({ type: PackageType.Source, path: tmpUnitySourceTree });
+			} else {
+				let files = await unityPackager.package(tmpUnitySourceTree, parsed.targetPath, parsed.packageName, parsed.version);
+				files.map(x => {
+					if (!packages[x.type]) packages[x.type] = [];
+					packages[x.type].push(x);
+				});
+			}
+		}
+
 		if (parsed.doPackmanPackage) {
-			let files = await packmanPackager.package(tmpPackmanSourceTree, parsed.targetPath, parsed.packageName, parsed.version);
-			let packmanPackageFile: PackageFile = files.find(x => x.type === PackageType.PackmanPackage)!;
+			if (parsed.skipPackaging) {
+				packages[PackageType.Source].push({ type: PackageType.Source, path: tmpPackmanSourceTree });
+			} else {
+				let files = await packmanPackager.package(tmpPackmanSourceTree, parsed.targetPath, parsed.packageName, parsed.version);
+				files.map(x => {
+					if (!packages[x.type]) packages[x.type] = [];
+					packages[x.type].push(x);
+				});
+			}
+		}
+	}
+
+
+	if (parsed.doUpmPackage) {
+		const tmpUpmSourceTree = p.join(parsed.skipPackaging ? parsed.targetPath : tmpBuildDir, parsed.packageName);
+		// do the upm package first. it always has a -preview suffix
+		let versionMetadataIndex = parsed.version.indexOf('+');
+		parsed.version = parsed.version.substring(0, versionMetadataIndex > 0 ? versionMetadataIndex : undefined ) + "-preview";
+
+		let packageJson = await upmPackager.prepare(parsed.sourcePath, parsed.version, parsed.ignores, tmpUpmSourceTree);
+
+		if (parsed.skipPackaging) {
+			packages[PackageType.Source].push({ type: PackageType.Source, path: tmpUpmSourceTree });
+		} else {
+
+			let files = await upmPackager.package(tmpUpmSourceTree, parsed.targetPath, parsed.packageName, parsed.version);
+			let upmPackageFile: PackageFile = files.find(x => x.type === PackageType.PackmanPackage)!;
 			files.map(x => {
 				if (!packages[x.type]) packages[x.type] = [];
 				packages[x.type].push(x);
 			});
 
 			if (packageJson) {
-				const packmanPackageManifest: string = p.join(parsed.targetPath, `packages.json`);
+				const upmManifest: string = p.join(parsed.targetPath, `packages.json`);
 				let packageManifest: { [key: string]: string } = {};
-				if (await asyncfile.exists(packmanPackageManifest)) {
-					packageManifest = JSON.parse(await asyncfile.readTextFile(packmanPackageManifest));
+				if (await asyncfile.exists(upmManifest)) {
+					packageManifest = JSON.parse(await asyncfile.readTextFile(upmManifest));
 				}
 			
-				packageManifest[p.basename(packmanPackageFile.path)] = JSON.parse(await asyncfile.readTextFile(packageJson));
-				await asyncfile.writeTextFile(packmanPackageManifest, JSON.stringify(packageManifest));
-				packages[PackageType.Manifest] = { type: PackageType.Manifest, path: packmanPackageManifest};
-			}
+				packageManifest[p.basename(upmPackageFile.path)] = JSON.parse(await asyncfile.readTextFile(packageJson));
+				await asyncfile.writeTextFile(upmManifest, JSON.stringify(packageManifest));
+				packages[PackageType.Manifest] = { type: PackageType.Manifest, path: upmManifest};
+			}			
 		}
-
-		if (parsed.doUnityPackage) {
-			let files = await unityPackager.package(tmpUnitySourceTree, parsed.targetPath, parsed.packageName, parsed.version);
-			files.map(x => {
-				if (!packages[x.type]) packages[x.type] = [];
-				packages[x.type].push(x);
-			});
-		}
-
-		await asyncfile.writeTextFile(manifest, JSON.stringify(packages));
 	}
+
+	await asyncfile.writeTextFile(manifest, JSON.stringify(packages));
 })();
 
 

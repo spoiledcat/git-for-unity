@@ -11,7 +11,9 @@ export interface ParsedOptions {
 	ignores: Ignores;
 	doUnityPackage: boolean;
 	doPackmanPackage: boolean;
+	doUpmPackage: boolean;
 	tmpPath: string | undefined;
+	other: string[];
 }
 
 export const optionDefinitions : OptionDefinition[] = [
@@ -77,11 +79,18 @@ export const optionDefinitions : OptionDefinition[] = [
 		description: 'Skip packaging for the asset store (.unitypackage)'
 	},
 	{
-		name: 'skipPackman',
+		name: 'skipPackage',
 		alias: 'p',
 		type: Boolean,
 		defaultValue: false,
-		description: 'Skip packaging for packman (.tgz with the sources inside a "package" folder, and a zip with the sources inside a "package name" folder )'
+		description: 'Skip packaging for package manager (zip with the sources inside a "package name" folder )'
+	},
+	{
+		name: 'skipUpm',
+		alias: 'm',
+		type: Boolean,
+		defaultValue: false,
+		description: 'Skip packaging for upm (.tgz with the sources inside a "package" folder)'
 	},
 	{
 		name: 'tmp',

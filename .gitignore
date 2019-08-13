@@ -308,3 +308,5 @@ sysinfo.txt
 lib/deps.zip
 nbgv.exe
 .store
+.Editor
+PackageSources/

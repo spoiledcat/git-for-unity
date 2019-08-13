@@ -36,6 +36,8 @@ Param(
 	$SkipUnity,
 	[switch]
 	$SkipPackman,
+	[switch]
+	$SkipUpm,
 	[string]
 	$Tmp,
 	[switch]
@@ -60,6 +62,7 @@ try {
 	$noPackage = ""
 	$noUnity = ""
 	$noPackman = ""
+	$noUpm = ""
 
 	if ($Skip) {
 		$noPackage = "-k"
@@ -71,7 +74,11 @@ try {
 		$noPackman = "-p"
 	}
 
-	Run-Command -Fatal { & node ..\yarn.js -s start -o $Out -n $Name -v $Version -s $Source -i $Ignore -e $Extra -t $BaseInstall --tmp $Tmp $noPackage $noUnity $noPackman }
+	if ($SkipUpm) {
+		$noUpm = "-m"
+	}
+
+	Run-Command -Fatal { & node ..\yarn.js -s start -o $Out -n $Name -v $Version -s $Source -i $Ignore -e $Extra -t $BaseInstall --tmp $Tmp $noPackage $noUnity $noPackman $noUpm }
 
 } finally {
 	Pop-Location
