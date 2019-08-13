@@ -10,11 +10,11 @@ upm_windows:
 test_editors:
   - version: 2019.1
 test_platforms:
-  - name: ubuntu
-    type: Unity::VM
-    image: package-ci/ubuntu:stable
-    flavor: m1.large
-    command: export GITHUB_UNITY_DISABLE=1
+#  - name: ubuntu
+#    type: Unity::VM
+#    image: package-ci/ubuntu:stable
+#    flavor: m1.large
+#    command: export GITHUB_UNITY_DISABLE=1
   - name: windows
     type: Unity::VM
     image: package-ci/win10:latest
