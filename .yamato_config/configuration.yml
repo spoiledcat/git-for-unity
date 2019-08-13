@@ -1,6 +1,6 @@
 upm_linux:
   type: Unity::VM
-  image: package-ci/ubuntu:latest
+  image: package-ci/ubuntu:stable
   flavor: m1.large
 upm_windows:
   type: Unity::VM
@@ -10,14 +10,16 @@ upm_windows:
 test_editors:
   - version: 2019.1
 test_platforms:
-#  - name: ubuntu
-#    type: Unity::VM
-#    image: package-ci/ubuntu:latest
-#    flavor: m1.large
+  - name: ubuntu
+    type: Unity::VM
+    image: package-ci/ubuntu:stable
+    flavor: m1.large
+    command: export GITHUB_UNITY_DISABLE=1
   - name: windows
     type: Unity::VM
     image: package-ci/win10:latest
     flavor: b1.large
+    command: set GITHUB_UNITY_DISABLE=1
 
 packages:
   - name: com.unity.git.api
