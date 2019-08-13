@@ -1,10 +1,10 @@
 test_editors:
   - version: 2019.1
 test_platforms:
-  - name: win
+  - name: ubuntu
     type: Unity::VM
-    image: package-ci/win10:stable
-    flavor: b1.large
+    image: package-ci/ubuntu:latest
+    flavor: m1.large
 packages:
   - name: com.unity.git.api
     path: PackageSources/com.unity.git.api
