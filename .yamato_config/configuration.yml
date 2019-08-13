@@ -1,5 +1,12 @@
+test_editors:
+  - version: 2019.1
+test_platforms:
+  - name: win
+    type: Unity::VM
+    image: package-ci/win10:stable
+    flavor: b1.large
 packages:
   - name: com.unity.git.api
-    path: artifacts/package/com.unity.git.api
+    path: PackageSources/com.unity.git.api
   - name: com.unity.git.ui
-    path: artifacts/package/com.unity.git.ui
+    path: PackageSources/com.unity.git.ui

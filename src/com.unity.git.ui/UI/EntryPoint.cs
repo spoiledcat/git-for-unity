@@ -15,7 +15,7 @@ namespace Unity.VersionControl.Git
             var tempEnv = new DefaultEnvironment();
             if (tempEnv.GetEnvironmentVariable("GITHUB_UNITY_DISABLE") == "1")
             {
-                Debug.Log("GitHub for Unity " + ApplicationInfo.Version + " is disabled");
+                //Debug.Log("GitHub for Unity " + ApplicationInfo.Version + " is disabled");
                 return;
             }
 
