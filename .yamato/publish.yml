@@ -8,7 +8,9 @@ publish_internal:
     flavor: {{ upm_linux.flavor }}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
-    - upm-ci package publish
+{% for package in packages %}
+    - upm-ci package publish --package-path {{ package.path }}
+{% endfor %}
   triggers:
     tags:
       only:
