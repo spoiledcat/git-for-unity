@@ -11,6 +11,7 @@ export interface ParsedOptions {
 	ignores: Ignores;
 	doUnityPackage: boolean;
 	doPackmanPackage: boolean;
+	tmpPath: string | undefined;
 }
 
 export const optionDefinitions : OptionDefinition[] = [
@@ -81,6 +82,11 @@ export const optionDefinitions : OptionDefinition[] = [
 		type: Boolean,
 		defaultValue: false,
 		description: 'Skip packaging for packman (.tgz with the sources inside a "package" folder, and a zip with the sources inside a "package name" folder )'
+	},
+	{
+		name: 'tmp',
+		typeLabel: '{underline directory}',
+		description: 'Temporary directory to store combined artifacts into while processing multiple packages',
 	},
 ];
 

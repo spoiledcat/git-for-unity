@@ -1,5 +1,4 @@
 import { FileTreeWalker } from "./TreeWalker";
-import { Readable } from "stream";
 import * as p from 'path';
 import * as asyncfile from 'async-file';
 import { copyFile } from './helpers';
@@ -14,14 +13,14 @@ export type PackageHandlerFunction = (baseSourcePath: string, sourceFile: string
 export type PackageHandler = { [key: string] : PackageHandlerFunction };
 
 export enum PackageType {
-    Source,
-    PackmanSource,
-    PackmanPackage,
-    UnityPackage,
-    Manifest
+    Source = "source",
+    PackmanSource = "package",
+    PackmanPackage = "upm",
+    UnityPackage = "unity",
+    Manifest = "manifest"
 }
-export type PackageFile = { type: PackageType, path: string, md5Path?: string };
-export type PackageFileList = { [key: number] : PackageFile };
+export type PackageFile = { type: PackageType, path: string, md5Path?: string, md5Hash?: string };
+export type PackageFileList = { [key: string] : PackageFile };
 
 export async function createTar(sourcePath: string, archiveFile: string, relativeTargetPath?: string) {
     return new Promise<void>(async (resolve, reject) => {
@@ -136,7 +135,7 @@ async function jsonHandler (baseSourcePath: string, sourceFile: string,
     for (let k in deps) {
         let dep = deps[k];
         if (dep.startsWith('file:')) {
-            const dependencyJsonFile = p.join(p.dirname(sourceFile), (p.join(dep.substr(5), 'package.json')));
+            const dependencyJsonFile = p.join(baseTargetPath, p.dirname(relativeSourcePath), (p.join(dep.substr(5), 'package.json')));
             if (!await asyncfile.exists(dependencyJsonFile)) {
                 dep = '';
             } else {

@@ -32,17 +32,16 @@ export class UnityPackager extends Packager {
         const packagePath: string = p.join(targetPath, `${packageName}-${version}.unitypackage`);
         const packageMd5Path: string = p.join(targetPath, `${packageName}-${version}.unitypackage.md5`);
 
-        await asyncfile
+        return asyncfile
             .mkdirp(targetPath)
             .then(() => createZip(sourcePath, packagePath))
             .then(async () => {
                 const hash = md5(await asyncfile.readFile(packagePath));
                 await asyncfile.writeTextFile(packageMd5Path, hash);
-            });
-
-        return [
-            { type: PackageType.UnityPackage, path: packagePath, md5Path: packageMd5Path }
-        ];
+                return [
+                    { type: PackageType.UnityPackage, path: packagePath, md5Path: packageMd5Path, md5Hash: hash }
+                ];
+            })
     }
 
     static async metaHandler (baseSourcePath: string, sourceFile: string,

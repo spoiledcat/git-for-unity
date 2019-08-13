@@ -7,14 +7,17 @@ import * as p from 'path';
 import { readAllLines } from './read-lines';
 import { FileTreeWalker } from './TreeWalker';
 import { optionDefinitions, sections, ParsedOptions } from './cmdlineoptions';
-import { PackageFile, PackageType, PackageFileList } from './packager';
+import { PackageType, PackageFileList, PackageFile } from './packager';
 import { UnityPackager } from './unityPackager';
 import { PackmanPackager } from './packmanPackager';
-import { pluck, map } from 'rxjs/operators';
 
 async function validateOptionPath(options: commandLineArgs.CommandLineOptions, argName: string, optional: boolean = false) {
 
-	if (optional && !options[argName]) return undefined;
+	if (optional)
+	{
+		if ((!options[argName] || options[argName] === '')) return undefined;
+		return p.resolve(options[argName]);
+	}
 
 	validateOption(options, argName);
 
@@ -27,7 +30,7 @@ async function validateOptionPath(options: commandLineArgs.CommandLineOptions, a
 }
 
 function validateOption(options: commandLineArgs.CommandLineOptions, argName: string, optional: boolean = false) {
-	if (!options[argName])
+	if (!options[argName] || options[argName] === '')
 	{
 		console.error(`Missing argument: ${argName}`);
 		console.error(commandLineUsage(sections));
@@ -51,6 +54,7 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 		ignores: [],
 		doUnityPackage: !options.skipUnity,
 		doPackmanPackage: !options.skipPackman,
+		tmpPath: (await validateOptionPath(options, 'tmp', true))
 	};
 
 	if (extras) {
@@ -76,8 +80,29 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 (async () => {
 
 	const parsed = await parseCommandLine();
-	
-	const tmpPackmanSourceTree = parsed.skipPackaging ? p.join(parsed.targetPath, 'package', parsed.packageName) : await FileTreeWalker.getTempDir();
+
+	let tmpBuildDir = parsed.tmpPath || `build/tmp`;
+	if (!p.isAbsolute(tmpBuildDir)) {
+		tmpBuildDir = p.resolve(tmpBuildDir);
+	}
+	tmpBuildDir = p.join(tmpBuildDir, parsed.packageName);
+
+	if (!parsed.tmpPath) {
+		console.warn(`--tmp arg not specified, reusing ${tmpBuildDir}.`);
+	}
+
+	if (!parsed.skipPackaging) {
+		if (await asyncfile.exists(tmpBuildDir)) {
+			await asyncfile.delete(tmpBuildDir);
+		}
+	}
+
+	const tmpPackmanSourceTree = parsed.skipPackaging ? p.join(parsed.targetPath, 'package', parsed.packageName) : tmpBuildDir;
+
+	if (!(await asyncfile.exists(tmpPackmanSourceTree))) {
+		await asyncfile.mkdirp(tmpPackmanSourceTree);
+	}
+
 	const tmpUnitySourceTree = parsed.skipPackaging ? p.join(parsed.targetPath, "unitypackage") : await FileTreeWalker.getTempDir();
 
 	const packmanPackager = new PackmanPackager();
@@ -89,23 +114,34 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 		await unityPackager.prepareSource(tmpPackmanSourceTree, tmpUnitySourceTree, parsed.baseInstallationPath);
 	}
 
-	const packages: PackageFileList = {};
+	let packages: { [key: string] : any, manifest?: PackageFile } = {};
+	const manifest: string = p.join(parsed.targetPath, `manifest.json`);
+	if (await asyncfile.exists(manifest)) {
+		packages = JSON.parse(await asyncfile.readTextFile(manifest));
+	}
+
 	if (parsed.skipPackaging) {
 		if (parsed.doPackmanPackage)
-			packages[PackageType.Source] = { type: PackageType.Source, path: tmpPackmanSourceTree };
+			packages[PackageType.Source].push({ type: PackageType.Source, path: tmpPackmanSourceTree });
 		if (parsed.doUnityPackage)
-			packages[PackageType.Source] = { type: PackageType.Source, path: tmpUnitySourceTree };
+			packages[PackageType.Source].push({ type: PackageType.Source, path: tmpUnitySourceTree });
 	} else {
 		if (parsed.doPackmanPackage) {
 			let files = await packmanPackager.package(tmpPackmanSourceTree, parsed.targetPath, parsed.packageName, parsed.version);
-			files.map(x => packages[x.type] = x);
+			let packmanPackageFile: PackageFile = files.find(x => x.type === PackageType.PackmanPackage)!;
+			files.map(x => {
+				if (!packages[x.type]) packages[x.type] = [];
+				packages[x.type].push(x);
+			});
 
 			if (packageJson) {
 				const packmanPackageManifest: string = p.join(parsed.targetPath, `packages.json`);
-				let packageManifest: { [key: string]: string } | undefined = undefined;
-					packageManifest = {
-					[p.basename(p.basename(packages[PackageType.PackmanPackage].path))]: JSON.parse(await asyncfile.readTextFile(packageJson))
-				};
+				let packageManifest: { [key: string]: string } = {};
+				if (await asyncfile.exists(packmanPackageManifest)) {
+					packageManifest = JSON.parse(await asyncfile.readTextFile(packmanPackageManifest));
+				}
+			
+				packageManifest[p.basename(packmanPackageFile.path)] = JSON.parse(await asyncfile.readTextFile(packageJson));
 				await asyncfile.writeTextFile(packmanPackageManifest, JSON.stringify(packageManifest));
 				packages[PackageType.Manifest] = { type: PackageType.Manifest, path: packmanPackageManifest};
 			}
@@ -113,11 +149,14 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 
 		if (parsed.doUnityPackage) {
 			let files = await unityPackager.package(tmpUnitySourceTree, parsed.targetPath, parsed.packageName, parsed.version);
-			files.map(x => packages[x.type] = x);
+			files.map(x => {
+				if (!packages[x.type]) packages[x.type] = [];
+				packages[x.type].push(x);
+			});
 		}
-	}
 
-	console.log(JSON.stringify(packages));
+		await asyncfile.writeTextFile(manifest, JSON.stringify(packages));
+	}
 })();
 
 

@@ -19,26 +19,20 @@ export class PackmanPackager extends Packager {
         const zipPath: string = p.join(targetPath, `${packageName}-${version}.zip`);
         const zipMd5Path: string = p.join(targetPath, `${packageName}-${version}.zip.md5`);
 
-        await asyncfile
-            .mkdirp(targetPath)
-            .then(() => createTar(sourcePath, tgzPath, 'package'))
-            .then(async () => {
-                const hash = md5(await asyncfile.readFile(tgzPath));
-                await asyncfile.writeTextFile(tgzMd5Path, hash);
-            }
-        );
+        await asyncfile.mkdirp(targetPath);
 
-        await asyncfile
-            .mkdirp(p.dirname(zipPath))
-            .then(() => createZip(sourcePath, zipPath, p.dirname(sourcePath) === packageName ? packageName : undefined))
-            .then(async () => {
-                const hash = md5(await asyncfile.readFile(zipPath));
-                await asyncfile.writeTextFile(zipMd5Path, hash);
-        });
+        let ret: PackageFile[] = [];
 
-        return [
-            { type: PackageType.PackmanPackage, path: tgzPath, md5Path: tgzMd5Path }, 
-            { type: PackageType.PackmanSource, path: zipPath, md5Path: zipMd5Path }
-        ];
+        await createTar(sourcePath, tgzPath, 'package');
+        let hash = md5(await asyncfile.readFile(tgzPath));
+        await asyncfile.writeTextFile(tgzMd5Path, hash);
+        ret.push({ type: PackageType.PackmanPackage, path: tgzPath, md5Path: tgzMd5Path, md5Hash: hash });
+
+        await createZip(sourcePath, zipPath, p.dirname(sourcePath) === packageName ? packageName : undefined);
+        hash = md5(await asyncfile.readFile(zipPath));
+        await asyncfile.writeTextFile(zipMd5Path, hash);
+        ret.push({ type: PackageType.PackmanSource, path: zipPath, md5Path: zipMd5Path, md5Hash: hash });
+
+        return ret;
     }
 }

@@ -5,7 +5,7 @@
 	"unity": "2018.4",
 	"description": "Git for Unity brings [Git](https://git-scm.com/) into [Unity](https://unity3d.com/), integrating source control into your work with friendly and accessible tools and workflows.",
 	"dependencies": {
-		"com.unity.git.api": "file:../api"
+		"com.unity.git.api": "file:../com.unity.git.api"
 	},
 	"devDependencies": {
 	}
