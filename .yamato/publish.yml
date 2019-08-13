@@ -3,9 +3,9 @@
 publish_internal:
   name: Internal publish
   agent:
-    type: {{ upm_linux.type }}
-    image: {{ upm_linux.image }}
-    flavor: {{ upm_linux.flavor }}
+    type: {{ upm_windows.type }}
+    image: {{ upm_windows.image }}
+    flavor: {{ upm_windows.flavor }}
   commands:
     - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
 {% for package in packages %}
@@ -16,9 +16,12 @@ publish_internal:
       only:
         - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
   artifacts:
-    artifacts:
+    logs:
       paths:
-        - "upm-ci~/packages/*.tgz"
+        - "upm-ci~/test-results/**/*"
+    packages:
+      paths:
+        - "upm-ci~/packages/**/*.tgz"
   dependencies:
     - .yamato/build.yml#build
     {% for editor in test_editors %}

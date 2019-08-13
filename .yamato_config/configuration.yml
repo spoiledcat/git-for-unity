@@ -4,7 +4,7 @@ upm_linux:
   flavor: m1.large
 upm_windows:
   type: Unity::VM
-  image: package-ci/win10:latest
+  image: package-ci/win10:stable
   flavor: b1.large
 
 test_editors:
@@ -17,7 +17,7 @@ test_platforms:
 #    command: export GITHUB_UNITY_DISABLE=1
   - name: windows
     type: Unity::VM
-    image: package-ci/win10:latest
+    image: package-ci/win10:stable
     flavor: b1.large
     command: set GITHUB_UNITY_DISABLE=1
 

@@ -23,6 +23,9 @@ test_{{ platform.name }}_{{ editor.version }}:
     logs:
       paths:
         - "upm-ci~/test-results/**/*"
+    packages:
+      paths:
+        - "upm-ci~/packages/**/*.tgz"
 
 {% endfor %}
 {% endfor %}
