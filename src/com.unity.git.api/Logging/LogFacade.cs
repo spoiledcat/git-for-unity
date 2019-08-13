@@ -18,7 +18,7 @@ namespace Unity.VersionControl.Git
 
         public void Debug(string message)
         {
-#if DEVELOPER_BUILD
+#if GFU_DEBUG_BUILD
             LogHelper.LogAdapter.Debug(context, message);
 #endif
         }
@@ -51,28 +51,28 @@ namespace Unity.VersionControl.Git
 
         public void Debug(string format, params object[] objects)
         {
-#if DEVELOPER_BUILD
+#if GFU_DEBUG_BUILD
             Debug(String.Format(format, objects));
 #endif
         }
 
         public void Debug(Exception ex, string message)
         {
-#if DEVELOPER_BUILD
+#if GFU_DEBUG_BUILD
             Debug(String.Concat(message, Environment.NewLine, ex.GetExceptionMessage()));
 #endif
         }
 
         public void Debug(Exception ex)
         {
-#if DEVELOPER_BUILD
+#if GFU_DEBUG_BUILD
             Debug(ex, string.Empty);
 #endif
         }
 
         public void Debug(Exception ex, string format, params object[] objects)
         {
-#if DEVELOPER_BUILD
+#if GFU_DEBUG_BUILD
             Debug(ex, String.Format(format, objects));
 #endif
         }

@@ -5,7 +5,7 @@ namespace Unity.VersionControl.Git
 {
     public static partial class ApplicationInfo
     {
-#if DEVELOPER_BUILD
+#if GFU_DEBUG_BUILD
         public const string ApplicationName = "GitHub for Unity Debug";
         public const string ApplicationProvider = "GitHub";
         public const string ApplicationSafeName = "GitHubUnity-dev";
@@ -16,7 +16,7 @@ namespace Unity.VersionControl.Git
 #endif
         public const string ApplicationDescription = "GitHub for Unity";
 
-#if DEVELOPER_BUILD
+#if GFU_DEBUG_BUILD
 /*
         For external contributors, we have bundled a developer OAuth application
         called `GitHub for Unity (dev)` so that you can complete the sign in flow

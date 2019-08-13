@@ -11,7 +11,7 @@ namespace Unity.VersionControl.Git.UI
     [InitializeOnLoad]
     class Menus : ScriptableObject
     {
-#if DEVELOPER_BUILD
+#if GFU_DEBUG_BUILD
 
         private const string Menu_Window_Git = "Window/Git/Open";
         private const string Menu_Window_Git_Command_Line = "Window/Git/Command Line";
@@ -33,7 +33,7 @@ namespace Unity.VersionControl.Git.UI
             EntryPoint.ApplicationManager.UsageTracker.IncrementApplicationMenuMenuItemCommandLine();
         }
 
-#if DEVELOPER_BUILD
+#if GFU_DEBUG_BUILD
 
         [MenuItem("Git/Select Window")]
         public static void Git_SelectWindow()

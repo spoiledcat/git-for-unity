@@ -9,7 +9,7 @@ namespace Unity.VersionControl.Git
     class UsageTrackerSync : IUsageTracker
     {
 
-#if DEVELOPER_BUILD
+#if GFU_DEBUG_BUILD
         protected internal const int MetrisReportTimeout = 30;
 #else
         protected internal const int MetrisReportTimeout = 3 * 60;
