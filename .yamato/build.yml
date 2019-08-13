@@ -1,32 +1,31 @@
-build:
-  name: Build
-  agent:
-    type: Unity::VM
-    image: core-kaunas/win10-vs2017-dotnetcore:latest
-    flavor: m1.large
-  interpreter: powershell
-  commands:
-    - |
-      #$version = $env:YAMATO_JOB_ID
-      #Write-Output "Building $version"
-      #scripts\Set-Version.ps1 $version -BumpPatch -Verbose
+name: Build
+agent:
+  type: Unity::VM
+  image: core-kaunas/win10-vs2017-dotnetcore:latest
+  flavor: m1.large
+interpreter: powershell
+commands:
+  - |
+    #$version = $env:YAMATO_JOB_ID
+    #Write-Output "Building $version"
+    #scripts\Set-Version.ps1 $version -BumpPatch -Verbose
 
-      scripts\Get-Deps.ps1
-      scripts\Build.ps1
+    scripts\Get-Deps.ps1
+    scripts\Build.ps1
 
-      dotnet tool install --tool-path . nbgv
-      Push-Location src\com.unity.git.api
-      $version = ..\..\nbgv get-version -f json | ConvertFrom-Json
-      Pop-Location
+    dotnet tool install --tool-path . nbgv
+    Push-Location src\com.unity.git.api
+    $version = ..\..\nbgv get-version -f json | ConvertFrom-Json
+    Pop-Location
 
-      Write-Output "Packaging version $($version.AssemblyInformationalVersion)"
-      scripts\Create-Packages.ps1 $($version.AssemblyInformationalVersion) -Verbose
+    Write-Output "Packaging version $($version.AssemblyInformationalVersion)"
+    scripts\Create-Packages.ps1 $($version.AssemblyInformationalVersion) -Verbose
 
-  triggers:
-    branches:
-      only:
-      - "/.*/"
-  artifacts:
-    packages:
-      paths:
-        - "artifacts/*.tgz"
+triggers:
+  branches:
+    only:
+    - "/.*/"
+artifacts:
+  packages:
+    paths:
+      - "artifacts/*.tgz"
