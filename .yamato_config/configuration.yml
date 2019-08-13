@@ -8,5 +8,3 @@ test_platforms:
 packages:
   - name: com.unity.git.api
     path: PackageSources/com.unity.git.api
-  - name: com.unity.git.ui
-    path: PackageSources/com.unity.git.ui
