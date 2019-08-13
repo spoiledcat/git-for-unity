@@ -18,8 +18,9 @@ publish_internal:
       paths:
         - "upm-ci~/packages/*.tgz"
   dependencies:
+    - .yamato/build.yml#build
     {% for editor in test_editors %}
     {% for platform in test_platforms %}
-    - .yamato/upm-ci.yml#test_{{ platform.name }}_{{ editor.version }}
+    - .yamato/test.yml#test_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}

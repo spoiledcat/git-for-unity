@@ -29,10 +29,10 @@ test_{{ platform.name }}_{{ editor.version }}:
 
 test_trigger:
   name: Tests Trigger
-  # triggers:
-  #   branches:
-  #     only:
-  #     - "/.*/"
+  triggers:
+    branches:
+      only:
+      - "/.*/"
   dependencies:
     {% for editor in test_editors %}
     {% for platform in test_platforms %}
