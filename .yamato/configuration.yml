@@ -1,0 +1,5 @@
+packages:
+  - name: com.unity.git.api
+    path: artifacts/package/com.unity.git.api
+  - name: com.unity.git.ui
+    path: artifacts/package/com.unity.git.ui
