@@ -15,9 +15,9 @@ test_{{ platform.name }}_{{ editor.version }}:
       export GITHUB_UNITY_DISABLE=1
       upm-ci package test -u {{ editor.version }} --packages-path {{ package.path }}
 {% endfor %}
-    logs:
-      paths:
-        - "upm-ci~/test-results/**/*"
+  logs:
+    paths:
+      - "upm-ci~/test-results/**/*"
   dependencies:
     - .yamato/build.yml#build
 {% endfor %}

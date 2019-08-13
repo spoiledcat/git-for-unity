@@ -8,9 +8,57 @@ pack:
     flavor: m1.large
 
   dependencies:
-    - .yamato/build.yml
+    - .yamato/build.yml#build
 
   commands:
   {% for package in packages %}
     - ls -lisa {{ package.path }}
   {% endfor %}
+
+{% for editor in test_editors %}
+{% for platform in test_platforms %}
+test_{{ platform.name }}_{{ editor.version }}:
+  name : Test {{ editor.version }} on {{ platform.name }}
+  agent:
+    type: {{ platform.type }}
+    image: {{ platform.image }}
+    flavor: {{ platform.flavor}}
+  commands:
+    - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
+{% for package in packages %}
+    - |
+      export GITHUB_UNITY_DISABLE=1
+      upm-ci package test -u {{ editor.version }} --packages-path {{ package.path }}
+{% endfor %}
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+  dependencies:
+    - .yamato/build.yml#build
+{% endfor %}
+{% endfor %}
+
+test_trigger:
+  name: Tests Trigger
+  agent:
+    type: Unity::VM
+    image: package-ci/ubuntu:latest
+    flavor: m1.large
+  triggers:
+    branches:
+      only:
+      - "/.*/"
+  artifacts:
+    logs:
+      paths:
+        - "upm-ci~/test-results/**/*"
+    packages:
+      paths:
+        - "upm-ci~/packages/**/*"
+  dependencies:
+    - .yamato/build.yml#build
+    {% for editor in test_editors %}
+    {% for platform in test_platforms %}
+    - .yamato/upm-ci.yml#test_{{platform.name}}_{{editor.version}}
+    {% endfor %}
+    {% endfor %}
