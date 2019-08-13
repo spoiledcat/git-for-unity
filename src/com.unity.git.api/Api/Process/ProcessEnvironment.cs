@@ -14,7 +14,7 @@ namespace Unity.VersionControl.Git
         private NPath basePath;
         private string[] envPath;
         private NPath gitInstallPath;
-        public NPath LibExecPath { get; private set; }
+        private NPath libExecPath;
 
 
         public ProcessEnvironment(IEnvironment environment)
@@ -25,7 +25,7 @@ namespace Unity.VersionControl.Git
 
         private void Reset()
         {
-            basePath = LibExecPath = NPath.Default;
+            basePath = libExecPath = NPath.Default;
             envPath = null;
             gitInstallPath = Environment.GitInstallPath;
 
@@ -35,7 +35,7 @@ namespace Unity.VersionControl.Git
             basePath = ResolveBasePath();
             envPath = CreateEnvPath().ToArray();
             if (ResolveGitExecPath(out NPath p))
-                LibExecPath = p;
+                libExecPath = p;
         }
 
         private void GeneralConfigure(ProcessStartInfo psi, NPath workingDirectory)
@@ -62,7 +62,7 @@ namespace Unity.VersionControl.Git
             if (dontSetupGit)
                 return;
 
-            if (gitInstallPath == NPath.Default || gitInstallPath != Environment.GitInstallPath)
+            //if (gitInstallPath == NPath.Default || gitInstallPath != Environment.GitInstallPath)
                 Reset();
 
             var pathEntries = new List<string>(envPath);
@@ -70,8 +70,8 @@ namespace Unity.VersionControl.Git
 
             // we can only set this env var if there is a libexec/git-core. git will bypass internally bundled tools if this env var
             // is set, which will break Apple's system git on certain tools (like osx-credentialmanager)
-            if (LibExecPath.IsInitialized)
-                psi.EnvironmentVariables["GIT_EXEC_PATH"] = LibExecPath.ToString();
+            if (libExecPath.IsInitialized)
+                psi.EnvironmentVariables["GIT_EXEC_PATH"] = libExecPath.ToString();
 
             pathEntries.Add("END");
 
@@ -231,8 +231,8 @@ namespace Unity.VersionControl.Git
         private IEnumerable<string> CreateEnvPath()
         {
             yield return Environment.GitExecutablePath.Parent.ToString();
-            var basePath = ResolveBasePath();
-            yield return basePath.Combine("bin").ToString();
+            var basep = ResolveBasePath();
+            yield return basep.Combine("bin").ToString();
             if (Environment.IsWindows)
                 yield return Environment.GitInstallPath.Combine("usr/bin").ToString();
             if (Environment.GitInstallPath.IsInitialized && Environment.GitLfsExecutablePath.Parent != Environment.GitExecutablePath.Parent)
