@@ -43,7 +43,7 @@ on_success:
 on_finish:
 - ps: |
     Set-Location $env:appveyor_build_folder
-    $manifest = "$($env:appveyor_build_folder)\artifacts\manifest.json
+    $manifest = "$($env:appveyor_build_folder)\artifacts\manifest.json"
     scripts\Upload-ToAppveyor.ps1 $manifest
     Get-ChildItem $env:appveyor_build_folder\build\*.log | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName logs }
     Get-ChildItem $env:appveyor_build_folder\artifacts\binaries*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName binaries }
