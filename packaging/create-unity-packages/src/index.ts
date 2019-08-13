@@ -115,6 +115,7 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 			await unityPackager.prepareSource(tmpPackmanSourceTree, tmpUnitySourceTree, parsed.baseInstallationPath);
 
 			if (parsed.skipPackaging) {
+				if (!packages[PackageType.Source]) packages[PackageType.Source] = [];
 				packages[PackageType.Source].push({ type: PackageType.Source, path: tmpUnitySourceTree });
 			} else {
 				let files = await unityPackager.package(tmpUnitySourceTree, parsed.targetPath, parsed.packageName, parsed.version);
@@ -127,6 +128,7 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 
 		if (parsed.doPackmanPackage) {
 			if (parsed.skipPackaging) {
+				if (!packages[PackageType.Source]) packages[PackageType.Source] = [];
 				packages[PackageType.Source].push({ type: PackageType.Source, path: tmpPackmanSourceTree });
 			} else {
 				let files = await packmanPackager.package(tmpPackmanSourceTree, parsed.targetPath, parsed.packageName, parsed.version);
@@ -148,6 +150,7 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 		let packageJson = await upmPackager.prepare(parsed.sourcePath, parsed.version, parsed.ignores, tmpUpmSourceTree);
 
 		if (parsed.skipPackaging) {
+			if (!packages[PackageType.Source]) packages[PackageType.Source] = [];
 			packages[PackageType.Source].push({ type: PackageType.Source, path: tmpUpmSourceTree });
 		} else {
 
