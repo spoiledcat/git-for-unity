@@ -2,13 +2,23 @@ upm_linux:
   type: Unity::VM
   image: package-ci/ubuntu:latest
   flavor: m1.large
+upm_windows:
+  type: Unity::VM
+  image: package-ci/win10:latest
+  flavor: b1.large
+
 test_editors:
   - version: 2019.1
 test_platforms:
-  - name: ubuntu
+#  - name: ubuntu
+#    type: Unity::VM
+#    image: package-ci/ubuntu:latest
+#    flavor: m1.large
+  - name: windows
     type: Unity::VM
-    image: package-ci/ubuntu:latest
-    flavor: m1.large
+    image: package-ci/win10:latest
+    flavor: b1.large
+
 packages:
   - name: com.unity.git.api
     path: PackageSources/com.unity.git.api
