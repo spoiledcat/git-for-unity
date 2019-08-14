@@ -11,25 +11,12 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 
 . $PSScriptRoot\helpers.ps1 | out-null
 
-function Get-ObjectMembers {
-    [CmdletBinding()]
-    Param(
-        [Parameter(Mandatory=$True, ValueFromPipeline=$True)]
-        [PSCustomObject]$obj
-    )
-    $obj | Get-Member -MemberType NoteProperty | ForEach-Object {
-        $key = $_.Name
-        [PSCustomObject]@{Key = $key; Value = $obj."$key"}
-    }
-}
-
 & {
 	Trap {
 		Write-Output "Error uploading artifacts"
 		Write-Output "Error: $_"
 		exit 0
 	}
-
 
 	Get-Content $Manifest | ConvertFrom-Json | Get-ObjectMembers | % {
 		$key = $_.Key

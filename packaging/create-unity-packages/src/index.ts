@@ -154,15 +154,29 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 			});
 
 			if (packageJson) {
-				const upmManifest: string = p.join(parsed.targetPath, `packages.json`);
-				let packageManifest: { [key: string]: string } = {};
-				if (await asyncfile.exists(upmManifest)) {
-					packageManifest = JSON.parse(await asyncfile.readTextFile(upmManifest));
-				}
-			
-				packageManifest[p.basename(upmPackageFile.path)] = JSON.parse(await asyncfile.readTextFile(packageJson));
-				await asyncfile.writeTextFile(upmManifest, JSON.stringify(packageManifest));
-				packages[PackageType.Manifest] = { type: PackageType.Manifest, path: upmManifest};
+				const upmManifestFile: string = p.join(parsed.targetPath, `manifest-${parsed.packageName}.json`);
+				let upmManifest: { [key: string]: {} } = {};
+
+				// this adds multiple dependent packages to a single manifest, but we don't want that right now
+				// unless we want to add a test package
+				
+				// const json = JSON.parse(await asyncfile.readTextFile(packageJson));
+				// let deps = json['dependencies'];
+				// for (let dep in deps) {
+				// 	const dependencyJsonFile = p.join(parsed.targetPath, `manifest-${dep}.json`);
+				// 	if (await asyncfile.exists(dependencyJsonFile)) {
+				// 		const depmanifest: { [key: string]: {} } = JSON.parse(await asyncfile.readTextFile(dependencyJsonFile));
+				// 		for (let entry in depmanifest) {
+				// 			upmManifest[entry] = depmanifest[entry];
+				// 		}
+				// 	}
+				// }
+
+				upmManifest[p.basename(upmPackageFile.path)] = JSON.parse(await asyncfile.readTextFile(packageJson));
+				await asyncfile.writeTextFile(upmManifestFile, JSON.stringify(upmManifest));
+
+				// save the upm manifest file
+				packages[PackageType.Manifest] = { type: PackageType.Manifest, path: upmManifestFile};
 			}			
 		}
 	}

@@ -14,13 +14,12 @@ test_platforms:
 #    type: Unity::VM
 #    image: package-ci/ubuntu:stable
 #    flavor: m1.large
-#    command: export GITHUB_UNITY_DISABLE=1
   - name: windows
     type: Unity::VM
     image: package-ci/win10:stable
     flavor: b1.large
-    command: set GITHUB_UNITY_DISABLE=1
 
 packages:
   - name: com.unity.git.api
     path: PackageSources/com.unity.git.api
+    safename: com_unity_git_api

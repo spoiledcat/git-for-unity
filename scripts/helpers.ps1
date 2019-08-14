@@ -95,5 +95,17 @@ New-Module -ScriptBlock {
         New-Item -Type Directory $path
     }
 
-    Export-ModuleMember -Function Die,Run-Command,Run-Process,Create-TempDirectory
+    function Get-ObjectMembers {
+        [CmdletBinding()]
+        Param(
+            [Parameter(Mandatory=$True, ValueFromPipeline=$True)]
+            [PSCustomObject]$obj
+        )
+        $obj | Get-Member -MemberType NoteProperty | ForEach-Object {
+            $key = $_.Name
+            [PSCustomObject]@{Key = $key; Value = $obj."$key"}
+        }
+    }
+
+    Export-ModuleMember -Function Die,Run-Command,Run-Process,Create-TempDirectory,Get-ObjectMembers
 }

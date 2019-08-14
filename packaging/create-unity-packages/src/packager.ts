@@ -17,8 +17,10 @@ export enum PackageType {
     PackmanSource = "package",
     PackmanPackage = "upm",
     UnityPackage = "unity",
+    UpmManifest = "upmmanifest",
     Manifest = "manifest"
 }
+
 export type PackageFile = { type: PackageType, path: string, md5Path?: string, md5Hash?: string };
 export type PackageFileList = { [key: string] : PackageFile };
 

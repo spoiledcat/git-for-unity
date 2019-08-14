@@ -21,14 +21,11 @@ build:
 
       Write-Output "Packaging version $($version.AssemblyInformationalVersion)"
       scripts\Create-Packages.ps1 $($version.AssemblyInformationalVersion) "PackageSources" -SkipUnity -SkipPackman
-      New-Item -itemtype Directory -Path "upm-ci~\packages" -Force
-      Copy-Item "artifacts\*.tgz" "upm-ci~\packages\"
-      Copy-Item "artifacts\packages.json" "upm-ci~\packages\"
 
   artifacts:
     packages:
       paths:
-        - "upm-ci~/packages/**/*"
+        - "artifacts/**/*"
     sources:
       paths:
         - "PackageSources/**/*"
