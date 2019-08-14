@@ -26,7 +26,7 @@ export const optionDefinitions : OptionDefinition[] = [
 		name: 'src',
 		alias: 's',
 		type: String,
-		description: 'Path(s) to the source assets to be packaged. If you pass more than one, you must pass an equal amount to extras, ignores, installPath and project',
+		description: 'Path to the sources to be packaged.',
 	},
 	{
 		name: 'out',
@@ -45,12 +45,6 @@ export const optionDefinitions : OptionDefinition[] = [
 		alias: 'v',
 		type: String,
 		description: 'Version of the package',
-	},
-	{
-		name: 'extras',
-		alias: 'e',
-		type: String,
-		description: 'Path to extra files to also be packaged (recursively',
 	},
 	{
 		name: 'ignores',

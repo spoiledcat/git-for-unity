@@ -25,8 +25,6 @@ Param(
 	[string]
 	$Version,
 	[string]
-	$Extra,
-	[string]
 	$Ignore,
 	[string]
 	$BaseInstall,
@@ -78,7 +76,7 @@ try {
 		$noUpm = "-m"
 	}
 
-	Run-Command -Fatal { & node ..\yarn.js -s start -o $Out -n $Name -v $Version -s $Source -i $Ignore -e $Extra -t $BaseInstall --tmp $Tmp $noPackage $noUnity $noPackman $noUpm }
+	Run-Command -Fatal { & node ..\yarn.js -s start -o $Out -n $Name -v $Version -s $Source -i $Ignore -t $BaseInstall --tmp $Tmp $noPackage $noUnity $noPackman $noUpm }
 
 } finally {
 	Pop-Location

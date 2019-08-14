@@ -42,7 +42,6 @@ function validateOption(options: commandLineArgs.CommandLineOptions, argName: st
 
 async function parseCommandLine() : Promise<ParsedOptions> {
 	const options = commandLineArgs(optionDefinitions);
-	const extras = await validateOptionPath(options, "extras", true);
 	const ignoreFile = await validateOptionPath(options, "ignores", true);
 
 	const parsed : ParsedOptions = {
@@ -59,13 +58,6 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 		tmpPath: (await validateOptionPath(options, 'tmp', true)),
 		other: []
 	};
-
-	if (extras) {
-		let combinedSourcesPath = await FileTreeWalker.getTempDir();
-		await FileTreeWalker.copy(parsed.sourcePath, combinedSourcesPath);
-		await FileTreeWalker.copy(extras, combinedSourcesPath);
-		parsed.sourcePath = combinedSourcesPath;
-	}
 
 	if (ignoreFile) {
 		const ignoreData = await asyncfile.readTextFile(ignoreFile);
