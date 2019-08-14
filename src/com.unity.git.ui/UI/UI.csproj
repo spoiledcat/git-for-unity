@@ -24,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
-    <PackageReference Include="AsyncBridge.Net35" version="0.2.3333.0" />
+    <PackageReference Include="AsyncBridge.Net35.Repackaged" version="0.2.4-custom" />
     <PackageReference Include="ReadOnlyCollectionInterfaces" version="1.0.0" />
-    <PackageReference Include="TaskParallelLibrary" version="1.0.3333.0" targetFramework="net35" />
+    <PackageReference Include="TaskParallelLibrary.Repackaged" version="1.0.4-custom" targetFramework="net35" />
     <PackageReference Include="ValueTupleBridge" Version="0.1.5" targetFramework="net35" />
     <Reference Include="System.Web" />
   </ItemGroup>

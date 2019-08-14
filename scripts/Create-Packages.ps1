@@ -58,23 +58,21 @@ if ($Trace) {
 
     $pkgName="com.unity.git.api"
     $pkgSrcDir="$packageDir\$pkgName"
-    $extrasDir=""
     $ignorefile="$srcDir\$pkgName\.npmignore"
     $baseInstall="Packages\$pkgName"
     $outDir=$artifactDir
 
-    Write-Verbose "$packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall"
+    Write-Verbose "$packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version $extrasDir -Ignore $ignorefile -BaseInstall $baseInstall"
     Write-Output "Packaging $pkgName..."
-    Run-Command -Fatal { & $packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm }
+    Run-Command -Fatal { & $packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm }
 
     $pkgName="com.unity.git.ui"
     $pkgSrcDir="$packageDir\$pkgName"
-    $extrasDir=""
     $ignorefile="$srcDir\$pkgName\.npmignore"
     $baseInstall="Packages\$pkgName"
     $outDir=$artifactDir
 
-    Write-Verbose "$packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall"
+    Write-Verbose "$packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version $extrasDir -Ignore $ignorefile -BaseInstall $baseInstall"
     Write-Output "Packaging $pkgName..."
-    Run-Command -Fatal { & $packagingScriptsDir\run.ps1 $pkgSrcDir $outDir $pkgName $Version $extrasDir $ignorefile $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm }
+    Run-Command -Fatal { & $packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm }
 }

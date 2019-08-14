@@ -12,7 +12,10 @@
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
-    <PackageReference Include="Unity.NETFramework.ReferenceAssemblies.net35" Version="1.0.0" IncludeAssets="runtime; build; native; contentfiles; analyzers" PrivateAssets="All" />
+    <PackageReference Include="Custom.Unity.NETFramework.ReferenceAssemblies.net35" Version="1.0.1-custom" IncludeAssets="runtime; build; native; contentfiles; analyzers" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net471" Version="1.0.0-preview.2" IncludeAssets="runtime; build; native; contentfiles; analyzers" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
