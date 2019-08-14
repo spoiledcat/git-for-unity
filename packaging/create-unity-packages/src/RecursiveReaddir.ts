@@ -11,8 +11,12 @@ type Callback = (error?: Error, file?: FileEntry) => boolean;
 
 const patternMatcher = (pattern: string): IgnoreFunction => {
   return (file: FileEntry) => {
-    const minimatcher = new minimatch.Minimatch(pattern, { matchBase: true });
-    return (!minimatcher.negate || !file.isDir) && minimatcher.match(file.file);
+    const minimatcher = new minimatch.Minimatch(pattern, { matchBase: true, dot: true });
+    const ret = (!minimatcher.negate || !file.isDir) && minimatcher.match(file.file);
+    // if (ret) {
+    //   console.log(`Ignoring ${file.file} because ${pattern}`);
+    // }
+    return ret;
   };
 };
 const toMatcherFunction = (ignoreEntry: string | IgnoreFunction) => {

@@ -1,0 +1,16 @@
+{
+    "name": "Unity.Git.Api",
+    "references": [
+        "Unity.Git.Logging"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

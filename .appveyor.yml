@@ -1,0 +1,48 @@
+image: Visual Studio 2017
+environment:
+  matrix:
+    - node_version: '8'
+
+install:
+- ps: Install-Product node 8 x64
+- ps: |
+    scripts\Get-Deps.ps1
+    nuget restore
+
+configuration: Release
+build:
+  project: GitForUnity.sln
+  verbosity: minimal
+test:
+  assemblies:
+    except:
+      - '**\*.TestRunner.dll'
+      - '**\TestUtils.dll'
+  categories:
+    except:
+    - DoNotRunOnAppVeyor
+on_success:
+- ps: |
+
+    $version = $env:APPVEYOR_BUILD_VERSION
+
+    Write-Output "Packaging version $($env:GitAssemblyInformationalVersion) ($version)"
+
+    scripts\Create-Packages.ps1 $version
+
+    # save commit and binaries
+    $sourcedir="$($env:appveyor_build_folder)\build\Release"
+    $commitfile="$sourcedir\commit"
+    Add-Content $commitfile $appveyor_repo_commit
+
+    $dllzip="$($env:appveyor_build_folder)\artifacts\binaries-$version.zip"
+    Write-Output "Zipping $sourcedir to $dllzip"
+    7z a $dllzip $sourcedir
+
+on_finish:
+- ps: |
+    Set-Location $env:appveyor_build_folder
+    $manifest = "$($env:appveyor_build_folder)\artifacts\manifest.json"
+    scripts\Upload-ToAppveyor.ps1 $manifest
+    Get-ChildItem $env:appveyor_build_folder\build\*.log | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName logs }
+    Get-ChildItem $env:appveyor_build_folder\artifacts\binaries*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName binaries }

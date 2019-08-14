@@ -13,9 +13,8 @@
   <Import Project="$(SolutionDir)\common\properties.props" />
   <Import Project="$(SolutionDir)\common\tests.props" />  
   <ItemGroup>
-    <ProjectReference Include="$(SolutionDir)\src\api\Api\Api.csproj" />
-    <ProjectReference Include="$(SolutionDir)\src\api\Logging\Logging.csproj" />
+    <ProjectReference Include="..\..\src\com.unity.git.api\Api\Api.csproj" />
+    <ProjectReference Include="..\..\src\com.unity.git.api\Logging\Logging.csproj" />
     <ProjectReference Include="..\TestWebServer\TestWebServer.csproj" />
   </ItemGroup>
-  <Import Project="$(SolutionDir)\common\build.targets" />
 </Project>

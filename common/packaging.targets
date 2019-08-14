@@ -1,29 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ApiSourceDir Condition="'$(ApiSourceDir)' == '' ">$(SolutionDir)\src\api</ApiSourceDir>
-    <UiSourceDir Condition="'$(UiSourceDir)' == '' ">$(SolutionDir)\src\ui</UiSourceDir>
     <PublishTo Condition="'$(PublishTo)' == '' ">$(SolutionDir)\build\packages</PublishTo>
-    <ApiPackageName>com.unity.version-control.git</ApiPackageName>
-    <UiPackageName>com.unity.version-control.git.ui</UiPackageName>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
-  <Target Name="CreatePackage" AfterTargets="AfterBuild">
+  <Target Name="EnumeratePackageFiles" Returns="$(PackageName);@(FilesToCopy)">
 
-    <CreateItem Include="$(ApiSourceDir)\**\*.*">
-      <Output TaskParameter="Include" ItemName="ApiToCopy" />
+    <CreateItem Include="$(PackageSourceDir)\$(PackageName)\**\*.*;$(PackageSourceDir)\extras\$(PackageName)\**\*.*" Exclude="$(PackageSourceDir)\$(PackageName)\**\*.csproj*;$(PackageSourceDir)\$(PackageName)\**\*.ncrunch*;$(PackageSourceDir)\$(PackageName)\**\obj\**">
+      <Output TaskParameter="Include" ItemName="FilesToCopy" />
     </CreateItem>
 
-    <CreateItem Include="$(UiSourceDir)\**\*.*">
-      <Output TaskParameter="Include" ItemName="UiToCopy" />
-    </CreateItem>
+  </Target>
 
-    <MakeDir Directories="$(PublishTo)\$(ApiPackageName)" />
-    <MakeDir Directories="$(PublishTo)\$(UiPackageName)" />
+  <Target Name="CopySourcesToPackmanPackage"
+    DependsOnTargets="EnumeratePackageFiles"
+    AfterTargets="AfterBuild"
+    Inputs="@(FilesToCopy);@(VersionFiles)"
+    Outputs="@(FilesToCopy->'$(PublishTo)\$(PackageName)\%(RecursiveDir)%(Filename)%(Extension)');@(VersionFiles->'$(PublishTo)\$(PackageName)\%(Project)\%(Filename)%(Extension)')"
+    >
 
-    <Copy SourceFiles="@(ApiToCopy)" DestinationFiles="@(ApiToCopy->'$(PublishTo)\$(ApiPackageName)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="@(UiToCopy)" DestinationFiles="@(UiToCopy->'$(PublishTo)\$(UiPackageName)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <MakeDir Directories="$(PublishTo)\$(PackageName)" />
+
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFiles="@(FilesToCopy->'$(PublishTo)\$(PackageName)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(VersionFiles)" DestinationFiles="@(VersionFiles->'$(PublishTo)\$(PackageName)\%(Project)\%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
 
   </Target>
 </Project>

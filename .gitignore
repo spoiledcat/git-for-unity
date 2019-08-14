@@ -60,7 +60,6 @@ artifacts/
 *_p.c
 *_i.h
 *.ilk
-*.meta
 *.obj
 *.pch
 *.pdb
@@ -201,7 +200,6 @@ _pkginfo.txt
 # Others
 ClientBin/
 ~$*
-*~
 *.dbmdl
 *.dbproj.schemaview
 *.jfm
@@ -305,3 +303,9 @@ sysinfo.txt
 *.unitypackage
 /downloads
 /embedded-git.json
+lib/deps.zip
+nbgv.exe
+.store
+.Editor
+PackageSources/
+upm-ci~/

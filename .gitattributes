@@ -12,3 +12,4 @@
 *.asset -text
 *.unity -text
 *.bundle filter=lfs diff=lfs merge=lfs -text
+*-custom.nupkg filter=lfs diff=lfs merge=lfs -text

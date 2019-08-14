@@ -11,7 +11,7 @@
     <RootNamespace>Unity.VersionControl.Git</RootNamespace>
     <AssemblyName>Unity.VersionControl.Git.Localization</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <OutputPath>..\api\Localization\</OutputPath>
+    <OutputPath>..\com.unity.git.api\Localization\</OutputPath>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -37,6 +37,9 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
   </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
+    <PackageReference Include="Custom.Unity.NETFramework.ReferenceAssemblies.net35" Version="1.0.1-custom" IncludeAssets="runtime; build; native; contentfiles; analyzers" PrivateAssets="All" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Localization.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -50,10 +53,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
+  <PropertyGroup>
+    <BuildWrapperDependsOn>$(BuildDependsOn)</BuildWrapperDependsOn>
+    <BuildDependsOn>CheckIfBuildIsNeeded;BuildWrapper</BuildDependsOn>
+  </PropertyGroup>
+  <Target Name="CheckIfBuildIsNeeded">
+    <PropertyGroup Condition="'$(MSBuildRuntimeType)' == 'Core'">
+      <DoBuild>false</DoBuild>
+    </PropertyGroup>
   </Target>
--->
-  <Import Project="$(SolutionDir)\common\build.targets" />
+  <Target Name="BuildWrapper" Condition=" '$(DoBuild)' != 'false' " DependsOnTargets="$(BuildWrapperDependsOn)" Returns="$(TargetPath)" />
 </Project>

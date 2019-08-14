@@ -1,0 +1,34 @@
+{% metadata_file .yamato_config/configuration.yml %}
+---
+{% for package in packages %}
+
+publish_{{ package.safename }}:
+  name: Publish {{ package.name }} Internal
+  agent:
+    type: {{ upm_windows.type }}
+    image: {{ upm_windows.image }}
+    flavor: {{ upm_windows.flavor }}
+  interpreter: powershell
+  commands:
+    - |
+      $env:GITHUB_UNITY_DISABLE=1
+      $upmDir="upm-ci~\packages"
+      scripts\CopyPackagesForUpm.ps1 "artifacts\manifest-{{ package.name }}.json" "$upmDir"
+
+    - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - upm-ci package publish --package-path {{ package.path }}
+
+  triggers:
+    tags:
+      only:
+        - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
+
+  dependencies:
+    - .yamato/build.yml#build
+    {% for editor in test_editors %}
+    {% for platform in test_platforms %}
+    - .yamato/test.yml#test_{{ package.safename }}_{{ platform.name }}_{{ editor.version }}
+    {% endfor %}
+    {% endfor %}
+
+{% endfor %}

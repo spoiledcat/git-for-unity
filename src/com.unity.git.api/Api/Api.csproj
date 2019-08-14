@@ -1,0 +1,73 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <TargetFrameworks>net35;net471</TargetFrameworks>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\..\</SolutionDir>
+    <ProjectGuid>{B389ADAF-62CC-486E-85B4-2D8B078DF76B}</ProjectGuid>
+    <AssemblyName>Unity.VersionControl.Git</AssemblyName>
+    <RootNamespace>Unity.VersionControl.Git</RootNamespace>
+  </PropertyGroup>
+
+  <Import Project="$(SolutionDir)\common\properties.props" />
+  <Import Project="$(SolutionDir)\common\libraries.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Localization\Localization.csproj" Condition="'$(MSBuildRuntimeType)' != 'Core'" />
+    <Reference Include="Unity.VersionControl.Git.Localization.dll" Condition="'$(MSBuildRuntimeType)' == 'Core'">
+      <HintPath>..\Localization\Unity.VersionControl.Git.Localization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+
+    <ProjectReference Include="..\Logging\Logging.csproj" />
+
+    <Reference Include="Mono.Posix">
+      <HintPath>..\Mono.Posix\Mono.Posix.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="sfw.net">
+      <HintPath>..\sfw\sfw.net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
+    <PackageReference Include="AsyncBridge.Net35.Repackaged" version="0.2.4-custom" />
+    <PackageReference Include="ReadOnlyCollectionInterfaces" version="1.0.0" />
+    <PackageReference Include="TaskParallelLibrary.Repackaged" version="1.0.4-custom" targetFramework="net35" />
+    <PackageReference Include="ValueTupleBridge" Version="0.1.5" targetFramework="net35" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="**\*.cs" Exclude="SolutionInfo.cs" />
+    <EmbeddedResource Include="PlatformResources\**\gitconfig;PlatformResources\**\git-lfs.json;PlatformResources\windows\git.json" />
+    <EmbeddedResource Include="Resources\*" Exclude="Resources\*.meta" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Condition=" '$(Buildtype)' == 'Internal'" Include="$(SolutionDir)\script\src\ApplicationInfo_Local.cs">
+      <Link>Properties\ApplicationInfo_Local.cs</Link>
+    </Compile>
+    <Compile Condition=" '$(Buildtype)' != 'Internal' And Exists('$(SolutionDir)\common\ApplicationInfo_Local.cs')" Include="$(SolutionDir)\script\src\ApplicationInfo_Local.cs">
+      <Link>Properties\ApplicationInfo_Local.cs</Link>
+    </Compile>
+    <None Include="$(SolutionDir)\common\ApplicationInfo_Local.cs-example">
+      <Link>Properties\ApplicationInfo_Local.cs-example</Link>
+    </None>
+  </ItemGroup>
+
+  <!-- copy source files to packman package folder -->
+  <PropertyGroup>
+    <PackageSourceDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</PackageSourceDir>
+    <PackageName>com.unity.git.api</PackageName>
+  </PropertyGroup>
+  <ItemGroup>
+    <VersionFiles Include="$(IntermediateOutputPath)\$(AssemblyName).Version.cs">
+      <Project>Api</Project>
+    </VersionFiles>
+    <VersionFiles Include="$(IntermediateOutputPath)\$(RootNamespace).Logging.Version.cs">
+      <Project>Logging</Project>
+    </VersionFiles>
+  </ItemGroup>
+
+  <Import Project="$(SolutionDir)\common\packaging.targets" Condition=" '$(TargetFramework)' == 'net471' " />
+</Project>

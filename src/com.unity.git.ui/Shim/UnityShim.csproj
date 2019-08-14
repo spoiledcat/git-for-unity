@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <PropertyGroup>
+    <TargetFrameworks>net35;net471</TargetFrameworks>
+    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\..\</SolutionDir>
+    <ProjectGuid>{F94F8AE1-C171-4A83-89E8-6557CA91A188}</ProjectGuid>
+    <AssemblyName>UnityShim</AssemblyName>
+    <RootNamespace>Unity.VersionControl.Git</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\common\properties.props" />
+  <Import Project="$(SolutionDir)\common\libraries.props" />
+  <Import Project="$(SolutionDir)\common\unityreferences.targets" />
+
+  <ItemGroup>
+    <Reference Include="UnityEditor">
+      <HintPath>$(UnityDir)Managed\UnityEditor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(UnityDir)Managed\UnityEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="**\*.cs" Exclude="SolutionInfo.cs" />
+  </ItemGroup>
+</Project>

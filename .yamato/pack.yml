@@ -1,0 +1,16 @@
+{% metadata_file .yamato_config/configuration.yml %}
+---
+pack:
+  name: Pack
+  agent:
+    type: Unity::VM
+    image: package-ci/ubuntu:latest
+    flavor: m1.large
+
+  dependencies:
+    - .yamato/build.yml#build
+
+  commands:
+  {% for package in packages %}
+    - ls -lisa {{ package.path }}
+  {% endfor %}
