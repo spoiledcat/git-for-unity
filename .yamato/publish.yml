@@ -22,16 +22,12 @@ publish_{{ package.safename }}:
     tags:
       only:
         - /^(r|R)(c|C)-\d+\.\d+\.\d+(-preview(\.\d+)?)?$/
-  artifacts:
-    logs:
-      paths:
-        - "upm-ci~/test-results/**/*"
 
   dependencies:
     - .yamato/build.yml#build
     {% for editor in test_editors %}
     {% for platform in test_platforms %}
-    - .yamato/test.yml#test_{{ platform.name }}_{{ editor.version }}
+    - .yamato/test.yml#test_{{ package.safename }}_{{ platform.name }}_{{ editor.version }}
     {% endfor %}
     {% endfor %}
 
