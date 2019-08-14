@@ -62,7 +62,7 @@ if ($Trace) {
     $baseInstall="Packages\$pkgName"
     $outDir=$artifactDir
 
-    Write-Verbose "$packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version $extrasDir -Ignore $ignorefile -BaseInstall $baseInstall"
+    Write-Verbose "$packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall"
     Write-Output "Packaging $pkgName..."
     Run-Command -Fatal { & $packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm }
 
@@ -72,7 +72,7 @@ if ($Trace) {
     $baseInstall="Packages\$pkgName"
     $outDir=$artifactDir
 
-    Write-Verbose "$packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version $extrasDir -Ignore $ignorefile -BaseInstall $baseInstall"
+    Write-Verbose "$packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall"
     Write-Output "Packaging $pkgName..."
     Run-Command -Fatal { & $packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm }
 }

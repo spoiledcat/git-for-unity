@@ -28,7 +28,7 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 	Trap {
 		Write-Output "Setting version failed"
 		Write-Output "Error: $_"
-		exit 0
+		exit -1
 	}
 
 	Write-Verbose "Set-Version: NewVersion: $NewVersion BumpMajor: $BumpMajor BumpMinor: $BumpMinor BumpPatch: $BumpPatch BumpBuild: $BumpBuild"

@@ -17,7 +17,7 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 	Trap {
 		Write-Output "Error getting artifacts"
 		Write-Output "Error: $_"
-		exit 0
+		exit -1
 	}
 
 	Write-Output "$Manifest $Out"
