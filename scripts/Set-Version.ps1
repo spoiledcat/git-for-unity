@@ -42,23 +42,22 @@ function Read-Version([string]$versionFile) {
 	$parsed
 }
 
-function Write-Version([string]$versionFile, [TheVersion]$version, [bool]$verbose) {
+function Write-Version([string]$versionFile, [TheVersion]$version) {
 	Write-Verbose "Writing version $version to $versionFile "
 	$versionjson = Get-Content $versionFile | ConvertFrom-Json
 	$versionjson.version = $version.Version
 	ConvertTo-Json $versionjson | Set-Content $versionFile
 }
 
-function Set-Version([string]$versionFile, [string]$newValue, [bool]$verbose) {
+function Set-Version([string]$versionFile, [string]$newValue) {
 	$parsed = [TheVersion]::Parse("$newValue")
-	Write-Version $versionFile $parsed $verbose
+	Write-Version $versionFile $parsed
 }
 
 function Bump-Version([string]$versionFile,
 	[bool]$bumpMajor, [bool] $bumpMinor,
 	[bool]$bumpPatch, [bool] $bumpBuild,
-	[string]$newValue,
-	[bool]$verbose)
+	[string]$newValue)
 {
 	Write-Verbose "Reading $versionFile"
 
@@ -109,14 +108,14 @@ function Bump-Version([string]$versionFile,
 
 if ($NewVersion -ne '' -and !($BumpMajor -or $BumpMinor -or $BumpPatch -or $BumpBuild)) {
 	$versionFile = "$rootDirectory\src\com.unity.git.ui\version.json"
-	Set-Version $versionFile $NewVersion $Verbose
+	Set-Version $versionFile $NewVersion
 
 	$versionFile = "$rootDirectory\src\com.unity.git.api\version.json"
-	Set-Version $versionFile $NewVersion $Verbose
+	Set-Version $versionFile $NewVersion
 } else {
 	$versionFile = "$rootDirectory\src\com.unity.git.ui\version.json"
-	Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion $Verbose
+	Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion
 
 	$versionFile = "$rootDirectory\src\com.unity.git.api\version.json"
-	Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion $Verbose
+	Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion
 }
