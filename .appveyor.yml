@@ -7,7 +7,6 @@ install:
 - ps: Install-Product node 8 x64
 - ps: |
     scripts\Get-Deps.ps1
-    scripts\Set-Version.ps1 -BumpPatch -NewVersion $env:APPVEYOR_BUILD_NUMBER
     nuget restore
 
 configuration: Release
