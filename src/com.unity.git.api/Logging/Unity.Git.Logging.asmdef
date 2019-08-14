@@ -1,10 +1,6 @@
 {
-    "name": "Unity.VersionControl.Git.UI",
-    "references": [
-        "Unity.VersionControl.Git.Api",
-        "Unity.VersionControl.Git.Logging",
-        "UnityShim"
-    ],
+    "name": "Unity.Git.Logging",
+    "references": [],
     "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
@@ -13,6 +9,6 @@
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": []
 }

@@ -11,11 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\com.unity.git.ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI", "src\com.unity.git.ui\UI\UI.csproj", "{ADD7A18B-DD2A-4C22-A2C1-488964EFF30B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnityShim", "src\com.unity.git.ui\UnityShim\UnityShim.csproj", "{F94F8AE1-C171-4A83-89E8-6557CA91A188}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnityShim", "src\com.unity.git.ui\Shim\UnityShim.csproj", "{F94F8AE1-C171-4A83-89E8-6557CA91A188}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D17F1B4C-42DC-4E78-BCEF-9F239A084C4D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnityTests", "src\com.unity.git.ui\UnityTests\UnityTests.csproj", "{462CDBD4-0DDA-4854-1B13-CFDACBFB66F5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnityTests", "src\com.unity.git.api\Tests\Editor\UnityTests.csproj", "{462CDBD4-0DDA-4854-1B13-CFDACBFB66F5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{69F13D9D-AD56-4EEC-AE10-D528EE23E1A9}"
 EndProject

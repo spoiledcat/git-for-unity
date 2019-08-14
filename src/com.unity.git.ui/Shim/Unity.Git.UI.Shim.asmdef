@@ -1,5 +1,5 @@
 {
-    "name": "UnityShim",
+    "name": "Unity.Git.UI.Shim",
     "references": [
     ],
     "optionalUnityReferences": [],

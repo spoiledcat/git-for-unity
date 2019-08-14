@@ -1,12 +1,9 @@
 {
-    "name": "Unity.VersionControl.Git.UnityTests",
+    "name": "Unity.Git.Api",
     "references": [
-        "Unity.VersionControl.Git.UI",
-        "Unity.VersionControl.Git.Api"
+        "Unity.Git.Logging"
     ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ],
+    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -14,6 +11,6 @@
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
-    "autoReferenced": false,
+    "autoReferenced": true,
     "defineConstraints": []
 }
