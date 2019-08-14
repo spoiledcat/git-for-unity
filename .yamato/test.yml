@@ -5,7 +5,7 @@
 {% for platform in test_platforms %}
 
 test_{{ package.safename }}_{{ platform.name }}_{{ editor.version }}:
-  name : Test {{ editor.version }} on {{ platform.name }}
+  name : Test {{ package.name }} {{ editor.version }} on {{ platform.name }}
   agent:
     type: {{ platform.type }}
     image: {{ platform.image }}

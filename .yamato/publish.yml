@@ -3,7 +3,7 @@
 {% for package in packages %}
 
 publish_{{ package.safename }}:
-  name: Internal publish
+  name: Publish {{ package.name }} Internal
   agent:
     type: {{ upm_windows.type }}
     image: {{ upm_windows.image }}
