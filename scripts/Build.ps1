@@ -1,3 +1,4 @@
+[CmdletBinding()]
 Param(
 	[switch]
 	$Trace = $false
@@ -9,5 +10,6 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 
 . $PSScriptRoot\helpers.ps1 | out-null
 
-Run-Command -Fatal { .\hMSBuild.bat /t:restore /verbosity:minimal }
-Run-Command -Fatal { .\hMSBuild.bat /verbosity:minimal }
+Invoke-Command -Fatal { common\nuget restore }
+Invoke-Command -Fatal { .\hMSBuild.bat /t:restore /verbosity:minimal }
+Invoke-Command -Fatal { .\hMSBuild.bat /verbosity:minimal }

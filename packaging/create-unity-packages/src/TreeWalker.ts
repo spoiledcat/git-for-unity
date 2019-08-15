@@ -44,7 +44,7 @@ export class FileTreeWalker {
 		return this._listener.asObservable();
 	}
 
-	public static getTempDir = () => tmpDir({ prefix: 'packaging-', unsafeCleanup: true, keep: true });
+	public static getTempDir = () => tmpDir({ prefix: 'packaging-', unsafeCleanup: true, keep: false });
 
 	public walk = () => {
 		return this.listener;

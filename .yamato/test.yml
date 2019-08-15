@@ -32,12 +32,17 @@ test_{{ package.safename }}_{{ platform.name }}_{{ editor.version }}:
 {% endfor %}
 {% endfor %}
 
-test_trigger:
-  name: Tests Trigger
+upm_test_trigger:
+  name: UPM Tests Trigger
   triggers:
+    pull_requests:
+      - targets:
+        only:
+          - "master"
     branches:
       only:
-      - "/.*/"
+      - "master"
+
   dependencies:
     {% for package in packages %}
     {% for editor in test_editors %}

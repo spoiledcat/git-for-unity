@@ -7,12 +7,9 @@ build:
   interpreter: powershell
   commands:
     - |
-      #$version = $env:YAMATO_JOB_ID
-      #Write-Output "Building $version"
-      #scripts\Set-Version.ps1 $version -BumpPatch -Verbose
-
       scripts\Get-Deps.ps1
       scripts\Build.ps1
+      scripts\Test.ps1 -Yamato
 
       dotnet tool install --tool-path . nbgv
       Push-Location src\com.unity.git.api
@@ -29,3 +26,6 @@ build:
     sources:
       paths:
         - "PackageSources/**/*"
+    tests:
+      paths:
+        - "test-results/**/*"

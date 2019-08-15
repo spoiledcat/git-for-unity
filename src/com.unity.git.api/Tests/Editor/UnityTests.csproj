@@ -5,7 +5,7 @@
     <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\..\</SolutionDir>
     <ProjectGuid>{462CDBD4-0DDA-4854-1B13-CFDACBFB66F5}</ProjectGuid>
     <RootNamespace>UnityTests</RootNamespace>
-    <AssemblyName>UnityTests</AssemblyName>
+    <AssemblyName>Unity.Tests.Editor</AssemblyName>
     <OutputPath>$(SolutionDir)\build\tests\</OutputPath>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />

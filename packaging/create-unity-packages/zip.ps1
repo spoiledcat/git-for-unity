@@ -37,12 +37,12 @@ if ($Trace) {
 
 . $PSScriptRoot\helpers.ps1 | out-null
 
-Push-Location $scriptsDirectory
+Push-Location $rootDirectory
 
 try {
 
 	if (!(Test-Path 'node_modules')) {
-		Run-Command -Fatal { & node ..\yarn.js -s install --prefer-offline }
+		Invoke-Command -Fatal { & node ..\yarn.js -s install --prefer-offline }
 	}
 
 	$doUnity = ""
@@ -50,7 +50,7 @@ try {
 		$doUnity = "-u"
 	}
 
-	Run-Command -Fatal { & node ..\yarn.js -s run zip -s $Source -o $Out -n $Name -v $Version $doUnity }
+	Invoke-Command -Fatal { & node ..\yarn.js -s run zip -s $Source -o $Out -n $Name -v $Version $doUnity }
 
 } finally {
 	Pop-Location

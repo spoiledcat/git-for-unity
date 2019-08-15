@@ -21,21 +21,23 @@ New-Module -ScriptBlock {
 New-Module -ScriptBlock {
     function Die([int]$exitCode, [string]$message, [object[]]$output) {
         #$host.SetShouldExit($exitCode)
+        $ret = ""
         if ($output) {
-            Write-Host $output
+            $ret = $output | %{ "`r`n$_" }
+            Write-Host $ret
             $message += ". See output above."
         }
         $hash = @{
             Message = $message
             ExitCode = $exitCode
-            Output = $output
+            Output = $ret
         }
         Throw (New-Object -TypeName ScriptException -ArgumentList $message,$exitCode)
         #throw $message
     }
 
 
-    function Run-Command([scriptblock]$Command, [switch]$Fatal, [switch]$Quiet) {
+    function Invoke-Command([scriptblock]$Command, [switch]$Fatal, [switch]$Quiet) {
         $output = ""
 
         $exitCode = 0
@@ -62,7 +64,7 @@ New-Module -ScriptBlock {
         $output
     }
 
-    function Run-Process([int]$Timeout, [string]$Command, [string[]]$Arguments, [switch]$Fatal = $false)
+    function Invoke-Process([int]$Timeout, [string]$Command, [string[]]$Arguments, [switch]$Fatal = $false)
     {
         $args = ($Arguments | %{ "`"$_`"" })
         [object[]] $output = "$Command " + $args
@@ -90,7 +92,7 @@ New-Module -ScriptBlock {
         $output
     }
 
-    function Create-TempDirectory {
+    function New-TempDirectory {
         $path = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
         New-Item -Type Directory $path
     }
@@ -107,5 +109,5 @@ New-Module -ScriptBlock {
         }
     }
 
-    Export-ModuleMember -Function Die,Run-Command,Run-Process,Create-TempDirectory,Get-ObjectMembers
+    Export-ModuleMember -Function Die,Invoke-Command,Invoke-Process,New-TempDirectory,Get-ObjectMembers
 }

@@ -49,12 +49,12 @@ if ($Trace) {
 
 . $PSScriptRoot\helpers.ps1 | out-null
 
-Push-Location $scriptsDirectory
+Push-Location $rootDirectory
 
 try {
 
 	if (!(Test-Path 'node_modules')) {
-		Run-Command -Fatal { & node ..\yarn.js -s install --prefer-offline }
+		Invoke-Command -Fatal { & node ..\yarn.js -s install --prefer-offline }
 	}
 
 	$noPackage = ""
@@ -76,7 +76,7 @@ try {
 		$noUpm = "-m"
 	}
 
-	Run-Command -Fatal { & node ..\yarn.js -s start -o $Out -n $Name -v $Version -s $Source -i $Ignore -t $BaseInstall --tmp $Tmp $noPackage $noUnity $noPackman $noUpm }
+	Invoke-Command -Fatal { & node ..\yarn.js -s start -o $Out -n $Name -v $Version -s $Source -i $Ignore -t $BaseInstall --tmp $Tmp $noPackage $noUnity $noPackman $noUpm }
 
 } finally {
 	Pop-Location

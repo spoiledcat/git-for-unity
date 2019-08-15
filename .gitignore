@@ -309,3 +309,4 @@ nbgv.exe
 .Editor
 PackageSources/
 upm-ci~/
+test-results/

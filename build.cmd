@@ -11,5 +11,6 @@ if not %2.==. (
 	set Target=%2
 )
 
+call common\nuget restore
 call hMSBuild.bat /t:restore
 call hMSBuild.bat /verbosity:minimal /property:Configuration=%Configuration% /target:%Target%
