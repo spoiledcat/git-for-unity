@@ -11,9 +11,9 @@ build:
       scripts\Build.ps1
       scripts\Test.ps1 -Yamato
 
-      try { dotnet tool install -g nbgv } catch {}
+      dotnet tool install --tool-path . nbgv
       Push-Location src\com.unity.git.api
-      $version = nbgv get-version -f json | ConvertFrom-Json
+      $version = ..\..\nbgv get-version -f json | ConvertFrom-Json
       Pop-Location
 
       Write-Output "Packaging version $($version.AssemblyInformationalVersion)"
