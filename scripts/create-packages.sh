@@ -27,15 +27,15 @@ while (( "$#" )); do
       ;;
     -u|--skipUnity)
       FLAGS="$FLAGS $1"
-      shift 2
+      shift
       ;;
     -p|--skipPackman)
       FLAGS="$FLAGS $1"
-      shift 2
+      shift
       ;;
     -m|--skipUpm)
       FLAGS="$FLAGS $1"
-      shift 2
+      shift
       ;;
     --) # end argument parsing
       shift
