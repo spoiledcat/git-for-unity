@@ -37,8 +37,8 @@ upm_test_trigger:
   triggers:
     pull_requests:
       - targets:
-        only:
-          - "master"
+          only:
+            - "master"
     branches:
       only:
       - "master"
