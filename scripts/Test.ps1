@@ -28,7 +28,7 @@ if ($OutDir -ne '') {
 $TimeoutDuration = 5*60
 
 $args = Get-ChildItem "$testDir\*Tests.dll" | % { "$testDir\$($_.Name)" }
-$args += " --where:cat!=DoNotRunOnAppVeyor"
+$args += "--where:cat!=DoNotRunOnAppVeyor"
 
 Write-Verbose "$nunit $args"
 
