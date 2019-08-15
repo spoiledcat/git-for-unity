@@ -22,10 +22,12 @@ namespace IntegrationTests
             bool enableTrace = false,
             bool initializeRepository = true)
         {
-            defaultEnvironment = new DefaultEnvironment(cacheContainer);
+            this.enableTrace = enableTrace;
 
-            defaultEnvironment.FileSystem.SetCurrentDirectory(repoPath);
             options = options ?? new CreateEnvironmentOptions(NPath.SystemTemp.Combine(ApplicationInfo.ApplicationName, "IntegrationTests"));
+
+            defaultEnvironment = new DefaultEnvironment(cacheContainer);
+            defaultEnvironment.FileSystem.SetCurrentDirectory(repoPath);
 
             var environmentPath = options.UserProfilePath;
 
@@ -34,13 +36,13 @@ namespace IntegrationTests
             CommonAppData = environmentPath.Combine("System");
             SystemCachePath = CommonAppData.Combine("Cache");
 
-            var installPath = solutionDirectory.Parent.Parent.Parent.Combine("src", "api", "Api");
+            var installPath = solutionDirectory.Parent.Parent.Parent.Combine("src", "com.unity.git.api", "Api");
 
             Initialize(UnityVersion, installPath, solutionDirectory, NPath.Default, repoPath.Combine("Assets"));
 
             InitializeRepository(initializeRepository ? (NPath?)repoPath : null);
 
-            this.enableTrace = enableTrace;
+            GitDefaultInstallation = new GitInstaller.GitInstallDetails(UserCachePath, this);
 
             if (enableTrace)
             {

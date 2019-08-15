@@ -11,7 +11,7 @@ using Unity.VersionControl.Git;
 namespace IntegrationTests.Download
 {
     [TestFixture]
-    class TestsWithHttpServer : BaseTestWithHttpServer
+    class TestsWithHttpServer : BaseIntegrationTestWithHttpServer
     {
         public override void OnSetup()
         {
@@ -200,7 +200,7 @@ namespace IntegrationTests.Download
     }
 
     [TestFixture]
-    class DownloadTaskTestsWithHttpServer : BaseTestWithHttpServer
+    class DownloadTaskTestsWithHttpServer : BaseIntegrationTestWithHttpServer
     {
         [Test]
         public async Task ResumingDownloadsWorks()

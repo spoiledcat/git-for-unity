@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -7,9 +8,32 @@ using NSubstitute;
 using NUnit.Framework;
 using System.IO;
 using System.Linq;
+using TestUtils;
 
 namespace IntegrationTests
 {
+    [TestFixture]
+    class CleanGitInstallerTests : BaseTestWithHttpServer
+    {
+        [Test]
+        public void NoLocalGit_NoDownload_DoesntThrow()
+        {
+            var cacheContainer = Substitute.For<ICacheContainer>();
+            var environment = CreateCleanEnvironment(cacheContainer, TestBasePath, true);
+            var platform = new Platform(environment);
+            var taskManager = InitializeTaskManager();
+            var processManager = new ProcessManager(environment, platform.GitEnvironment, taskManager.Token);
+
+            GitInstaller.GitInstallDetails.GitPackageFeed = "fail";
+
+            var currentState = environment.GitDefaultInstallation.GetDefaults();
+            var gitInstaller = new GitInstaller(environment, processManager, taskManager.Token, currentState);
+
+            var newState = gitInstaller.RunSynchronously();
+            Assert.AreEqual(currentState, newState);
+        }
+    }
+
     [TestFixture]
     class GitInstallerTests : BaseIntegrationTest
     {
@@ -43,10 +67,10 @@ namespace IntegrationTests
         {
             var gitInstallationPath = TestBasePath.Combine("GitInstall").CreateDirectory();
 
-            var installDetails = new GitInstaller.GitInstallDetails(gitInstallationPath, Environment)
-                {
-                    GitPackageFeed = $"http://localhost:{server.Port}/{GitInstaller.GitInstallDetails.GitPackageName}",
-                };
+            GitInstaller.GitInstallDetails.GitPackageFeed =
+                $"http://localhost:{server.Port}/{GitInstaller.GitInstallDetails.GitPackageName}";
+
+            var installDetails = new GitInstaller.GitInstallDetails(gitInstallationPath, Environment);
 
             TestBasePath.Combine("git").CreateDirectory();
 
@@ -93,10 +117,10 @@ namespace IntegrationTests
             var gitLfsInstallationPath = gitInstallationPath;
             var gitLfsExecutablePath = gitLfsInstallationPath.Combine("bin/git-lfs");
 
-            var installDetails = new GitInstaller.GitInstallDetails(gitInstallationPath, Environment)
-                {
-                    GitPackageFeed = $"http://localhost:{server.Port}/unity/git/mac/{GitInstaller.GitInstallDetails.GitPackageName}",
-                };
+            GitInstaller.GitInstallDetails.GitPackageFeed =
+                $"http://localhost:{server.Port}/unity/git/mac/{GitInstaller.GitInstallDetails.GitPackageName}";
+
+            var installDetails = new GitInstaller.GitInstallDetails(gitInstallationPath, Environment);
 
             var ret = new string[] { gitLfsExecutablePath };
             filesystem.GetFiles(Arg.Any<string>(), Arg.Is<string>(installDetails.GitLfsExecutablePath.FileName), Arg.Any<SearchOption>())
@@ -116,7 +140,7 @@ namespace IntegrationTests
     }
 
     [TestFixture]
-    class GitInstallerTestsWithHttp : BaseTestWithHttpServer
+    class GitInstallerTestsWithHttp : BaseIntegrationTestWithHttpServer
     {
         public override void OnSetup()
         {
@@ -128,10 +152,8 @@ namespace IntegrationTests
         [Test]
         public void GitIsInstalledIfMissing()
         {
-            var installDetails = new GitInstaller.GitInstallDetails(TestBasePath, Environment)
-            {
-                GitPackageFeed = $"http://localhost:{server.Port}/{GitInstaller.GitInstallDetails.GitPackageName}",
-            };
+            GitInstaller.GitInstallDetails.GitPackageFeed = $"http://localhost:{server.Port}/{GitInstaller.GitInstallDetails.GitPackageName}";
+            var installDetails = new GitInstaller.GitInstallDetails(TestBasePath, Environment);
             var gitInstaller = new GitInstaller(Environment, ProcessManager, TaskManager.Token, installDetails: installDetails);
             var result = gitInstaller.RunSynchronously();
             result.Should().NotBeNull();

@@ -53,11 +53,10 @@ namespace Unity.VersionControl.Git
         {
             UpdateTask("Setting up git...", 100);
 
-            var skipSystemProbing = currentState != null;
+            bool skipSystemProbing = currentState != null;
 
             try
             {
-
                 currentState = VerifyGitSettings(currentState);
                 if (currentState.GitIsValid && currentState.GitLfsIsValid)
                 {
@@ -66,11 +65,11 @@ namespace Unity.VersionControl.Git
                     return currentState;
                 }
 
-                if (!skipSystemProbing)
-                {
-                    if (environment.IsMac)
-                        currentState = FindGit(currentState);
-                }
+                //if (!skipSystemProbing)
+                //{
+                //    if (environment.IsMac)
+                //        currentState = FindGit(currentState);
+                //}
 
                 currentState = SetDefaultPaths(currentState);
                 currentState = CheckForGitUpdates(currentState);
@@ -85,11 +84,17 @@ namespace Unity.VersionControl.Git
                 currentState = GetZipsIfNeeded(currentState);
                 currentState = ExtractGit(currentState);
 
-                // if installing from zip failed (internet down maybe?), try to find a usable system git
-                if (!currentState.GitIsValid && currentState.GitInstallationPath == installDetails.GitInstallationPath)
-                    currentState = FindGit(currentState);
-                if (!currentState.GitLfsIsValid && currentState.GitLfsInstallationPath == installDetails.GitLfsInstallationPath)
-                    currentState = FindGitLfs(currentState);
+                if (!skipSystemProbing)
+                {
+                    // if installing from zip failed (internet down maybe?), try to find a usable system git
+                    if (!currentState.GitIsValid &&
+                        currentState.GitInstallationPath == installDetails.GitInstallationPath)
+                        currentState = FindGit(currentState);
+                    if (!currentState.GitLfsIsValid &&
+                        currentState.GitLfsInstallationPath == installDetails.GitLfsInstallationPath)
+                        currentState = FindGitLfs(currentState);
+                }
+
                 currentState.GitLastCheckTime = DateTimeOffset.Now;
                 return currentState;
             }
@@ -229,7 +234,7 @@ namespace Unity.VersionControl.Git
             if (state.GitInstallationPath != installDetails.GitInstallationPath)
                 return state;
 
-            state.GitPackage = DugiteReleaseManifest.Load(installDetails.GitManifest, installDetails.GitPackageFeed, environment);
+            state.GitPackage = DugiteReleaseManifest.Load(installDetails.GitManifest, GitInstallDetails.GitPackageFeed, environment);
             if (state.GitPackage == null)
                 return state;
 
@@ -327,19 +332,81 @@ namespace Unity.VersionControl.Git
 
         public class GitInstallationState
         {
-            public bool GitIsValid { get; set; }
-            public bool GitLfsIsValid { get; set; }
-            public bool GitZipExists { get; set; }
-            public NPath GitZipPath { get; set; }
-            public NPath GitInstallationPath { get; set; }
-            public NPath GitExecutablePath { get; set; }
-            public NPath GitLfsInstallationPath { get; set; }
-            public NPath GitLfsExecutablePath { get; set; }
-            public DugiteReleaseManifest GitPackage { get; set; }
+            private readonly Dictionary<string, object> fields = new Dictionary<string, object>();
+
+            private T TryGetField<T>(string field)
+            {
+                if (fields.TryGetValue(field, out object val))
+                {
+                    return (T)val;
+                }
+                return default(T);
+            }
+
+            public bool GitIsValid { get => TryGetField<bool>(nameof(GitIsValid)); set => fields[nameof(GitIsValid)] = value; }
+            public bool GitLfsIsValid { get => TryGetField<bool>(nameof(GitLfsIsValid)); set => fields[nameof(GitLfsIsValid)] = value; }
+            public bool GitZipExists { get => TryGetField<bool>(nameof(GitZipExists)); set => fields[nameof(GitZipExists)] = value; }
+            public NPath GitZipPath { get => TryGetField<NPath>(nameof(GitZipPath)); set => fields[nameof(GitZipPath)] = value; }
+            public NPath GitInstallationPath { get => TryGetField<NPath>(nameof(GitInstallationPath)); set => fields[nameof(GitInstallationPath)] = value; }
+            public NPath GitExecutablePath { get => TryGetField<NPath>(nameof(GitExecutablePath)); set => fields[nameof(GitExecutablePath)] = value; }
+            public NPath GitLfsInstallationPath { get => TryGetField<NPath>(nameof(GitLfsInstallationPath)); set => fields[nameof(GitLfsInstallationPath)] = value; }
+            public NPath GitLfsExecutablePath { get => TryGetField<NPath>(nameof(GitLfsExecutablePath)); set => fields[nameof(GitLfsExecutablePath)] = value; }
+            public DugiteReleaseManifest GitPackage { get => TryGetField<DugiteReleaseManifest>(nameof(GitPackage)); set => fields[nameof(GitPackage)] = value; }
             public DateTimeOffset GitLastCheckTime { get; set; }
-            public bool IsCustomGitPath { get; set; }
-            public TheVersion GitVersion { get; set; }
-            public TheVersion GitLfsVersion { get; set; }
+            public bool IsCustomGitPath { get => TryGetField<bool>(nameof(IsCustomGitPath)); set => fields[nameof(IsCustomGitPath)] = value; }
+            public TheVersion GitVersion { get => TryGetField<TheVersion>(nameof(GitVersion)); set => fields[nameof(GitVersion)] = value; }
+            public TheVersion GitLfsVersion { get => TryGetField<TheVersion>(nameof(GitLfsVersion)); set => fields[nameof(GitLfsVersion)] = value; }
+
+            public GitInstallationState()
+            {
+                GitIsValid = GitLfsIsValid = GitZipExists = IsCustomGitPath = default(bool);
+                GitZipPath = GitInstallationPath = GitExecutablePath = GitLfsInstallationPath = GitLfsExecutablePath = default(NPath);
+                GitPackage = default(DugiteReleaseManifest);
+                GitVersion = GitLfsVersion = default(TheVersion);
+            }
+
+            public override int GetHashCode()
+            {
+                int hash = 17;
+                foreach (var val in fields.Values)
+                {
+                    hash *= 23 + (val?.GetHashCode() ?? 0);
+                }
+                return hash;
+            }
+
+            public override bool Equals(object other)
+            {
+                if (other is GitInstallationState state)
+                    return Equals(state);
+                return false;
+            }
+
+            public bool Equals(GitInstallationState other)
+            {
+                if ((object)other == null)
+                    return false;
+                return GetHashCode() == other.GetHashCode();
+            }
+
+            public static bool operator ==(GitInstallationState lhs, GitInstallationState rhs)
+            {
+                // If both are null, or both are same instance, return true.
+                if (ReferenceEquals(lhs, rhs))
+                    return true;
+
+                // If one is null, but not both, return false.
+                if (((object)lhs == null) || ((object)rhs == null))
+                    return false;
+
+                // Return true if the fields match:
+                return Equals(lhs.fields, rhs.fields);
+            }
+
+            public static bool operator !=(GitInstallationState lhs, GitInstallationState rhs)
+            {
+                return !(lhs == rhs);
+            }
         }
 
         public class GitInstallDetails
@@ -380,7 +447,7 @@ namespace Unity.VersionControl.Git
             public NPath GitLfsInstallationPath { get; }
             public NPath GitExecutablePath { get; }
             public NPath GitLfsExecutablePath { get; }
-            public UriString GitPackageFeed { get; set; } = packageFeed;
+            public static UriString GitPackageFeed { get; set; } = packageFeed;
             public NPath GitManifest { get; set; }
         }
     }

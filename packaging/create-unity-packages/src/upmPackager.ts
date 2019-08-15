@@ -12,14 +12,24 @@ export class UpmPackager extends Packager {
 
     public async prepare(sourcePath: string, version: string, ignores: Ignores, outputPath: string, baseInstallationPath?: string) : Promise<string | undefined> {
         const ret = await super.prepare(sourcePath, version, ignores, outputPath, baseInstallationPath);
-        var today = new Date().toISOString().substring(0, 10);
-        await asyncfile.writeTextFile(p.join(outputPath, "CHANGELOG.md"), `# Changelog
 
-        All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+        var today = new Date().toISOString().substring(0, 10);
+        const changelogFile = p.join(outputPath, "CHANGELOG.md");
+        const changelogHeader = '# Changelog'
+        const changelogEntryHeader = `## [${version}] - ${today}`;
+        let changelog = '';
+
+        if (await asyncfile.exists(changelogFile)) {
+            changelog = await asyncfile.readTextFile(changelogFile);
+        }
+
+        changelog = `${changelogHeader}
         
-        ## [${version}] - ${today}
-`
-        );
+${changelogEntryHeader}
+${changelog}
+`;
+
+        await asyncfile.writeTextFile(changelogFile, changelog);
         return ret;
     }
 

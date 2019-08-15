@@ -76,6 +76,7 @@ namespace Unity.VersionControl.Git
         {
             DugiteReleaseManifest package = null;
             var filename = localCacheFile.FileName;
+            var cacheDir = localCacheFile.Parent;
             var key = localCacheFile.FileNameWithoutExtension + "_updatelastCheckTime";
             var now = DateTimeOffset.Now;
 
@@ -96,8 +97,7 @@ namespace Unity.VersionControl.Git
             if (!localCacheFile.IsInitialized)
             {
                 // try from assembly resources
-                localCacheFile = AssemblyResources.ToFile(ResourceType.Platform, packageFeed.Filename,
-                    localCacheFile.Parent, environment);
+                localCacheFile = AssemblyResources.ToFile(ResourceType.Platform, filename, cacheDir, environment);
             }
 
             if (localCacheFile.IsInitialized)
