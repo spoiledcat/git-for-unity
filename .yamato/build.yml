@@ -1,3 +1,5 @@
+{% metadata_file .yamato_config/configuration.yml %}
+---
 build:
   name: Build on Windows
   agent:
@@ -18,6 +20,12 @@ build:
 
       Write-Output "Packaging version $($version.AssemblyInformationalVersion)"
       scripts\Create-Packages.ps1 $($version.AssemblyInformationalVersion) "PackageSources" -SkipUnity -SkipPackman
+
+    - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
+{% for package in packages %}
+    - scripts\CreateCombinedManifest.ps1 {{ package.name }} {{ package.path }}
+    - Copy-Item upm-ci~\packages\{{ package.name }}*.tgz artifacts\
+{% endfor %}
 
   artifacts:
     packages:

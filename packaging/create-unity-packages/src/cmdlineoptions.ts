@@ -1,5 +1,37 @@
 import { Ignores } from "./RecursiveReaddir";
 import { OptionDefinition, Section } from "command-line-usage";
+import commandLineArgs = require("command-line-args");
+import commandLineUsage = require("command-line-usage");
+import * as asyncfile from 'async-file';
+import * as p from 'path';
+
+export async function validateOptionPath(options: commandLineArgs.CommandLineOptions, argName: string, optional: boolean = false) {
+
+	if (optional)
+	{
+		if ((!options[argName] || options[argName] === '')) return undefined;
+		return p.resolve(options[argName]);
+	}
+
+	validateOption(options, argName);
+
+	if (!(await asyncfile.exists(options[argName]))) {
+		console.error(`Bad parameter ${argName}: ${options[argName]} does not exist`);
+		console.error(commandLineUsage(sections));
+		process.exit(-1);
+	}
+	return p.resolve(options[argName]);
+}
+
+export function validateOption(options: commandLineArgs.CommandLineOptions, argName: string, optional: boolean = false) {
+	if (!options[argName] || options[argName] === '')
+	{
+		console.error(`Missing argument: ${argName}`);
+		console.error(commandLineUsage(sections));
+		process.exit(-1);
+	}
+	return options[argName] as string;
+}
 
 export interface ParsedOptions {
 	sourcePath: string;

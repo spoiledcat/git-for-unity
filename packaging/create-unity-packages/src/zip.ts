@@ -146,11 +146,11 @@ async function parseCommandLine() {
             
         packageManifest[packageKey] = json;
 
-        await asyncfile.writeTextFile(packmanPackageManifest, JSON.stringify(packageManifest));
+        await asyncfile.writeTextFile(packmanPackageManifest, JSON.stringify(packageManifest, undefined, 2));
         packages[PackageType.Manifest] = { type: PackageType.Manifest, path: packmanPackageManifest};
     }
 
-	console.log(JSON.stringify(packages));
+	console.log(JSON.stringify(packages, undefined, 2));
 })();
 
 
