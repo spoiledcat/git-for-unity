@@ -2,42 +2,29 @@
 
 import * as asyncfile from 'async-file';
 import * as commandLineArgs from 'command-line-args';
-import * as commandLineUsage from 'command-line-usage';
 import * as p from 'path';
 import { readAllLines } from './read-lines';
 import { FileTreeWalker } from './TreeWalker';
-import { optionDefinitions, sections, ParsedOptions } from './cmdlineoptions';
-import { PackageType, PackageFileList, PackageFile } from './packager';
+import { optionDefinitions, validateOptionPath, validateOption } from './cmdlineoptions';
+import { PackageType, PackageFile } from './packager';
 import { UnityPackager } from './unityPackager';
 import { PackmanPackager } from './packmanPackager';
 import { UpmPackager } from './upmPackager';
+import { Ignores } from './RecursiveReaddir';
 
-async function validateOptionPath(options: commandLineArgs.CommandLineOptions, argName: string, optional: boolean = false) {
-
-	if (optional)
-	{
-		if ((!options[argName] || options[argName] === '')) return undefined;
-		return p.resolve(options[argName]);
-	}
-
-	validateOption(options, argName);
-
-	if (!(await asyncfile.exists(options[argName]))) {
-		console.error(`Bad parameter ${argName}: ${options[argName]} does not exist`);
-		console.error(commandLineUsage(sections));
-		process.exit(-1);
-	}
-	return p.resolve(options[argName]);
-}
-
-function validateOption(options: commandLineArgs.CommandLineOptions, argName: string, optional: boolean = false) {
-	if (!options[argName] || options[argName] === '')
-	{
-		console.error(`Missing argument: ${argName}`);
-		console.error(commandLineUsage(sections));
-		process.exit(-1);
-	}
-	return options[argName] as string;
+interface ParsedOptions {
+	sourcePath: string;
+	targetPath: string;
+	packageName: string;
+	version: string;
+	baseInstallationPath: string | undefined;
+	skipPackaging: boolean;
+	ignores: Ignores;
+	doUnityPackage: boolean;
+	doPackmanPackage: boolean;
+	doUpmPackage: boolean;
+	tmpPath: string | undefined;
+	other: string[];
 }
 
 async function parseCommandLine() : Promise<ParsedOptions> {
@@ -134,7 +121,7 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 
 
 	if (parsed.doUpmPackage) {
-		const tmpUpmSourceTree = p.join(parsed.skipPackaging ? parsed.targetPath : tmpBuildDir, parsed.packageName);
+		const tmpUpmSourceTree = p.join(tmpBuildDir, parsed.packageName);
 		// do the upm package first. it always has a -preview suffix
 		let versionMetadataIndex = parsed.version.indexOf('+');
 		parsed.version = parsed.version.substring(0, versionMetadataIndex > 0 ? versionMetadataIndex : undefined ) + "-preview";
@@ -157,23 +144,21 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 				const upmManifestFile: string = p.join(parsed.targetPath, `manifest-${parsed.packageName}.json`);
 				let upmManifest: { [key: string]: {} } = {};
 
-				// this adds multiple dependent packages to a single manifest, but we don't want that right now
-				// unless we want to add a test package
-				
-				// const json = JSON.parse(await asyncfile.readTextFile(packageJson));
-				// let deps = json['dependencies'];
-				// for (let dep in deps) {
-				// 	const dependencyJsonFile = p.join(parsed.targetPath, `manifest-${dep}.json`);
-				// 	if (await asyncfile.exists(dependencyJsonFile)) {
-				// 		const depmanifest: { [key: string]: {} } = JSON.parse(await asyncfile.readTextFile(dependencyJsonFile));
-				// 		for (let entry in depmanifest) {
-				// 			upmManifest[entry] = depmanifest[entry];
-				// 		}
-				// 	}
-				// }
+				// this adds multiple dependent packages to a single manifest
+				const json = JSON.parse(await asyncfile.readTextFile(packageJson));
+				let deps = json['dependencies'];
+				for (let dep in deps) {
+					const dependencyJsonFile = p.join(parsed.targetPath, `manifest-${dep}.json`);
+					if (await asyncfile.exists(dependencyJsonFile)) {
+						const depmanifest: { [key: string]: {} } = JSON.parse(await asyncfile.readTextFile(dependencyJsonFile));
+						for (let entry in depmanifest) {
+							upmManifest[entry] = depmanifest[entry];
+						}
+					}
+				}
 
 				upmManifest[p.basename(upmPackageFile.path)] = JSON.parse(await asyncfile.readTextFile(packageJson));
-				await asyncfile.writeTextFile(upmManifestFile, JSON.stringify(upmManifest));
+				await asyncfile.writeTextFile(upmManifestFile, JSON.stringify(upmManifest, undefined, 2));
 
 				// save the upm manifest file
 				packages[PackageType.Manifest] = { type: PackageType.Manifest, path: upmManifestFile};
@@ -181,7 +166,5 @@ async function parseCommandLine() : Promise<ParsedOptions> {
 		}
 	}
 
-	await asyncfile.writeTextFile(manifest, JSON.stringify(packages));
+	await asyncfile.writeTextFile(manifest, JSON.stringify(packages, undefined, 2));
 })();
-
-

@@ -37,6 +37,10 @@ while (( "$#" )); do
       FLAGS="$FLAGS $1"
       shift
       ;;
+    -k|--skip)
+      FLAGS="$FLAGS $1"
+      shift
+      ;;
     --) # end argument parsing
       shift
       break

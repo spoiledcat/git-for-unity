@@ -19,6 +19,8 @@ Param(
     [switch]
     $SkipUpm = $false,
     [switch]
+    $Skip = $false,
+    [switch]
     $Trace = $false
 )
 
@@ -57,7 +59,7 @@ $outDir=$artifactDir
 
 Write-Verbose "$packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall"
 Write-Output "Packaging $pkgName..."
-Invoke-Command -Fatal { & $packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm }
+Invoke-Command -Fatal { & $packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm -Skip:$Skip }
 
 $pkgName="com.unity.git.ui"
 $pkgSrcDir="$packageDir\$pkgName"
@@ -67,4 +69,4 @@ $outDir=$artifactDir
 
 Write-Verbose "$packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall"
 Write-Output "Packaging $pkgName..."
-Invoke-Command -Fatal { & $packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm }
+Invoke-Command -Fatal { & $packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm  -Skip:$Skip }

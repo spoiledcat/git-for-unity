@@ -142,7 +142,7 @@ async function jsonHandler (baseSourcePath: string, sourceFile: string,
                 dep = '';
             } else {
                 const dependencyJson = JSON.parse(await asyncfile.readTextFile(dependencyJsonFile));
-                const dependencyJsonVersion = `^${dependencyJson['version']}`;
+                const dependencyJsonVersion = `${dependencyJson['version']}`;
                 dep = dependencyJsonVersion;
             }
             deps[k] = dep;
@@ -158,21 +158,21 @@ async function jsonHandler (baseSourcePath: string, sourceFile: string,
             "revision": "[commit]"
           }
     */
-    const remotes = execSync('git remote -v').toString().trim().split('\n').map(x => x.trim()).map(x => x.split('\t')).filter(x => x[1].endsWith('(fetch)'));
-    if (remotes.length > 0) {
-        const commit = execSync('git rev-parse HEAD').toString().trim();
-        let origin = remotes.find(x => x[0] === 'origin');
-        if (!origin)
-            origin = remotes[0];
-        const url = origin[1].split(' ')[0];
-        json['repository'] = {
-            type: 'git',
-            url: url,
-            revision: commit
-        };
-    }
+    
+    const commit = execSync('git rev-parse HEAD').toString().trim();
+    let remote = "origin";
+    let url = "";
+    try {
+        url = execSync(`git remote get-url ${remote}`).toString().trim();
+    } catch {}
 
-    const contents = JSON.stringify(json);
+    json['repository'] = {
+        type: 'git',
+        url: url,
+        revision: commit
+    };
+
+    const contents = JSON.stringify(json, undefined, 2);
     // console.log(`Writing ${targetFile}`);
     await asyncfile.writeTextFile(targetFile, contents)
     return true;
