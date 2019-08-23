@@ -62,9 +62,9 @@ namespace IntegrationTests
 
             GitClient.Clean(new List<string> { m_CleanFiles[0], m_CleanFiles[2] }).RunSynchronously();
 
-            File.Exists(m_CleanFiles[0]).Should().BeFalse();
-            File.Exists(m_CleanFiles[1]).Should().BeTrue();
-            File.Exists(m_CleanFiles[2]).Should().BeFalse();
+            m_CleanFiles[0].ToNPath().Exists().Should().BeFalse();
+            m_CleanFiles[1].ToNPath().Exists().Should().BeTrue();
+            m_CleanFiles[2].ToNPath().Exists().Should().BeFalse();
         }
 
         [Test]
@@ -79,9 +79,9 @@ namespace IntegrationTests
 
             GitClient.CleanAll().RunSynchronously();
 
-            File.Exists(m_CleanFiles[0]).Should().BeFalse();
-            File.Exists(m_CleanFiles[1]).Should().BeFalse();
-            File.Exists(m_CleanFiles[2]).Should().BeFalse();
+            m_CleanFiles[0].ToNPath().Exists().Should().BeFalse();
+            m_CleanFiles[1].ToNPath().Exists().Should().BeFalse();
+            m_CleanFiles[2].ToNPath().Exists().Should().BeFalse();
         }
     }
 }
