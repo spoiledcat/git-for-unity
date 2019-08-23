@@ -14,24 +14,7 @@ namespace IntegrationTests
     {
         protected override int Timeout { get; set; } = 5 * 60 * 1000;
 
-        readonly string[] m_CleanFiles = new[] { "file1.txt", "file2.txt", "file3.txt" };
-
-        [OneTimeTearDown]
-        public void OnOneTimeTearDown()
-        {
-            // Clean up any created files!
-            try
-            {
-                foreach (var file in m_CleanFiles)
-                {
-                    File.Delete(file);
-                }
-            }
-            catch
-            {
-                // ignored
-            }
-        }
+        readonly string[] m_CleanFiles = { "file1.txt", "file2.txt", "file3.txt" };
 
         [Test]
         public void AaSetupGitFirst()
@@ -70,20 +53,11 @@ namespace IntegrationTests
         [Test]
         public void ShouldCleanFile()
         {
-            if (!DefaultEnvironment.OnWindows)
-                return;
-
             InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized);
 
             foreach (var file in m_CleanFiles)
             {
-                // Create the file.
-                using (var fs = File.Create(file))
-                {
-                    // Write some text to the file
-                    var info = new UTF8Encoding(true).GetBytes("Some text");
-                    fs.Write(info, 0, info.Length);
-                }
+                file.ToNPath().WriteAllText("Some test text.");
             }
 
             GitClient.Clean(new List<string> { m_CleanFiles[0], m_CleanFiles[2] }).RunSynchronously();
@@ -96,20 +70,11 @@ namespace IntegrationTests
         [Test]
         public void ShouldCleanAllFiles()
         {
-            if (!DefaultEnvironment.OnWindows)
-                return;
-
             InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized);
 
             foreach (var file in m_CleanFiles)
             {
-                // Create the file.
-                using (var fs = File.Create(file))
-                {
-                    // Write some text to the file
-                    var info = new UTF8Encoding(true).GetBytes("Some text");
-                    fs.Write(info, 0, info.Length);
-                }
+                file.ToNPath().WriteAllText("Some test text.");
             }
 
             GitClient.CleanAll().RunSynchronously();

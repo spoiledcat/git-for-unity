@@ -324,6 +324,7 @@ namespace Unity.VersionControl.Git
     {
         private const string UserNameConfigKey = "user.name";
         private const string UserEmailConfigKey = "user.email";
+        private const int SpoolLength = 5000;
         private readonly IEnvironment environment;
         private readonly IProcessManager processManager;
         private readonly CancellationToken cancellationToken;
@@ -568,7 +569,7 @@ namespace Unity.VersionControl.Git
             IOutputProcessor<string> processor = null)
         {
             GitAddTask last = null;
-            foreach (var batch in files.Spool(5000))
+            foreach (var batch in files.Spool(SpoolLength))
             {
                 var current = new GitAddTask(batch, cancellationToken, processor).Configure(processManager);
                 if (last == null)
@@ -590,7 +591,7 @@ namespace Unity.VersionControl.Git
             IOutputProcessor<string> processor = null)
         {
             GitCheckoutTask last = null;
-            foreach (var batch in files.Spool(5000))
+            foreach (var batch in files.Spool(SpoolLength))
             {
                 var current = new GitCheckoutTask(batch, cancellationToken, processor).Configure(processManager);
                 if (last == null)
@@ -618,7 +619,7 @@ namespace Unity.VersionControl.Git
         public ITask<string> Clean(IList<string> files, IOutputProcessor<string> processor = null)
         {
             GitCleanTask last = null;
-            foreach (var batch in files.Spool(5000))
+            foreach (var batch in files.Spool(SpoolLength))
             {
                 var current = new GitCleanTask(batch, cancellationToken, processor).Configure(processManager);
                 if (last == null)
@@ -654,7 +655,7 @@ namespace Unity.VersionControl.Git
             IOutputProcessor<string> processor = null)
         {
             GitRemoveFromIndexTask last = null;
-            foreach (var batch in files.Spool(5000))
+            foreach (var batch in files.Spool(SpoolLength))
             {
                 var current = new GitRemoveFromIndexTask(batch, cancellationToken, processor).Configure(processManager);
                 if (last == null)
