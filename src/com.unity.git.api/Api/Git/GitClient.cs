@@ -210,6 +210,21 @@ namespace Unity.VersionControl.Git
         ITask<string> DiscardAll(IOutputProcessor<string> processor = null);
 
         /// <summary>
+        /// Executes at least one `git clean` command to discard changes to the list of untracked files.
+        /// </summary>
+        /// <param name="files">The files to clean</param>
+        /// <param name="processor">A custom output processor instance</param>
+        /// <returns>String output of git command</returns>
+        ITask<string> Clean(IList<string> files, IOutputProcessor<string> processor = null);
+
+        /// <summary>
+        /// Executes `git clean` command to discard changes to all untracked files.
+        /// </summary>
+        /// <param name="processor">A custom output processor instance</param>
+        /// <returns>String output of git command</returns>
+        ITask<string> CleanAll(IOutputProcessor<string> processor = null);
+
+        /// <summary>
         /// Executes at least one `git checkout` command to checkout files at the given changeset
         /// </summary>
         /// <param name="changeset">The md5 of the changeset</param>
@@ -309,6 +324,7 @@ namespace Unity.VersionControl.Git
     {
         private const string UserNameConfigKey = "user.name";
         private const string UserEmailConfigKey = "user.email";
+        private const int SpoolLength = 5000;
         private readonly IEnvironment environment;
         private readonly IProcessManager processManager;
         private readonly CancellationToken cancellationToken;
@@ -553,7 +569,7 @@ namespace Unity.VersionControl.Git
             IOutputProcessor<string> processor = null)
         {
             GitAddTask last = null;
-            foreach (var batch in files.Spool(5000))
+            foreach (var batch in files.Spool(SpoolLength))
             {
                 var current = new GitAddTask(batch, cancellationToken, processor).Configure(processManager);
                 if (last == null)
@@ -571,11 +587,11 @@ namespace Unity.VersionControl.Git
         }
 
         ///<inheritdoc/>
-        public ITask<string> Discard( IList<string> files,
+        public ITask<string> Discard(IList<string> files,
             IOutputProcessor<string> processor = null)
         {
             GitCheckoutTask last = null;
-            foreach (var batch in files.Spool(5000))
+            foreach (var batch in files.Spool(SpoolLength))
             {
                 var current = new GitCheckoutTask(batch, cancellationToken, processor).Configure(processManager);
                 if (last == null)
@@ -600,6 +616,34 @@ namespace Unity.VersionControl.Git
         }
 
         ///<inheritdoc/>
+        public ITask<string> Clean(IList<string> files, IOutputProcessor<string> processor = null)
+        {
+            GitCleanTask last = null;
+            foreach (var batch in files.Spool(SpoolLength))
+            {
+                var current = new GitCleanTask(batch, cancellationToken, processor).Configure(processManager);
+                if (last == null)
+                {
+                    last = current;
+                }
+                else
+                {
+                    last.Then(current);
+                    last = current;
+                }
+            }
+
+            return last;
+        }
+
+        ///<inheritdoc/>
+        public ITask<string> CleanAll(IOutputProcessor<string> processor = null)
+        {
+            return new GitCleanTask(cancellationToken, processor)
+                .Configure(processManager);
+        }
+
+        ///<inheritdoc/>
         public ITask<string> CheckoutVersion(string changeset, IList<string> files, IOutputProcessor<string> processor = null)
         {
             return new GitCheckoutTask(changeset, files, cancellationToken, processor)
@@ -611,7 +655,7 @@ namespace Unity.VersionControl.Git
             IOutputProcessor<string> processor = null)
         {
             GitRemoveFromIndexTask last = null;
-            foreach (var batch in files.Spool(5000))
+            foreach (var batch in files.Spool(SpoolLength))
             {
                 var current = new GitRemoveFromIndexTask(batch, cancellationToken, processor).Configure(processManager);
                 if (last == null)

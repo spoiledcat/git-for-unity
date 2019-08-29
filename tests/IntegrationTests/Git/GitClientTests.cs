@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Unity.VersionControl.Git;
@@ -10,6 +13,8 @@ namespace IntegrationTests
     class A_GitClientTests : BaseGitTestWithHttpServer
     {
         protected override int Timeout { get; set; } = 5 * 60 * 1000;
+
+        readonly string[] m_CleanFiles = { "file1.txt", "file2.txt", "file3.txt" };
 
         [Test]
         public void AaSetupGitFirst()
@@ -43,6 +48,40 @@ namespace IntegrationTests
             var result = GitClient.LfsVersion().RunSynchronously();
             var expected = TheVersion.Parse("2.6.1");
             result.Should().Be(expected);
+        }
+
+        [Test]
+        public void ShouldCleanFile()
+        {
+            InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized);
+
+            foreach (var file in m_CleanFiles)
+            {
+                file.ToNPath().WriteAllText("Some test text.");
+            }
+
+            GitClient.Clean(new List<string> { m_CleanFiles[0], m_CleanFiles[2] }).RunSynchronously();
+
+            m_CleanFiles[0].ToNPath().Exists().Should().BeFalse();
+            m_CleanFiles[1].ToNPath().Exists().Should().BeTrue();
+            m_CleanFiles[2].ToNPath().Exists().Should().BeFalse();
+        }
+
+        [Test]
+        public void ShouldCleanAllFiles()
+        {
+            InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized);
+
+            foreach (var file in m_CleanFiles)
+            {
+                file.ToNPath().WriteAllText("Some test text.");
+            }
+
+            GitClient.CleanAll().RunSynchronously();
+
+            m_CleanFiles[0].ToNPath().Exists().Should().BeFalse();
+            m_CleanFiles[1].ToNPath().Exists().Should().BeFalse();
+            m_CleanFiles[2].ToNPath().Exists().Should().BeFalse();
         }
     }
 }
