@@ -309,8 +309,9 @@ namespace Unity.VersionControl.Git
         /// </summary>
         /// <param name="username">The username to set</param>
         /// <param name="email">The email to set</param>
+        /// <param name="configSource">The source to set the values in</param>
         /// <returns><see cref="GitUser"/> output</returns>
-        ITask<GitUser> SetConfigNameAndEmail(string username, string email);
+        ITask<GitUser> SetConfigNameAndEmail(string username, string email, GitConfigSource configSource = GitConfigSource.User);
 
         /// <summary>
         /// Executes `git rev-parse --short HEAD` to get the current commit sha of the current branch.
@@ -458,10 +459,10 @@ namespace Unity.VersionControl.Git
         }
 
         ///<inheritdoc/>
-        public ITask<GitUser> SetConfigNameAndEmail(string username, string email)
+        public ITask<GitUser> SetConfigNameAndEmail(string username, string email, GitConfigSource configSource = GitConfigSource.User)
         {
-            return SetConfig(UserNameConfigKey, username, GitConfigSource.User)
-                .Then(SetConfig(UserEmailConfigKey, email, GitConfigSource.User))
+            return SetConfig(UserNameConfigKey, username, configSource)
+                .Then(SetConfig(UserEmailConfigKey, email, configSource))
                 .Then(b => new GitUser(username, email));
         }
 
