@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Unity.VersionControl.Git;
 using static Unity.VersionControl.Git.GitInstaller;
 
 namespace Unity.VersionControl.Git
@@ -28,14 +27,8 @@ namespace Unity.VersionControl.Git
 
         public ApplicationManagerBase(SynchronizationContext synchronizationContext, IEnvironment environment)
         {
-            UIScheduler = ThreadingHelper.GetUIScheduler(synchronizationContext);
-
-            SynchronizationContext = synchronizationContext;
-            ThreadingHelper.SetUIThread();
-            ThreadingHelper.MainThreadScheduler = UIScheduler;
-
             Environment = environment;
-            TaskManager = new TaskManager(UIScheduler);
+            TaskManager = new TaskManager().Initialize(synchronizationContext);
             Platform = new Platform(Environment);
             ProcessManager = new ProcessManager(Environment, Platform.GitEnvironment, TaskManager.Token);
             GitClient = new GitClient(Environment, ProcessManager, TaskManager.Token);
@@ -385,7 +378,7 @@ namespace Unity.VersionControl.Git
         public IPlatform Platform { get; protected set; }
         public virtual IProcessEnvironment GitEnvironment { get; set; }
         public IProcessManager ProcessManager { get; protected set; }
-        public ITaskManager TaskManager { get; protected set; }
+        public ITaskManager TaskManager { get; private set; }
         public IGitClient GitClient { get; protected set; }
         public ISettings LocalSettings { get { return Environment.LocalSettings; } }
         public ISettings SystemSettings { get { return Environment.SystemSettings; } }
@@ -407,7 +400,6 @@ namespace Unity.VersionControl.Git
 
         public bool IsBusy { get { return isBusy; } }
         protected TaskScheduler UIScheduler { get; private set; }
-        protected SynchronizationContext SynchronizationContext { get; private set; }
         protected IRepositoryManager RepositoryManager { get { return repositoryManager; } }
     }
 }

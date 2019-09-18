@@ -118,7 +118,7 @@ namespace IntegrationTests
         {
             var taskManager = new TaskManager();
             SyncContext = new ThreadSynchronizationContext(taskManager.Token);
-            taskManager.UIScheduler = new SynchronizationContextTaskScheduler(SyncContext);
+            taskManager.Initialize(new SynchronizationContextTaskScheduler(SyncContext));
             return taskManager;
         }
     }
