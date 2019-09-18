@@ -20,6 +20,11 @@ namespace Unity.VersionControl.Git
         /// Call this from the main thread so task manager knows which thread and
         /// synchronization context should be used
         /// </summary>
-        void Initialize();
+        ITaskManager Initialize(SynchronizationContext synchronizationContext);
+
+        /// <summary>
+        /// Call this from the main thread so task manager knows which thread it's in
+        /// </summary>
+        ITaskManager Initialize(TaskScheduler uiTaskScheduler);
     }
 }

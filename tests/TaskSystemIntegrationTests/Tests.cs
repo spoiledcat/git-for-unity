@@ -38,7 +38,7 @@ namespace IntegrationTests
             //LogHelper.TracingEnabled = true;
             TaskManager = new TaskManager();
             var syncContext = new ThreadSynchronizationContext(Token);
-            TaskManager.UIScheduler = new SynchronizationContextTaskScheduler(syncContext);
+            TaskManager.Initialize(new SynchronizationContextTaskScheduler(syncContext));
 
             var env = new DefaultEnvironment(new CacheContainer());
             TestBasePath = NPath.CreateTempDirectory("integration tests");

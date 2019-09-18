@@ -1,4 +1,3 @@
-using Unity.VersionControl.Git;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,21 +39,22 @@ namespace Unity.VersionControl.Git
 
         public TaskManager()
         {
+            instance = this;
             cts = new CancellationTokenSource();
             this.manager = new ConcurrentExclusiveInterleave(cts.Token);
-            instance = this;
         }
 
-        public TaskManager(TaskScheduler uiScheduler)
-            : this()
+        public ITaskManager Initialize(SynchronizationContext synchronizationContext)
         {
-            this.UIScheduler = uiScheduler;
+            return Initialize(ThreadingHelper.GetUIScheduler(synchronizationContext));
         }
 
-        public void Initialize()
+        public ITaskManager Initialize(TaskScheduler uiTaskScheduler)
         {
-            UIScheduler = TaskScheduler.FromCurrentSynchronizationContext();
+            UIScheduler = uiTaskScheduler;
             ThreadingHelper.SetUIThread();
+            ThreadingHelper.MainThreadScheduler = UIScheduler;
+            return this;
         }
 
         public Task Wait()
