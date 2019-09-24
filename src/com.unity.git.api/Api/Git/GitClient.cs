@@ -111,6 +111,15 @@ namespace Unity.VersionControl.Git
         ITask<string> Revert(string changeset, IOutputProcessor<string> processor = null);
 
         /// <summary>
+        /// Executes `git reset` to perform a reset operation.
+        /// </summary>
+        /// <param name="changeset">The changeset to reset to</param>
+        /// <param name="resetMode">Mode with which to reset with</param>
+        /// <param name="processor">A custom output processor instance</param>
+        /// <returns>String output of the git command</returns>
+        ITask<string> Reset(string changeset, GitResetMode resetMode = GitResetMode.NonSpecified, IOutputProcessor<string> processor = null);
+
+        /// <summary>
         /// Executes `git fetch` to perform a fetch operation.
         /// </summary>
         /// <param name="remote">The remote to fetch from</param>
@@ -492,6 +501,13 @@ namespace Unity.VersionControl.Git
         public ITask<string> Revert(string changeset, IOutputProcessor<string> processor = null)
         {
             return new GitRevertTask(changeset, cancellationToken, processor)
+                .Configure(processManager);
+        }
+
+        ///<inheritdoc/>
+        public ITask<string> Reset(string changeset, GitResetMode resetMode = GitResetMode.NonSpecified, IOutputProcessor<string> processor = null)
+        {
+            return new GitResetTask(changeset, resetMode, cancellationToken, processor)
                 .Configure(processManager);
         }
 
