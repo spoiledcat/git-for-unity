@@ -12,8 +12,6 @@ namespace Unity.VersionControl.Git.Tasks
             CancellationToken token, IOutputProcessor<string> processor = null)
             : base(token, processor ?? new SimpleOutputProcessor())
         {
-
-
             Name = TaskName;
             arguments = $"reset {GetModeString(resetMode)} {changeset}";
         }
