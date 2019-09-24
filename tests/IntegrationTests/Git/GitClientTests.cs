@@ -83,5 +83,29 @@ namespace IntegrationTests
             m_CleanFiles[1].ToNPath().Exists().Should().BeFalse();
             m_CleanFiles[2].ToNPath().Exists().Should().BeFalse();
         }
+
+        [Test]
+        public void ShouldResetRepositoryState()
+        {
+            InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized);
+
+            const string initialFile = "init-file.txt";
+            const string testFile = "reset-file.txt";
+
+            // Initial commit
+            initialFile.ToNPath().WriteAllText("Some test text.");
+            GitClient.Add(new List<string> { initialFile }).RunSynchronously();
+            GitClient.Commit("initial", "commit").RunSynchronously();
+
+            // Add file
+            testFile.ToNPath().WriteAllText("Some test text.");
+            GitClient.Add(new List<string> { testFile }).RunSynchronously();
+            GitClient.Commit("test", "commit").RunSynchronously();
+            testFile.ToNPath().Exists().Should().BeTrue();
+
+            // Reset to commit without file
+            GitClient.Reset("HEAD~1", GitResetMode.Hard).RunSynchronously();
+            testFile.ToNPath().Exists().Should().BeFalse();
+        }
     }
 }
