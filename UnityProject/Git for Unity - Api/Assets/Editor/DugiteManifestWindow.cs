@@ -23,9 +23,10 @@ class DugiteManifestWindow : BaseWindow
 		env.Initialize(unityVersion, extensionInstallPath, unityApplication.ToNPath(),
 			unityApplicationContents.ToNPath(), unityAssetsPath.ToNPath());
 		env.InitializeRepository();
-		TaskManager.Instance.Initialize();
+		TaskManager.Instance.Initialize(new UnityUIThreadSynchronizationContext());
+
 		var installer = new GitInstaller.GitInstallDetails(env.RepositoryPath, env);
-		var manifest = DugiteReleaseManifest.Load(installer.GitManifest, installer.GitPackageFeed, env);
+		var manifest = DugiteReleaseManifest.Load(installer.GitManifest, GitInstaller.GitInstallDetails.GitPackageFeed, env);
 
 		var downloader = new Downloader();
 		var downloadPath = env.RepositoryPath.Combine("downloads");

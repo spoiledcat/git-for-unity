@@ -1,10 +1,10 @@
 {
   "dependencies": {
+    "com.unity.git.api": "file:../../../src/com.unity.git.api",
     "com.unity.package-manager-ui": "2.1.2",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.imgui": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",
-    "com.unity.modules.ui": "1.0.0",
-    "com.unity.git.api": "file:../../../src/com.unity.git.api"
+    "com.unity.modules.ui": "1.0.0"
   }
 }

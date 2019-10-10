@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <ItemGroup>
-    <UnityVersions Include="2018.4.4f1;2018.4.3f1;2018.4.2f1;2019.1.10f1;2019.1.9f1;2019.1.8f1;2019.1.7f1;2019.1.6f1;2019.1.5f1;2019.1.4f1;2019.1.3f1;2019.1.2f1;2019.1.1f1" />
-  </ItemGroup>
-
   <PropertyGroup>
     <WhatOS Condition="Exists('\Applications') and !Exists('c:\Windows')">mac</WhatOS>
     <WhatOS Condition="'$(WhatOS)' != 'mac'">win</WhatOS>
@@ -29,9 +25,10 @@
   <Target Name="FindUnity">
 
     <ItemGroup>
-      <Locations Include="@(UnityVersions->'%(Identity)\Editor\Data\Managed\UnityEditor.dll')" />
-      <FilesFoundInPath Include="$(HubInstallDir)\*\Editor\Data\Managed\UnityEditor.dll" />
-      <BaseDirs Include="@(FilesFoundInPath->Replace('Managed\UnityEditor.dll', ''))" />
+      <FilesFoundInPath Condition="'$(WhatOS)' == 'win'" Include="$(HubInstallDir)\*\Editor\Data\Managed\UnityEditor.dll" />
+      <FilesFoundInPath Condition="'$(WhatOS)' == 'mac'" Include="$(HubInstallDir)\*\Unity.App\Contents\Managed\UnityEditor.dll" />
+      <BaseDirs Condition="'$(WhatOS)' == 'win'" Include="@(FilesFoundInPath->Replace('Managed\UnityEditor.dll', ''))" />
+      <BaseDirs Condition="'$(WhatOS)' == 'mac'" Include="@(FilesFoundInPath->Replace('Managed/UnityEditor.dll', ''))" />
     </ItemGroup>
 
     <PropertyGroup>
