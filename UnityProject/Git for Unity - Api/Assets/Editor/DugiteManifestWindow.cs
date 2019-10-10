@@ -25,7 +25,7 @@ class DugiteManifestWindow : BaseWindow
 		env.InitializeRepository();
 		TaskManager.Instance.Initialize(new UnityUIThreadSynchronizationContext());
 
-        var installer = new GitInstaller.GitInstallDetails(env.RepositoryPath, env);
+		var installer = new GitInstaller.GitInstallDetails(env.RepositoryPath, env);
 		var manifest = DugiteReleaseManifest.Load(installer.GitManifest, GitInstaller.GitInstallDetails.GitPackageFeed, env);
 
 		var downloader = new Downloader();
