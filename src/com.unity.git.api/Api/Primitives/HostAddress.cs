@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Unity.Editor.Tasks.Helpers;
 
 namespace Unity.VersionControl.Git
 {
@@ -80,18 +81,6 @@ namespace Unity.VersionControl.Git
             return hostUri.Host == GitHubDotComHostAddress.WebUri.Host
                 || hostUri.Host == GitHubDotComHostAddress.ApiUri.Host
                 || hostUri.Host == gistUri.Host;
-        }
-
-        public static bool IsGitHubDotCom(Connection connection)
-        {
-            if (connection == null || String.IsNullOrEmpty(connection.Host))
-                return false;
-
-            var connectionHost = connection.Host.ToUriString();
-
-            return connectionHost.Host == GitHubDotComHostAddress.WebUri.Host
-                || connectionHost.Host == GitHubDotComHostAddress.ApiUri.Host
-                || connectionHost.Host == gistUri.Host;
         }
 
         public bool IsGitHubDotCom()

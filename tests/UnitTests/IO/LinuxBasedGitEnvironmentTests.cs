@@ -28,7 +28,7 @@ namespace UnitTests
             filesystem.FileExists(Args.String).Returns(inFileSystem);
 
             //var linuxBasedGitInstallationStrategy = new LinuxEnvironment(environment);
-            //linuxBasedGitInstallationStrategy.ValidateGitInstall("asdf".ToNPath()).Should().Be(found);
+            //linuxBasedGitInstallationStrategy.ValidateGitInstall("asdf".ToSPath()).Should().Be(found);
         }
     }
 }

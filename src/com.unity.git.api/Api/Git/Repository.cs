@@ -1,12 +1,15 @@
-﻿using Unity.VersionControl.Git;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using Unity.Editor.Tasks;
+using Unity.Editor.Tasks.Helpers;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public interface IBackedByCache
     {
         void CheckAndRaiseEventsIfCacheNewer(CacheType cacheType, CacheUpdateEvent cacheUpdateEvent);
@@ -49,7 +52,7 @@ namespace Unity.VersionControl.Git
         /// </summary>
         /// <param name="localPath"></param>
         /// <param name="container"></param>
-        public Repository(NPath localPath, ICacheContainer container)
+        public Repository(SPath localPath, ICacheContainer container)
         {
             Guard.ArgumentNotNull(localPath, nameof(localPath));
 
@@ -142,8 +145,8 @@ namespace Unity.VersionControl.Git
         public ITask Push() => repositoryManager.Push(CurrentRemote.Value.Name, CurrentBranch?.Name);
         public ITask Fetch() => repositoryManager.Fetch(CurrentRemote.Value.Name);
         public ITask Revert(string changeset) => repositoryManager.Revert(changeset);
-        public ITask RequestLock(NPath file) => repositoryManager.LockFile(file);
-        public ITask ReleaseLock(NPath file, bool force) => repositoryManager.UnlockFile(file, force);
+        public ITask RequestLock(SPath file) => repositoryManager.LockFile(file);
+        public ITask ReleaseLock(SPath file, bool force) => repositoryManager.UnlockFile(file, force);
         public ITask DiscardChanges(GitStatusEntry[] gitStatusEntry) => repositoryManager.DiscardChanges(gitStatusEntry);
         public ITask CheckoutVersion(string changeset, IList<string> files) => repositoryManager.CheckoutVersion(changeset, files);
         public ITask RemoteAdd(string remote, string url) => repositoryManager.RemoteAdd(remote, url);
@@ -427,7 +430,7 @@ namespace Unity.VersionControl.Git
             private set { name = value; }
         }
 
-        public NPath LocalPath { get; private set; }
+        public SPath LocalPath { get; private set; }
         public string Owner => CloneUrl?.Owner ?? null;
         public bool IsGitHub => HostAddress.IsGitHubDotCom(CloneUrl);
         public bool IsBusy => repositoryManager?.IsBusy ?? false;
@@ -481,18 +484,16 @@ namespace Unity.VersionControl.Git
         public void SetNameAndEmail(string name, string email)
         {
             gitClient.SetConfigNameAndEmail(name, email)
-                     .ThenInUI((success, value) => {
-                         if (success)
-                         {
-                             Name = value.Name;
-                             Email = value.Email;
-                         }
-                     }).Start();
+                     .ThenInUI(value => {
+                         Name = value.Name;
+                         Email = value.Email;
+                     })
+                     .Start();
         }
 
         public override string ToString()
         {
-            return String.Format("Name: {0} Email: {1}", Name, Email);
+            return string.Format("Name: {0} Email: {1}", Name, Email);
         }
 
         private void CacheHasBeenUpdated(DateTimeOffset timeOffset)
@@ -520,13 +521,10 @@ namespace Unity.VersionControl.Git
 
             gitClient.GetConfigUserAndEmail()
                      .Catch(InvalidationFailed)
-                     .ThenInUI((success, value) =>
+                     .ThenInUI(value =>
                      {
-                         if (success)
-                         {
-                             Name = value.Name;
-                             Email = value.Email;
-                         }
+                         Name = value.Name;
+                         Email = value.Email;
                      }).Start();
         }
 

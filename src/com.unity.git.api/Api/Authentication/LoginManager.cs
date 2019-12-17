@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Unity.VersionControl.Git;
+using ITask = Unity.Editor.Tasks.ITask;
 
 namespace Unity.VersionControl.Git
 {

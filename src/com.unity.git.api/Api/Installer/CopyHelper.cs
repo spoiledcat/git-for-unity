@@ -6,14 +6,16 @@ using Unity.VersionControl.Git;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public static class CopyHelper
     {
         private static readonly ILogging Logger = LogHelper.GetLogger(typeof(CopyHelper));
 
-        public static void Copy(NPath fromPath, NPath toPath)
+        public static void Copy(SPath fromPath, SPath toPath)
         {
             Logger.Trace("Copying from {0} to {1}", fromPath, toPath);
-            
+
             try
             {
                 CopyFolder(fromPath, toPath);
@@ -37,7 +39,7 @@ namespace Unity.VersionControl.Git
                 fromPath.DeleteIfExists();
             }
         }
-        public static void CopyFolder(NPath fromPath, NPath toPath)
+        public static void CopyFolder(SPath fromPath, SPath toPath)
         {
             Logger.Trace("CopyFolder from {0} to {1}", fromPath, toPath);
             toPath.DeleteIfExists();
@@ -45,7 +47,7 @@ namespace Unity.VersionControl.Git
             fromPath.Move(toPath);
         }
 
-        public static void CopyFolderContents(NPath fromPath, NPath toPath)
+        public static void CopyFolderContents(SPath fromPath, SPath toPath)
         {
             Logger.Trace("CopyFolderContents from {0} to {1}", fromPath, toPath);
             toPath.DeleteContents();

@@ -1,13 +1,16 @@
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitLfsInstallTask : ProcessTask<string>
+    public class GitLfsInstallTask : NativeProcessTask<string>
     {
         private const string TaskName = "git lsf install";
 
-        public GitLfsInstallTask(CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleOutputProcessor())
+        public GitLfsInstallTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Name = TaskName;
         }

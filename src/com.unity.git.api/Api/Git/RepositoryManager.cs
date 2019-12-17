@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Unity.VersionControl.Git;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public interface IRepositoryManager : IDisposable
     {
         event Action<bool> IsBusyChanged;
@@ -35,8 +37,8 @@ namespace Unity.VersionControl.Git
         ITask SwitchBranch(string branch);
         ITask DeleteBranch(string branch, bool deleteUnmerged = false);
         ITask CreateBranch(string branch, string baseBranch);
-        ITask LockFile(NPath file);
-        ITask UnlockFile(NPath file, bool force);
+        ITask LockFile(SPath file);
+        ITask UnlockFile(SPath file, bool force);
         ITask DiscardChanges(GitStatusEntry[] gitStatusEntries);
         ITask CheckoutVersion(string changeset, IList<string> files);
         ITask UpdateGitLog();
@@ -57,37 +59,37 @@ namespace Unity.VersionControl.Git
 
     public interface IRepositoryPathConfiguration
     {
-        NPath RepositoryPath { get; }
-        NPath DotGitPath { get; }
-        NPath BranchesPath { get; }
-        NPath RemotesPath { get; }
-        NPath DotGitIndex { get; }
-        NPath DotGitHead { get; }
-        NPath DotGitConfig { get; }
-        NPath WorktreeDotGitPath { get; }
+        SPath RepositoryPath { get; }
+        SPath DotGitPath { get; }
+        SPath BranchesPath { get; }
+        SPath RemotesPath { get; }
+        SPath DotGitIndex { get; }
+        SPath DotGitHead { get; }
+        SPath DotGitConfig { get; }
+        SPath WorktreeDotGitPath { get; }
         bool IsWorktree { get; }
     }
 
     public class RepositoryPathConfiguration : IRepositoryPathConfiguration
     {
-        public RepositoryPathConfiguration(NPath repositoryPath)
+        public RepositoryPathConfiguration(SPath repositoryPath)
         {
             RepositoryPath = repositoryPath;
-            WorktreeDotGitPath = NPath.Default;
+            WorktreeDotGitPath = SPath.Default;
 
             DotGitPath = repositoryPath.Combine(".git");
-            NPath commonPath;
+            SPath commonPath;
             if (DotGitPath.FileExists())
             {
                 DotGitPath =
                     DotGitPath.ReadAllLines()
                               .Where(x => x.StartsWith("gitdir:"))
-                              .Select(x => x.Substring(7).Trim().ToNPath())
+                              .Select(x => x.Substring(7).Trim().ToSPath())
                               .First();
                 if (DotGitPath.Combine("commondir").FileExists())
                 {
                     commonPath = DotGitPath.Combine("commondir").ReadAllLines()
-                        .Select(x => x.Trim().ToNPath())
+                        .Select(x => x.Trim().ToSPath())
                         .First();
                     commonPath = DotGitPath.Combine(commonPath);
 
@@ -113,15 +115,15 @@ namespace Unity.VersionControl.Git
         }
 
         public bool IsWorktree { get; }
-        public NPath RepositoryPath { get; }
-        public NPath WorktreeDotGitPath { get; }
-        public NPath DotGitPath { get; }
-        public NPath BranchesPath { get; }
-        public NPath RemotesPath { get; }
-        public NPath DotGitIndex { get; }
-        public NPath DotGitHead { get; }
-        public NPath DotGitConfig { get; }
-        public NPath DotGitCommitEditMsg { get; }
+        public SPath RepositoryPath { get; }
+        public SPath WorktreeDotGitPath { get; }
+        public SPath DotGitPath { get; }
+        public SPath BranchesPath { get; }
+        public SPath RemotesPath { get; }
+        public SPath DotGitIndex { get; }
+        public SPath DotGitHead { get; }
+        public SPath DotGitConfig { get; }
+        public SPath DotGitCommitEditMsg { get; }
     }
 
     public class RepositoryManager : IRepositoryManager
@@ -129,8 +131,9 @@ namespace Unity.VersionControl.Git
         private readonly IGitConfig config;
         private readonly IGitClient gitClient;
         private readonly IRepositoryPathConfiguration repositoryPaths;
-        private readonly CancellationToken token;
         private readonly IRepositoryWatcher watcher;
+        private readonly CancellationTokenSource cts;
+        private readonly ITaskManager taskManager;
 
         private bool isBusy;
 
@@ -146,14 +149,15 @@ namespace Unity.VersionControl.Git
 
         public event Action<CacheType> DataNeedsRefreshing;
 
-        public RepositoryManager(IGitConfig gitConfig,
+        public RepositoryManager(ITaskManager taskManager,
+            IGitConfig gitConfig,
             IRepositoryWatcher repositoryWatcher,
             IGitClient gitClient,
-            CancellationToken token,
             IRepositoryPathConfiguration repositoryPaths)
         {
+            this.taskManager = taskManager;
+            cts = CancellationTokenSource.CreateLinkedTokenSource(taskManager.Token);
             this.repositoryPaths = repositoryPaths;
-            this.token = token;
             this.gitClient = gitClient;
             this.watcher = repositoryWatcher;
             this.config = gitConfig;
@@ -168,7 +172,7 @@ namespace Unity.VersionControl.Git
         }
 
         public static RepositoryManager CreateInstance(IPlatform platform, ITaskManager taskManager, IGitClient gitClient,
-            NPath repositoryRoot)
+            SPath repositoryRoot)
         {
             var repositoryPathConfiguration = new RepositoryPathConfiguration(repositoryRoot);
             string filePath = repositoryPathConfiguration.DotGitConfig;
@@ -176,9 +180,8 @@ namespace Unity.VersionControl.Git
 
             var repositoryWatcher = new RepositoryWatcher(platform, repositoryPathConfiguration, taskManager.Token);
 
-            return new RepositoryManager(gitConfig, repositoryWatcher,
-                gitClient, 
-                taskManager.Token, repositoryPathConfiguration);
+            return new RepositoryManager(taskManager, gitConfig, repositoryWatcher,
+                gitClient, repositoryPathConfiguration);
         }
 
         public void Initialize()
@@ -291,14 +294,14 @@ namespace Unity.VersionControl.Git
             return HookupHandlers(task, false);
         }
 
-        public ITask LockFile(NPath file)
+        public ITask LockFile(SPath file)
         {
             var task = GitClient.Lock(file)
                 .Then(() => DataNeedsRefreshing?.Invoke(CacheType.GitLocks));
             return HookupHandlers(task, false);
         }
 
-        public ITask UnlockFile(NPath file, bool force)
+        public ITask UnlockFile(SPath file, bool force)
         {
             var task = GitClient.Unlock(file, force)
                 .Then(() => DataNeedsRefreshing?.Invoke(CacheType.GitLocks));
@@ -310,16 +313,16 @@ namespace Unity.VersionControl.Git
             Guard.ArgumentNotNullOrEmpty(gitStatusEntries, "gitStatusEntries");
 
             ActionTask<GitStatusEntry[]> task = null;
-            task = new ActionTask<GitStatusEntry[]>(token, (_, entries) =>
+            task = new ActionTask<GitStatusEntry[]>(taskManager, entries =>
                 {
-                    var itemsToDelete = new List<NPath>();
+                    var itemsToDelete = new List<SPath>();
                     var itemsToRevert = new List<string>();
 
                     foreach (var gitStatusEntry in gitStatusEntries)
                     {
                         if (gitStatusEntry.WorkTreeStatus == GitFileStatus.Added || gitStatusEntry.WorkTreeStatus == GitFileStatus.Untracked)
                         {
-                            itemsToDelete.Add(gitStatusEntry.path.ToNPath().MakeAbsolute());
+                            itemsToDelete.Add(gitStatusEntry.path.ToSPath().MakeAbsolute());
                         }
                         else
                         {
@@ -356,12 +359,9 @@ namespace Unity.VersionControl.Git
         public ITask UpdateGitLog()
         {
             var task = GitClient.Log()
-                .Then((success, logEntries) =>
+                .Then(logEntries =>
                 {
-                    if (success)
-                    {
-                        GitLogUpdated?.Invoke(logEntries);
-                    }
+                    GitLogUpdated?.Invoke(logEntries);
                 });
             return HookupHandlers(task, false);
         }
@@ -369,13 +369,10 @@ namespace Unity.VersionControl.Git
         public ITask UpdateFileLog(string path)
         {
             var task = GitClient.LogFile(path)
-                                .Then((success, logEntries) =>
+                                .Then(logEntries =>
                                 {
-                                    if (success)
-                                    {
-                                        var gitFileLog = new GitFileLog(path, logEntries);
-                                        GitFileLogUpdated?.Invoke(gitFileLog);
-                                    }
+                                    var gitFileLog = new GitFileLog(path, logEntries);
+                                    GitFileLogUpdated?.Invoke(gitFileLog);
                                 });
             return HookupHandlers(task, false);
         }
@@ -383,12 +380,9 @@ namespace Unity.VersionControl.Git
         public ITask UpdateGitStatus()
         {
             var task = GitClient.Status()
-                .Then((success, status) =>
+                .Then(status =>
                 {
-                    if (success)
-                    {
-                        GitStatusUpdated?.Invoke(status);
-                    }
+                    GitStatusUpdated?.Invoke(status);
                 });
             return HookupHandlers(task, false);
         }
@@ -399,12 +393,9 @@ namespace Unity.VersionControl.Git
             ConfigRemote? configRemote;
             GetCurrentBranchAndRemote(out configBranch, out configRemote);
 
-            var updateTask = new ActionTask<GitAheadBehindStatus>(token, (success, status) =>
+            var updateTask = new ActionTask<GitAheadBehindStatus>(taskManager, status =>
                 {
-                    if (success)
-                    {
-                        GitAheadBehindStatusUpdated?.Invoke(status);
-                    }
+                    GitAheadBehindStatusUpdated?.Invoke(status);
                 });
             if (configBranch.HasValue && configBranch.Value.Remote.HasValue)
             {
@@ -425,12 +416,9 @@ namespace Unity.VersionControl.Git
         public ITask UpdateLocks()
         {
             var task = GitClient.ListLocks(false)
-                .Then((success, locks) =>
+                .Then(locks =>
                 {
-                    if (success)
-                    {
-                        GitLocksUpdated?.Invoke(locks);
-                    }
+                    GitLocksUpdated?.Invoke(locks);
                 });
             return HookupHandlers(task, false);
 
@@ -438,7 +426,7 @@ namespace Unity.VersionControl.Git
 
         public ITask UpdateBranches()
         {
-            var task = new ActionTask(token, () =>
+            var task = new ActionTask(taskManager, () =>
             {
                 UpdateLocalBranches();
                 UpdateRemoteBranches();
@@ -449,7 +437,7 @@ namespace Unity.VersionControl.Git
 
         public ITask UpdateRepositoryInfo()
         {
-            var task = new ActionTask(token, () =>
+            var task = new ActionTask(taskManager, () =>
             {
                 ConfigBranch? branch;
                 ConfigRemote? remote;
@@ -610,7 +598,7 @@ namespace Unity.VersionControl.Git
             LocalBranchesUpdated?.Invoke(branches);
         }
 
-        private void UpdateLocalBranches(Dictionary<string, ConfigBranch> branches, NPath path, IEnumerable<ConfigBranch> configBranches, string prefix)
+        private void UpdateLocalBranches(Dictionary<string, ConfigBranch> branches, SPath path, IEnumerable<ConfigBranch> configBranches, string prefix)
         {
             foreach (var file in path.Files())
             {

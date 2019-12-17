@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     class WindowsDiskUsageTask : ProcessTask<long>
     {
         private readonly string arguments;
 
-        public WindowsDiskUsageTask(NPath directory, CancellationToken token)
+        public WindowsDiskUsageTask(SPath directory, CancellationToken token)
             : base(token, new WindowsDiskUsageOutputProcessor())
         {
             Name = "cmd";

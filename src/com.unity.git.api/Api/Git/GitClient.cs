@@ -1,12 +1,14 @@
-﻿using Unity.VersionControl.Git;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.Editor.Tasks;
 using Unity.VersionControl.Git.Tasks;
 using static Unity.VersionControl.Git.GitInstaller;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     /// <summary>
     /// Client that provides access to git functionality
     /// </summary>
@@ -17,14 +19,14 @@ namespace Unity.VersionControl.Git
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Init(IOutputProcessor<string> processor = null);
+        ITask<string> Init();
 
         /// <summary>
         /// Executes `git lfs install` to install LFS hooks.
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> LfsInstall(IOutputProcessor<string> processor = null);
+        ITask<string> LfsInstall();
 
         /// <summary>
         /// Executes `git rev-list` to determine the ahead/behind status between two refs.
@@ -33,14 +35,14 @@ namespace Unity.VersionControl.Git
         /// <param name="otherRef">Ref to compare against</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns><see cref="GitAheadBehindStatus"/> output</returns>
-        ITask<GitAheadBehindStatus> AheadBehindStatus(string gitRef, string otherRef, IOutputProcessor<GitAheadBehindStatus> processor = null);
+        ITask<GitAheadBehindStatus> AheadBehindStatus(string gitRef, string otherRef);
 
         /// <summary>
         /// Executes `git status` to determine the working directory status.
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns><see cref="GitStatus"/> output</returns>
-        ITask<GitStatus> Status(IOutputProcessor<GitStatus> processor = null);
+        ITask<GitStatus> Status();
 
         /// <summary>
         /// Executes `git config get` to get a configuration value.
@@ -49,7 +51,7 @@ namespace Unity.VersionControl.Git
         /// <param name="configSource">The config source (unspecified, local,user,global) to use</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> GetConfig(string key, GitConfigSource configSource, IOutputProcessor<string> processor = null);
+        ITask<string> GetConfig(string key, GitConfigSource configSource);
 
         /// <summary>
         /// Executes `git config set` to set a configuration value.
@@ -59,7 +61,7 @@ namespace Unity.VersionControl.Git
         /// <param name="configSource">The config source (unspecified, local,user,global) to use</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> SetConfig(string key, string value, GitConfigSource configSource, IOutputProcessor<string> processor = null);
+        ITask<string> SetConfig(string key, string value, GitConfigSource configSource);
 
         /// <summary>
         /// Executes `git config --unset` to remove a configuration value.
@@ -68,7 +70,7 @@ namespace Unity.VersionControl.Git
         /// <param name="configSource">The config source (unspecified, local,user,global) to use</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> UnSetConfig(string key, GitConfigSource configSource, IOutputProcessor<string> processor = null);
+        ITask<string> UnSetConfig(string key, GitConfigSource configSource);
 
         /// <summary>
         /// Executes two `git config get` commands to get the git user and email.
@@ -82,7 +84,7 @@ namespace Unity.VersionControl.Git
         /// <param name="local"></param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns><see cref="List&lt;T&gt;"/> of <see cref="GitLock"/> output</returns>
-        ITask<List<GitLock>> ListLocks(bool local, BaseOutputListProcessor<GitLock> processor = null);
+        ITask<List<GitLock>> ListLocks(bool local);
 
         /// <summary>
         /// Executes `git pull` to perform a pull operation.
@@ -91,7 +93,7 @@ namespace Unity.VersionControl.Git
         /// <param name="branch">The branch to pull</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Pull(string remote, string branch, IOutputProcessor<string> processor = null);
+        ITask<string> Pull(string remote, string branch);
 
         /// <summary>
         /// Executes `git push` to perform a push operation.
@@ -100,7 +102,7 @@ namespace Unity.VersionControl.Git
         /// <param name="branch">The branch to push</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Push(string remote, string branch, IOutputProcessor<string> processor = null);
+        ITask<string> Push(string remote, string branch);
 
         /// <summary>
         /// Executes `git revert` to perform a revert operation.
@@ -108,7 +110,7 @@ namespace Unity.VersionControl.Git
         /// <param name="changeset">The changeset to revert</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Revert(string changeset, IOutputProcessor<string> processor = null);
+        ITask<string> Revert(string changeset);
 
         /// <summary>
         /// Executes `git reset` to perform a reset operation.
@@ -117,7 +119,7 @@ namespace Unity.VersionControl.Git
         /// <param name="resetMode">Mode with which to reset with</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of the git command</returns>
-        ITask<string> Reset(string changeset, GitResetMode resetMode = GitResetMode.NonSpecified, IOutputProcessor<string> processor = null);
+        ITask<string> Reset(string changeset, GitResetMode resetMode = GitResetMode.NonSpecified);
 
         /// <summary>
         /// Executes `git fetch` to perform a fetch operation.
@@ -125,7 +127,7 @@ namespace Unity.VersionControl.Git
         /// <param name="remote">The remote to fetch from</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Fetch(string remote, IOutputProcessor<string> processor = null);
+        ITask<string> Fetch(string remote);
 
         /// <summary>
         /// Executes `git checkout` to switch branches.
@@ -133,7 +135,7 @@ namespace Unity.VersionControl.Git
         /// <param name="branch">The branch to checkout</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> SwitchBranch(string branch, IOutputProcessor<string> processor = null);
+        ITask<string> SwitchBranch(string branch);
 
         /// <summary>
         /// Executes `git branch -d` to delete a branch.
@@ -142,7 +144,7 @@ namespace Unity.VersionControl.Git
         /// <param name="deleteUnmerged">The flag to indicate the branch should be deleted even if not merged</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> DeleteBranch(string branch, bool deleteUnmerged = false, IOutputProcessor<string> processor = null);
+        ITask<string> DeleteBranch(string branch, bool deleteUnmerged = false);
 
         /// <summary>
         /// Executes `git branch` to create a branch.
@@ -151,7 +153,7 @@ namespace Unity.VersionControl.Git
         /// <param name="baseBranch">The name of branch to create from</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> CreateBranch(string branch, string baseBranch, IOutputProcessor<string> processor = null);
+        ITask<string> CreateBranch(string branch, string baseBranch);
 
         /// <summary>
         /// Executes `git remote add` to add a git remote.
@@ -160,7 +162,7 @@ namespace Unity.VersionControl.Git
         /// <param name="url">The url of the remote</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> RemoteAdd(string remote, string url, IOutputProcessor<string> processor = null);
+        ITask<string> RemoteAdd(string remote, string url);
 
         /// <summary>
         /// Executes `git remote rm` to remove a git remote.
@@ -168,7 +170,7 @@ namespace Unity.VersionControl.Git
         /// <param name="remote">The remote to remove</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> RemoteRemove(string remote, IOutputProcessor<string> processor = null);
+        ITask<string> RemoteRemove(string remote);
 
         /// <summary>
         /// Executes `git remote set-url` to change the url of a git remote.
@@ -177,7 +179,7 @@ namespace Unity.VersionControl.Git
         /// <param name="url">The url to change to</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> RemoteChange(string remote, string url, IOutputProcessor<string> processor = null);
+        ITask<string> RemoteChange(string remote, string url);
 
         /// <summary>
         /// Executes `git commit` to perform a commit operation.
@@ -186,7 +188,7 @@ namespace Unity.VersionControl.Git
         /// <param name="body">The commit message body</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Commit(string message, string body, IOutputProcessor<string> processor = null);
+        ITask<string> Commit(string message, string body);
 
         /// <summary>
         /// Executes at least one `git add` command to add the list of files to the git index.
@@ -194,14 +196,14 @@ namespace Unity.VersionControl.Git
         /// <param name="files">The file to add</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Add(IList<string> files, IOutputProcessor<string> processor = null);
+        ITask<string> Add(IList<string> files);
 
         /// <summary>
         /// Executes `git add -A` to add all files to the git index.
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> AddAll(IOutputProcessor<string> processor = null);
+        ITask<string> AddAll();
 
         /// <summary>
         /// Executes at least one `git checkout` command to discard changes to the list of files.
@@ -209,14 +211,14 @@ namespace Unity.VersionControl.Git
         /// <param name="files">The files to discard</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Discard(IList<string> files, IOutputProcessor<string> processor = null);
+        ITask<string> Discard(IList<string> files);
 
         /// <summary>
         /// Executes `git checkout -- .` to discard all changes in the working directory.
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> DiscardAll(IOutputProcessor<string> processor = null);
+        ITask<string> DiscardAll();
 
         /// <summary>
         /// Executes at least one `git clean` command to discard changes to the list of untracked files.
@@ -224,14 +226,14 @@ namespace Unity.VersionControl.Git
         /// <param name="files">The files to clean</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Clean(IList<string> files, IOutputProcessor<string> processor = null);
+        ITask<string> Clean(IList<string> files);
 
         /// <summary>
         /// Executes `git clean` command to discard changes to all untracked files.
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> CleanAll(IOutputProcessor<string> processor = null);
+        ITask<string> CleanAll();
 
         /// <summary>
         /// Executes at least one `git checkout` command to checkout files at the given changeset
@@ -240,7 +242,7 @@ namespace Unity.VersionControl.Git
         /// <param name="files">The files to check out</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> CheckoutVersion(string changeset, IList<string> files, IOutputProcessor<string> processor = null);
+        ITask<string> CheckoutVersion(string changeset, IList<string> files);
 
         /// <summary>
         /// Executes at least one `git reset HEAD` command to remove files from the git index.
@@ -248,7 +250,7 @@ namespace Unity.VersionControl.Git
         /// <param name="files">The files to remove</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Remove(IList<string> files, IOutputProcessor<string> processor = null);
+        ITask<string> Remove(IList<string> files);
 
         /// <summary>
         /// Executes at least one `git add` command to add the list of files to the git index. Followed by a `git commit` command to commit the changes.
@@ -258,7 +260,7 @@ namespace Unity.VersionControl.Git
         /// <param name="body">The commit message body</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> AddAndCommit(IList<string> files, string message, string body, IOutputProcessor<string> processor = null);
+        ITask<string> AddAndCommit(IList<string> files, string message, string body);
 
         /// <summary>
         /// Executes `git lfs lock` to lock a file.
@@ -266,7 +268,7 @@ namespace Unity.VersionControl.Git
         /// <param name="file">The file to lock</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Lock(NPath file, IOutputProcessor<string> processor = null);
+        ITask<string> Lock(SPath file);
 
         /// <summary>
         /// Executes `git lfs unlock` to unlock a file.
@@ -275,14 +277,14 @@ namespace Unity.VersionControl.Git
         /// <param name="force">If force should be used</param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> Unlock(NPath file, bool force, IOutputProcessor<string> processor = null);
+        ITask<string> Unlock(SPath file, bool force);
 
         /// <summary>
         /// Executes `git log` to get the history of the current branch.
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns><see cref="List&lt;T&gt;"/> of <see cref="GitLogEntry"/> output</returns>
-        ITask<List<GitLogEntry>> Log(BaseOutputListProcessor<GitLogEntry> processor = null);
+        ITask<List<GitLogEntry>> Log();
 
         /// <summary>
         /// Executes `git log -- <file>` to get the history of a specific file.
@@ -290,28 +292,28 @@ namespace Unity.VersionControl.Git
         /// <param name="file"></param>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns><see cref="List&lt;T&gt;"/> of <see cref="GitLogEntry"/> output</returns>
-        ITask<List<GitLogEntry>> LogFile(string file, BaseOutputListProcessor<GitLogEntry> processor = null);
+        ITask<List<GitLogEntry>> LogFile(string file);
 
         /// <summary>
         /// Executes `git --version` to get the git version.
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns><see cref="TheVersion"/> output</returns>
-        ITask<TheVersion> Version(IOutputProcessor<TheVersion> processor = null);
+        ITask<TheVersion> Version();
 
         /// <summary>
         /// Executes `git lfs version` to get the git lfs version.
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns><see cref="TheVersion"/> output</returns>
-        ITask<TheVersion> LfsVersion(IOutputProcessor<TheVersion> processor = null);
+        ITask<TheVersion> LfsVersion();
 
         /// <summary>
         /// Executes `git count-objects` to get the size of the git repo in kilobytes.
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns><see cref="int"/> output</returns>
-        ITask<int> CountObjects(IOutputProcessor<int> processor = null);
+        ITask<int> CountObjects();
 
         /// <summary>
         /// Executes two `git set config` commands to set the git name and email.
@@ -327,7 +329,7 @@ namespace Unity.VersionControl.Git
         /// </summary>
         /// <param name="processor">A custom output processor instance</param>
         /// <returns>String output of git command</returns>
-        ITask<string> GetHead(IOutputProcessor<string> processor = null);
+        ITask<string> GetHead();
     }
 
     public class GitClient : IGitClient
@@ -335,111 +337,126 @@ namespace Unity.VersionControl.Git
         private const string UserNameConfigKey = "user.name";
         private const string UserEmailConfigKey = "user.email";
         private const int SpoolLength = 5000;
-        private readonly IEnvironment environment;
+        private readonly ITaskManager taskManager;
+        private readonly IGitEnvironment environment;
         private readonly IProcessManager processManager;
-        private readonly CancellationToken cancellationToken;
+        private readonly IProcessEnvironment processEnvironment;
+        private readonly CancellationTokenSource cts;
+        private CancellationToken Token => cts.Token;
 
-        public GitClient(IEnvironment environment, IProcessManager processManager, CancellationToken cancellationToken)
+        public GitClient(ITaskManager taskManager, IProcessManager processManager, IProcessEnvironment gitProcessEnvironment, IGitEnvironment environment, CancellationToken cancellationToken = default)
         {
+            this.taskManager = taskManager;
             this.environment = environment;
             this.processManager = processManager;
-            this.cancellationToken = cancellationToken;
+            this.processEnvironment = gitProcessEnvironment;
+            cts = CancellationTokenSource.CreateLinkedTokenSource(taskManager.Token, cancellationToken);
+        }
+
+        public GitClient(IPlatform platform, CancellationToken cancellationToken = default)
+        {
+            this.taskManager = platform.TaskManager;
+            this.environment = platform.Environment;
+            this.processManager = platform.ProcessManager;
+            this.processEnvironment = platform.ProcessEnvironment;
+
+            cts = CancellationTokenSource.CreateLinkedTokenSource(taskManager.Token, cancellationToken);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Init(IOutputProcessor<string> processor = null)
+        public ITask<string> Init()
         {
-            return new GitInitTask(cancellationToken, processor)
+            return new GitInitTask(taskManager, processEnvironment, environment, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> LfsInstall(IOutputProcessor<string> processor = null)
+        public ITask<string> LfsInstall()
         {
-            return new GitLfsInstallTask(cancellationToken, processor)
+            return new GitLfsInstallTask(taskManager, processEnvironment, environment, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<GitStatus> Status(IOutputProcessor<GitStatus> processor = null)
+        public ITask<GitStatus> Status()
         {
-            return new GitStatusTask(new GitObjectFactory(environment), cancellationToken, processor)
+            return new GitStatusTask(taskManager, processEnvironment, environment, new GitObjectFactory(environment), Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<GitAheadBehindStatus> AheadBehindStatus(string gitRef, string otherRef, IOutputProcessor<GitAheadBehindStatus> processor = null)
+        public ITask<GitAheadBehindStatus> AheadBehindStatus(string gitRef, string otherRef)
         {
-            return new GitAheadBehindStatusTask(gitRef, otherRef, cancellationToken, processor)
+            return new GitAheadBehindStatusTask(taskManager, processEnvironment, environment, gitRef, otherRef, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<List<GitLogEntry>> Log(BaseOutputListProcessor<GitLogEntry> processor = null)
+        public ITask<List<GitLogEntry>> Log()
         {
-            return new GitLogTask(new GitObjectFactory(environment), cancellationToken, processor)
+            return new GitLogTask(taskManager, processEnvironment, environment, new GitObjectFactory(environment), token: Token)
                 .Configure(processManager)
                 .Catch(exception => exception is ProcessException &&
                     exception.Message.StartsWith("fatal: your current branch") &&
                     exception.Message.EndsWith("does not have any commits yet"))
-                .Then((success, list) => success ? list : new List<GitLogEntry>());
+                .Then((success, _, list) => success ? list : new List<GitLogEntry>());
         }
 
         ///<inheritdoc/>
-        public ITask<List<GitLogEntry>> LogFile(string file, BaseOutputListProcessor<GitLogEntry> processor = null)
+        public ITask<List<GitLogEntry>> LogFile(string file)
         {
-            if (file == NPath.Default)
+            if (file == SPath.Default)
             {
-                return new FuncTask<List<GitLogEntry>>(cancellationToken, () => new List<GitLogEntry>(0));
+                return taskManager.With(() => new List<GitLogEntry>(0));
             }
 
-            return new GitLogTask(file, new GitObjectFactory(environment), cancellationToken, processor)
+            return new GitLogTask(taskManager, processEnvironment, environment, new GitObjectFactory(environment), file, token: Token)
                 .Configure(processManager)
                 .Catch(exception => exception is ProcessException &&
                     exception.Message.StartsWith("fatal: your current branch") &&
                     exception.Message.EndsWith("does not have any commits yet"))
-                .Then((success, list) => success ? list : new List<GitLogEntry>());
+                .Then((success, _, list) => success ? list : new List<GitLogEntry>());
         }
 
         ///<inheritdoc/>
-        public ITask<TheVersion> Version(IOutputProcessor<TheVersion> processor = null)
+        public ITask<TheVersion> Version()
         {
-            return new GitVersionTask(cancellationToken, processor)
+            return new GitVersionTask(taskManager, processEnvironment, environment, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<TheVersion> LfsVersion(IOutputProcessor<TheVersion> processor = null)
+        public ITask<TheVersion> LfsVersion()
         {
-            return new GitLfsVersionTask(cancellationToken, processor)
+            return new GitLfsVersionTask(taskManager, processEnvironment, environment, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<int> CountObjects(IOutputProcessor<int> processor = null)
+        public ITask<int> CountObjects()
         {
-            return new GitCountObjectsTask(cancellationToken, processor)
+            return new GitCountObjectsTask(taskManager, processEnvironment, environment, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> GetConfig(string key, GitConfigSource configSource, IOutputProcessor<string> processor = null)
+        public ITask<string> GetConfig(string key, GitConfigSource configSource)
         {
-            return new GitConfigGetTask(key, configSource, cancellationToken, processor)
+            return new GitConfigGetTask(taskManager, processEnvironment, environment, key, configSource, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> SetConfig(string key, string value, GitConfigSource configSource, IOutputProcessor<string> processor = null)
+        public ITask<string> SetConfig(string key, string value, GitConfigSource configSource)
         {
-            return new GitConfigSetTask(key, value, configSource, cancellationToken, processor)
+            return new GitConfigSetTask(taskManager, processEnvironment, environment, key, value, configSource, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> UnSetConfig(string key, GitConfigSource configSource, IOutputProcessor<string> processor = null)
+        public ITask<string> UnSetConfig(string key, GitConfigSource configSource)
         {
-            return new GitConfigUnSetTask(key, configSource, cancellationToken, processor)
+            return new GitConfigUnSetTask(taskManager, processEnvironment, environment, key, configSource, Token)
                 .Configure(processManager);
         }
 
@@ -450,21 +467,20 @@ namespace Unity.VersionControl.Git
             string email = null;
 
             return GetConfig(UserNameConfigKey, GitConfigSource.User)
-                .Then((success, value) => {
+                .Then((success, _, value) => {
                     if (success)
                     {
                         username = value;
                     }
                 })
                 .Then(GetConfig(UserEmailConfigKey, GitConfigSource.User)
-                    .Then((success, value) => {
+                    .Then((success, _, value) => {
                         if (success)
                         {
                             email = value;
                         }
-                    })).Then(success => {
-                return new GitUser(username, email);
-            });
+                    }))
+                .Then(() => new GitUser(username, email));
         }
 
         ///<inheritdoc/>
@@ -476,119 +492,110 @@ namespace Unity.VersionControl.Git
         }
 
         ///<inheritdoc/>
-        public ITask<List<GitLock>> ListLocks(bool local, BaseOutputListProcessor<GitLock> processor = null)
+        public ITask<List<GitLock>> ListLocks(bool local)
         {
-            return new GitListLocksTask(local, cancellationToken, processor)
+            return new GitListLocksTask(taskManager, processEnvironment, environment, local, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Pull(string remote, string branch, IOutputProcessor<string> processor = null)
+        public ITask<string> Pull(string remote, string branch)
         {
-            return new GitPullTask(remote, branch, cancellationToken, processor)
+            return new GitPullTask(taskManager, processEnvironment, environment, remote, branch, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Push(string remote, string branch,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> Push(string remote, string branch)
         {
-            return new GitPushTask(remote, branch, true, cancellationToken, processor)
+            return new GitPushTask(taskManager, processEnvironment, environment, remote, branch, true, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Revert(string changeset, IOutputProcessor<string> processor = null)
+        public ITask<string> Revert(string changeset)
         {
-            return new GitRevertTask(changeset, cancellationToken, processor)
+            return new GitRevertTask(taskManager, processEnvironment, environment, changeset, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Reset(string changeset, GitResetMode resetMode = GitResetMode.NonSpecified, IOutputProcessor<string> processor = null)
+        public ITask<string> Reset(string changeset, GitResetMode resetMode = GitResetMode.NonSpecified)
         {
-            return new GitResetTask(changeset, resetMode, cancellationToken, processor)
+            return new GitResetTask(taskManager, processEnvironment, environment, changeset, resetMode, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Fetch(string remote,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> Fetch(string remote)
         {
-            return new GitFetchTask(remote, cancellationToken, processor: processor)
+            return new GitFetchTask(taskManager, processEnvironment, environment, remote, token: Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> SwitchBranch(string branch, IOutputProcessor<string> processor = null)
+        public ITask<string> SwitchBranch(string branch)
         {
-            return new GitSwitchBranchesTask(branch, cancellationToken, processor)
+            return new GitSwitchBranchesTask(taskManager, processEnvironment, environment, branch, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> DeleteBranch(string branch, bool deleteUnmerged = false,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> DeleteBranch(string branch, bool deleteUnmerged = false)
         {
-            return new GitBranchDeleteTask(branch, deleteUnmerged, cancellationToken, processor)
+            return new GitBranchDeleteTask(taskManager, processEnvironment, environment, branch, deleteUnmerged, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> CreateBranch(string branch, string baseBranch,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> CreateBranch(string branch, string baseBranch)
         {
-            return new GitBranchCreateTask(branch, baseBranch, cancellationToken, processor)
+            return new GitBranchCreateTask(taskManager, processEnvironment, environment, branch, baseBranch, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> RemoteAdd(string remote, string url,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> RemoteAdd(string remote, string url)
         {
-            return new GitRemoteAddTask(remote, url, cancellationToken, processor)
+            return new GitRemoteAddTask(taskManager, processEnvironment, environment, remote, url, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> RemoteRemove(string remote,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> RemoteRemove(string remote)
         {
-            return new GitRemoteRemoveTask(remote, cancellationToken, processor)
+            return new GitRemoteRemoveTask(taskManager, processEnvironment, environment, remote, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> RemoteChange(string remote, string url,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> RemoteChange(string remote, string url)
         {
-            return new GitRemoteChangeTask(remote, url, cancellationToken, processor)
+            return new GitRemoteChangeTask(taskManager, processEnvironment, environment, remote, url, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Commit(string message, string body,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> Commit(string message, string body)
         {
-            return new GitCommitTask(message, body, cancellationToken, processor)
+            return new GitCommitTask(taskManager, processEnvironment, environment, message, body, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> AddAll(IOutputProcessor<string> processor = null)
+        public ITask<string> AddAll()
         {
-            return new GitAddTask(cancellationToken, processor)
+            return new GitAddTask(taskManager, processEnvironment, environment, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Add(IList<string> files,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> Add(IList<string> files)
         {
             GitAddTask last = null;
             foreach (var batch in files.Spool(SpoolLength))
             {
-                var current = new GitAddTask(batch, cancellationToken, processor).Configure(processManager);
+                var current = new GitAddTask(taskManager, processEnvironment, environment, batch, Token).Configure(processManager);
                 if (last == null)
                 {
                     last = current;
@@ -604,13 +611,12 @@ namespace Unity.VersionControl.Git
         }
 
         ///<inheritdoc/>
-        public ITask<string> Discard(IList<string> files,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> Discard(IList<string> files)
         {
             GitCheckoutTask last = null;
             foreach (var batch in files.Spool(SpoolLength))
             {
-                var current = new GitCheckoutTask(batch, cancellationToken, processor).Configure(processManager);
+                var current = new GitCheckoutTask(taskManager, processEnvironment, environment, batch, Token).Configure(processManager);
                 if (last == null)
                 {
                     last = current;
@@ -626,19 +632,19 @@ namespace Unity.VersionControl.Git
         }
 
         ///<inheritdoc/>
-        public ITask<string> DiscardAll(IOutputProcessor<string> processor = null)
+        public ITask<string> DiscardAll()
         {
-            return new GitCheckoutTask(cancellationToken, processor)
+            return new GitCheckoutTask(taskManager, processEnvironment, environment, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Clean(IList<string> files, IOutputProcessor<string> processor = null)
+        public ITask<string> Clean(IList<string> files)
         {
             GitCleanTask last = null;
             foreach (var batch in files.Spool(SpoolLength))
             {
-                var current = new GitCleanTask(batch, cancellationToken, processor).Configure(processManager);
+                var current = new GitCleanTask(taskManager, processEnvironment, environment, batch, Token).Configure(processManager);
                 if (last == null)
                 {
                     last = current;
@@ -654,27 +660,26 @@ namespace Unity.VersionControl.Git
         }
 
         ///<inheritdoc/>
-        public ITask<string> CleanAll(IOutputProcessor<string> processor = null)
+        public ITask<string> CleanAll()
         {
-            return new GitCleanTask(cancellationToken, processor)
+            return new GitCleanTask(taskManager, processEnvironment, environment, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> CheckoutVersion(string changeset, IList<string> files, IOutputProcessor<string> processor = null)
+        public ITask<string> CheckoutVersion(string changeset, IList<string> files)
         {
-            return new GitCheckoutTask(changeset, files, cancellationToken, processor)
+            return new GitCheckoutTask(taskManager, processEnvironment, environment, changeset, files, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Remove(IList<string> files,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> Remove(IList<string> files)
         {
             GitRemoveFromIndexTask last = null;
             foreach (var batch in files.Spool(SpoolLength))
             {
-                var current = new GitRemoveFromIndexTask(batch, cancellationToken, processor).Configure(processManager);
+                var current = new GitRemoveFromIndexTask(taskManager, processEnvironment, environment, batch, Token).Configure(processManager);
                 if (last == null)
                 {
                     last = current;
@@ -690,39 +695,42 @@ namespace Unity.VersionControl.Git
         }
 
         ///<inheritdoc/>
-        public ITask<string> AddAndCommit(IList<string> files, string message, string body,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> AddAndCommit(IList<string> files, string message, string body)
         {
             return Add(files)
-                .Then(new GitCommitTask(message, body, cancellationToken)
+                .Then(new GitCommitTask(taskManager, processEnvironment, environment, message, body, Token)
                     .Configure(processManager));
         }
 
         ///<inheritdoc/>
-        public ITask<string> Lock(NPath file,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> Lock(SPath file)
         {
-            return new GitLockTask(file, cancellationToken, processor)
+            return new GitLockTask(taskManager, processEnvironment, environment, file, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> Unlock(NPath file, bool force,
-            IOutputProcessor<string> processor = null)
+        public ITask<string> Unlock(SPath file, bool force)
         {
-            return new GitUnlockTask(file, force, cancellationToken, processor)
+            return new GitUnlockTask(taskManager, processEnvironment, environment, file, force, Token)
                 .Configure(processManager);
         }
 
         ///<inheritdoc/>
-        public ITask<string> GetHead(IOutputProcessor<string> processor = null)
+        public ITask<string> GetHead()
         {
-            return new FirstNonNullLineProcessTask(cancellationToken, "rev-parse --short HEAD") { Name = "Getting current head..." }
-                .Configure(processManager)
-                   .Catch(exception => exception is ProcessException &&
-                       exception.Message.StartsWith("fatal: your current branch") &&
-                       exception.Message.EndsWith("does not have any commits yet"))
-                   .Then((success, head) => success ? head : null);
+            return new NativeProcessTask<string>(taskManager, processEnvironment, environment.GitExecutablePath, "rev-parse --short HEAD",
+                    new FirstNonNullOutputProcessor<string>(), Token) { Name = "Getting current head..." }
+                   .Configure(processManager)
+                      .Catch(exception =>
+                          exception is ProcessException &&
+                          exception.Message.StartsWith(
+                              "fatal: your current branch") &&
+                          exception.Message.EndsWith(
+                              "does not have any commits yet"))
+                      .Then((success, _, head) =>
+                          success ? head : null);
+
         }
 
         protected static ILogging Logger { get; } = LogHelper.GetLogger<GitClient>();

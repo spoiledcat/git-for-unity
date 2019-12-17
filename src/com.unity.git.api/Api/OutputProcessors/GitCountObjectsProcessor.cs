@@ -1,16 +1,14 @@
+using Unity.Editor.Tasks;
+
 namespace Unity.VersionControl.Git
 {
     public class GitCountObjectsProcessor : BaseOutputProcessor<int>
     {
-        public override void LineReceived(string line)
+        protected override bool ProcessLine(string line, out int result)
         {
-            if (line == null)
-            {
-                return;
-            }
+            base.ProcessLine(line, out result);
 
-            //2488 objects, 4237 kilobytes
-
+            //parses 2488 objects, 4237 kilobytes
             try
             {
                 var proc = new LineParser(line);
@@ -18,10 +16,11 @@ namespace Unity.VersionControl.Git
                 proc.MoveToAfter(',');
                 var kilobytes = int.Parse(proc.ReadUntilWhitespaceTrim());
 
-                RaiseOnEntry(kilobytes);
+                result = kilobytes;
+                return true;
             }
             catch {}
-            return;
+            return false;
         }
     }
 }

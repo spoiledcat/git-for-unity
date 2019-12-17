@@ -26,9 +26,9 @@ namespace IntegrationTests
 
         protected ITaskManager TaskManager { get; set; }
         protected IProcessManager ProcessManager { get; set; }
-        protected NPath TestBasePath { get; private set; }
+        protected SPath TestBasePath { get; private set; }
         protected CancellationToken Token => TaskManager.Token;
-        protected NPath TestApp => System.Reflection.Assembly.GetExecutingAssembly().Location.ToNPath().Parent.Combine("CommandLine.exe");
+        protected SPath TestApp => System.Reflection.Assembly.GetExecutingAssembly().Location.ToSPath().Parent.Combine("CommandLine.exe");
 
         [OneTimeSetUp]
         public void OneTimeSetup()
@@ -41,7 +41,7 @@ namespace IntegrationTests
             TaskManager.Initialize(new SynchronizationContextTaskScheduler(syncContext));
 
             var env = new DefaultEnvironment(new CacheContainer());
-            TestBasePath = NPath.CreateTempDirectory("integration tests");
+            TestBasePath = SPath.CreateTempDirectory("integration tests");
             env.FileSystem.SetCurrentDirectory(TestBasePath);
             env.Initialize("5.6", TestBasePath, TestBasePath, TestBasePath, TestBasePath.Combine("Assets"));
 
@@ -929,9 +929,9 @@ namespace IntegrationTests
         public void ThrowsIfCannotConvert()
         {
             Assert.Throws<ArgumentNullException>(() => new TaskQueue<string, double>());
-            // NPath has an implicit operator to string, but we cannot verify this without using
+            // SPath has an implicit operator to string, but we cannot verify this without using
             // reflection, so a converter is required
-            Assert.Throws<ArgumentNullException>(() => new TaskQueue<NPath, string>());
+            Assert.Throws<ArgumentNullException>(() => new TaskQueue<SPath, string>());
         }
 
         [Test]

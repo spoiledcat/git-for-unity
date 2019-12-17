@@ -1,15 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitCheckoutTask : ProcessTask<string>
+    using IO;
+
+    public class GitCheckoutTask : NativeProcessTask<string>
     {
         private const string TaskName = "git checkout";
         private readonly string arguments;
 
-        public GitCheckoutTask(IEnumerable<string> files, CancellationToken token,
-            IOutputProcessor<string> processor = null) : base(token, processor ?? new SimpleOutputProcessor())
+        public GitCheckoutTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            IEnumerable<string> files,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNull(files, "files");
             Name = TaskName;
@@ -19,21 +25,25 @@ namespace Unity.VersionControl.Git.Tasks
 
             foreach (var file in files)
             {
-                arguments += " \"" + file.ToNPath().ToString(SlashMode.Forward) + "\"";
+                arguments += " \"" + file.ToSPath().ToString(SlashMode.Forward) + "\"";
             }
         }
 
-        public GitCheckoutTask(CancellationToken token,
-            IOutputProcessor<string> processor = null) : base(token, processor ?? new SimpleOutputProcessor())
+        public GitCheckoutTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             arguments = "checkout -- .";
         }
 
         public GitCheckoutTask(
+            ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
             string changeset,
             IEnumerable<string> files,
-            CancellationToken token,
-            IOutputProcessor<string> processor = null) : base(token, processor ?? new SimpleOutputProcessor())
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNull(files, "files");
             Name = TaskName;
@@ -44,10 +54,10 @@ namespace Unity.VersionControl.Git.Tasks
 
             foreach (var file in files)
             {
-                arguments += " \"" + file.ToNPath().ToString(SlashMode.Forward) + "\"";
+                arguments += " \"" + file.ToSPath().ToString(SlashMode.Forward) + "\"";
             }
 
-            Message = "Checking out files at rev " + changeset.Substring(0, 7); 
+            Message = "Checking out files at rev " + changeset.Substring(0, 7);
         }
 
         public override string ProcessArguments { get { return arguments; } }

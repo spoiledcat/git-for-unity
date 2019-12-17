@@ -9,6 +9,7 @@ using System.Threading;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
     public static class ProcessTaskExtensions
     {
         public static T Configure<T>(this T task, IProcessManager processManager, bool withInput)
@@ -25,12 +26,12 @@ namespace Unity.VersionControl.Git
 
         public static T Configure<T>(this T task, IProcessManager processManager, string executable = null,
             string arguments = null,
-            NPath? workingDirectory = null,
+            SPath? workingDirectory = null,
             bool withInput = false
             , bool dontSetupGit = false)
             where T : IProcess
         {
-            return processManager.Configure(task, executable?.ToNPath(), arguments, workingDirectory, withInput, dontSetupGit);
+            return processManager.Configure(task, executable?.ToSPath(), arguments, workingDirectory, withInput, dontSetupGit);
         }
     }
 
@@ -531,10 +532,10 @@ namespace Unity.VersionControl.Git
 
     public class FirstNonNullLineProcessTask : ProcessTask<string>
     {
-        private readonly NPath? fullPathToExecutable;
+        private readonly SPath? fullPathToExecutable;
         private readonly string arguments;
 
-        public FirstNonNullLineProcessTask(CancellationToken token, NPath fullPathToExecutable, string arguments)
+        public FirstNonNullLineProcessTask(CancellationToken token, SPath fullPathToExecutable, string arguments)
             : base(token, new FirstNonNullLineOutputProcessor())
         {
             this.fullPathToExecutable = fullPathToExecutable;
@@ -553,10 +554,10 @@ namespace Unity.VersionControl.Git
 
     public class SimpleProcessTask : ProcessTask<string>
     {
-        private readonly NPath? fullPathToExecutable;
+        private readonly SPath? fullPathToExecutable;
         private readonly string arguments;
 
-        public SimpleProcessTask(CancellationToken token, NPath fullPathToExecutable, string arguments, IOutputProcessor<string> processor = null)
+        public SimpleProcessTask(CancellationToken token, SPath fullPathToExecutable, string arguments, IOutputProcessor<string> processor = null)
             : base(token, processor ?? new SimpleOutputProcessor())
         {
             this.fullPathToExecutable = fullPathToExecutable;
@@ -575,16 +576,16 @@ namespace Unity.VersionControl.Git
 
     public class SimpleListProcessTask : ProcessTaskWithListOutput<string>
     {
-        private readonly NPath fullPathToExecutable;
+        private readonly SPath fullPathToExecutable;
         private readonly string arguments;
 
-        public SimpleListProcessTask(CancellationToken token, NPath fullPathToExecutable, string arguments, IOutputProcessor<string, List<string>> processor = null)
+        public SimpleListProcessTask(CancellationToken token, SPath fullPathToExecutable, string arguments, IOutputProcessor<string, List<string>> processor = null)
             : base(token, processor ?? new SimpleListOutputProcessor())
         {
             this.fullPathToExecutable = fullPathToExecutable;
             this.arguments = arguments;
         }
-        
+
         public override string ProcessName => fullPathToExecutable;
         public override string ProcessArguments => arguments;
     }

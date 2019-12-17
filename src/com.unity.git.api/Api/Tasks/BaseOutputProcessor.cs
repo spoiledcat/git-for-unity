@@ -114,16 +114,4 @@ namespace Unity.VersionControl.Git
             return true;
         }
     }
-
-    class FirstLineIsPathOutputProcessor : FirstResultOutputProcessor<NPath>
-    {
-        protected override bool ProcessLine(string line, out NPath result)
-        {
-            result = NPath.Default;
-            if (String.IsNullOrEmpty(line))
-                return false;
-            result = line.ToNPath();
-            return true;
-        }
-    }
 }

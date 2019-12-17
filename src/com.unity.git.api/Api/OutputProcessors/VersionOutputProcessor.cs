@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
@@ -9,17 +10,20 @@ namespace Unity.VersionControl.Git
     {
         public static Regex GitVersionRegex = new Regex(@"git version (.*)");
 
-        public override void LineReceived(string line)
+        protected override bool ProcessLine(string line, out TheVersion result)
         {
-            if (String.IsNullOrEmpty(line))
-                return;
+            base.ProcessLine(line, out result);
+
+            if (string.IsNullOrEmpty(line))
+                return false;
 
             var match = GitVersionRegex.Match(line);
             if (match.Groups.Count > 1)
             {
-                var version = TheVersion.Parse(match.Groups[1].Value);
-                RaiseOnEntry(version);
+                result = TheVersion.Parse(match.Groups[1].Value);
+                return true;
             }
+            return false;
         }
     }
 }

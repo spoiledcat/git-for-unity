@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using Unity.Editor.Tasks;
+using Unity.Editor.Tasks.Helpers;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     /// <summary>
     /// Represents a repository, either local or retrieved via the GitHub API.
     /// </summary>
@@ -18,8 +22,8 @@ namespace Unity.VersionControl.Git
         ITask Push();
         ITask Fetch();
         ITask Revert(string changeset);
-        ITask RequestLock(NPath file);
-        ITask ReleaseLock(NPath file, bool force);
+        ITask RequestLock(SPath file);
+        ITask ReleaseLock(SPath file, bool force);
         ITask DiscardChanges(GitStatusEntry[] discardEntries);
         ITask CheckoutVersion(string changeset, IList<string> files);
 
@@ -41,7 +45,7 @@ namespace Unity.VersionControl.Git
         /// <summary>
         /// Gets the local path of the repository.
         /// </summary>
-        NPath LocalPath { get; }
+        SPath LocalPath { get; }
         bool IsGitHub { get; }
         /// <summary>
         /// Gets the current remote of the repository.

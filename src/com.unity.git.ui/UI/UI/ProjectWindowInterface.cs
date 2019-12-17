@@ -2,12 +2,15 @@ using System;
 using Unity.VersionControl.Git;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
 using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     class ProjectWindowInterface : AssetPostprocessor
     {
         private const string AssetsMenuRequestLock = "Assets/Request Lock";
@@ -38,7 +41,7 @@ namespace Unity.VersionControl.Git
 
             manager = theManager;
 
-            Platform.Keychain.ConnectionsChanged += UpdateCurrentUsername;
+            //Platform.Keychain.ConnectionsChanged += UpdateCurrentUsername;
             UpdateCurrentUsername();
 
             if (IsInitialized)
@@ -103,24 +106,24 @@ namespace Unity.VersionControl.Git
             var username = String.Empty;
             if (Repository != null)
             {
-                Connection connection;
-                if (!string.IsNullOrEmpty(Repository.CloneUrl))
-                {
-                    var host = Repository.CloneUrl
-                                         .ToRepositoryUri()
-                                         .GetComponents(UriComponents.Host, UriFormat.SafeUnescaped);
+                //Connection connection;
+                //if (!string.IsNullOrEmpty(Repository.CloneUrl))
+                //{
+                //    var host = Repository.CloneUrl
+                //                         .ToRepositoryUri()
+                //                         .GetComponents(UriComponents.Host, UriFormat.SafeUnescaped);
 
-                    connection = Platform.Keychain.Connections.FirstOrDefault(x => x.Host == host);
-                }
-                else
-                {
-                    connection = Platform.Keychain.Connections.FirstOrDefault(HostAddress.IsGitHubDotCom);
-                }
+                //    connection = Platform.Keychain.Connections.FirstOrDefault(x => x.Host == host);
+                //}
+                //else
+                //{
+                //    connection = Platform.Keychain.Connections.FirstOrDefault(HostAddress.IsGitHubDotCom);
+                //}
 
-                if (connection != null)
-                {
-                    username = connection.Username;
-                }
+                //if (connection != null)
+                //{
+                //    username = connection.Username;
+                //}
             }
 
             currentUsername = username;
@@ -165,25 +168,25 @@ namespace Unity.VersionControl.Git
         [MenuItem(AssetsMenuRequestLock, false, 10000)]
         private static void ContextMenu_Lock()
         {
-            RunLockUnlock(IsObjectUnlocked, CreateLockObjectTask, Localization.RequestLockActionTitle, "Failed to lock: no permissions");
+            RunLockUnlock(EntryPoint.ApplicationManager.TaskManager, IsObjectUnlocked, CreateLockObjectTask, Localization.RequestLockActionTitle, "Failed to lock: no permissions");
         }
 
         [MenuItem(AssetsMenuReleaseLock, false, 10001)]
         private static void ContextMenu_Unlock()
         {
-            RunLockUnlock(IsObjectLocked, x => CreateUnlockObjectTask(x, false), Localization.ReleaseLockActionTitle, "Failed to unlock: no permissions");
+            RunLockUnlock(EntryPoint.ApplicationManager.TaskManager, IsObjectLocked, x => CreateUnlockObjectTask(x, false), Localization.ReleaseLockActionTitle, "Failed to unlock: no permissions");
         }
 
         [MenuItem(AssetsMenuReleaseLockForced, false, 10002)]
         private static void ContextMenu_UnlockForce()
         {
-            RunLockUnlock(IsObjectLocked, x => CreateUnlockObjectTask(x, true), Localization.ReleaseLockActionTitle, "Failed to unlock: no permissions");
+            RunLockUnlock(EntryPoint.ApplicationManager.TaskManager, IsObjectLocked, x => CreateUnlockObjectTask(x, true), Localization.ReleaseLockActionTitle, "Failed to unlock: no permissions");
         }
 
-        private static void RunLockUnlock(Func<Object, bool> selector, Func<Object, ITask> creator, string title, string errorMessage)
+        private static void RunLockUnlock(ITaskManager taskManager, Func<Object, bool> selector, Func<Object, ITask> creator, string title, string errorMessage)
         {
             isBusy = true;
-            var taskQueue = new TaskQueue();
+            var taskQueue = new TaskQueue(taskManager);
             foreach (var lockedObject in Selection.objects.Where(selector))
             {
                 taskQueue.Queue(creator(lockedObject));
@@ -207,8 +210,8 @@ namespace Unity.VersionControl.Git
             if (selected == null)
                 return false;
 
-            NPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToNPath();
-            NPath repositoryPath = manager.Environment.GetRepositoryPath(assetPath);
+            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToSPath();
+            SPath repositoryPath = manager.Environment.GetRepositoryPath(assetPath);
 
             var alreadyLocked = locks.Any(x => repositoryPath == x.Path);
             if (alreadyLocked)
@@ -217,7 +220,7 @@ namespace Unity.VersionControl.Git
             GitFileStatus status = GitFileStatus.None;
             if (entries != null)
             {
-                status = entries.FirstOrDefault(x => repositoryPath == x.Path.ToNPath()).Status;
+                status = entries.FirstOrDefault(x => repositoryPath == x.Path.ToSPath()).Status;
             }
             return status != GitFileStatus.Untracked && status != GitFileStatus.Ignored;
         }
@@ -232,29 +235,29 @@ namespace Unity.VersionControl.Git
             if (selected == null)
                 return false;
 
-            NPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToNPath();
-            NPath repositoryPath = manager.Environment.GetRepositoryPath(assetPath);
+            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToSPath();
+            SPath repositoryPath = manager.Environment.GetRepositoryPath(assetPath);
 
             return locks.Any(x => repositoryPath == x.Path && (!isLockedByCurrentUser || x.Owner.Name == currentUsername));
         }
 
         private static ITask CreateUnlockObjectTask(Object selected, bool force)
         {
-            NPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToNPath();
-            NPath repositoryPath = manager.Environment.GetRepositoryPath(assetPath);
+            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToSPath();
+            SPath repositoryPath = manager.Environment.GetRepositoryPath(assetPath);
 
             var task = Repository.ReleaseLock(repositoryPath, force);
-            task.OnEnd += (_, s, __) => { if (s) manager.TaskManager.Run(manager.UsageTracker.IncrementUnityProjectViewContextLfsUnlock, null); };
+            //task.OnEnd += (_, s, __) => { if (s) manager.TaskManager.Run(manager.UsageTracker.IncrementUnityProjectViewContextLfsUnlock, null); };
             return task;
         }
 
         private static ITask CreateLockObjectTask(Object selected)
         {
-            NPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToNPath();
-            NPath repositoryPath = manager.Environment.GetRepositoryPath(assetPath);
+            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToSPath();
+            SPath repositoryPath = manager.Environment.GetRepositoryPath(assetPath);
 
             var task = Repository.RequestLock(repositoryPath);
-            task.OnEnd += (_, s, ___) => { if (s) manager.TaskManager.Run(manager.UsageTracker.IncrementUnityProjectViewContextLfsLock, null); };
+            //task.OnEnd += (_, s, ___) => { if (s) manager.TaskManager.Run(manager.UsageTracker.IncrementUnityProjectViewContextLfsLock, null); };
             return task;
         }
 
@@ -263,8 +266,8 @@ namespace Unity.VersionControl.Git
             guidsLocks.Clear();
             foreach (var lck in locks)
             {
-                NPath repositoryPath = lck.Path;
-                NPath assetPath = manager.Environment.GetAssetPath(repositoryPath);
+                SPath repositoryPath = lck.Path;
+                SPath assetPath = manager.Environment.GetAssetPath(repositoryPath);
 
                 var g = AssetDatabase.AssetPathToGUID(assetPath);
                 guidsLocks.Add(g);
@@ -276,7 +279,7 @@ namespace Unity.VersionControl.Git
             // and the inspector is disabled. There's no way to refresh the editor directly
             // (well, there is, but it's an internal api), so this just causes Unity to repaint everything.
             // Nail, meet bazooka, unfortunately, but that's the only way to do it with public APIs ¯_(ツ)_/¯
-            
+
             //EditorApplication.RepaintProjectWindow();
             UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
         }

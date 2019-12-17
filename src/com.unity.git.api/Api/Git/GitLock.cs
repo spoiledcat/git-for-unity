@@ -4,6 +4,8 @@ using Unity.VersionControl.Git;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     [Serializable]
     public struct GitLock
     {
@@ -33,11 +35,11 @@ namespace Unity.VersionControl.Git
             }
         }
         [NotSerialized] public string ID => id ?? String.Empty;
-        [NotSerialized] public NPath Path => path?.ToNPath() ?? NPath.Default;
+        [NotSerialized] public SPath Path => path?.ToSPath() ?? SPath.Default;
         [NotSerialized] public GitUser Owner => owner;
         [NotSerialized] public DateTimeOffset LockedAt => locked_at;
 
-        public GitLock(string id, NPath path, GitUser owner, DateTimeOffset locked_at)
+        public GitLock(string id, SPath path, GitUser owner, DateTimeOffset locked_at)
         {
             this.id = id;
             this.path = path.IsInitialized ? path.ToString() : null;

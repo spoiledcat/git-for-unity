@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
 using UnityEditor;
 using UnityEngine;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     [Serializable]
     public class GitLockEntryDictionary : SerializableDictionary<string, GitLockEntry> { }
 
@@ -58,7 +61,7 @@ namespace Unity.VersionControl.Git
         [SerializeField] public GitLockEntryDictionary assets = new GitLockEntryDictionary();
         [SerializeField] public GitStatusDictionary gitStatusDictionary = new GitStatusDictionary();
         [SerializeField] private GitLockEntry selectedEntry;
-        [SerializeField] public NPath projectPath;
+        [SerializeField] public SPath projectPath;
 
         public bool IsEmpty { get { return gitLockEntries.Count == 0; } }
 
@@ -220,7 +223,7 @@ namespace Unity.VersionControl.Git
         {
             var statusEntries = new Dictionary<string, int>();
             for (int i = 0; i < gitStatusEntries.Count; i++)
-                statusEntries.Add(gitStatusEntries[i].Path.ToNPath().ToString(SlashMode.Forward), i);
+                statusEntries.Add(gitStatusEntries[i].Path.ToSPath().ToString(SlashMode.Forward), i);
             var selectedLockId = SelectedEntry != null && SelectedEntry.GitLock != GitLock.Default
                 ? SelectedEntry.GitLock.ID
                 : null;
@@ -475,7 +478,7 @@ namespace Unity.VersionControl.Git
                 {
                     if (success)
                     {
-                        Manager.UsageTracker.IncrementUnityProjectViewContextLfsUnlock();
+                        //Manager.UsageTracker.IncrementUnityProjectViewContextLfsUnlock();
                     }
                     else
                     {
@@ -501,7 +504,7 @@ namespace Unity.VersionControl.Git
                 {
                     if (success)
                     {
-                        Manager.UsageTracker.IncrementUnityProjectViewContextLfsUnlock();
+                        //Manager.UsageTracker.IncrementUnityProjectViewContextLfsUnlock();
                     }
                     else
                     {
@@ -525,7 +528,7 @@ namespace Unity.VersionControl.Git
                 return;
             }
 
-            Platform.Keychain.ConnectionsChanged += KeychainConnectionsChanged;
+            //Platform.Keychain.ConnectionsChanged += KeychainConnectionsChanged;
             repository.CurrentRemoteChanged += RepositoryOnCurrentRemoteChanged;
             repository.LocksChanged += RepositoryOnLocksChanged;
             repository.StatusEntriesChanged += RepositoryOnStatusEntriesChanged;
@@ -538,7 +541,7 @@ namespace Unity.VersionControl.Git
                 return;
             }
 
-            Platform.Keychain.ConnectionsChanged -= KeychainConnectionsChanged;
+            //Platform.Keychain.ConnectionsChanged -= KeychainConnectionsChanged;
             repository.CurrentRemoteChanged -= RepositoryOnCurrentRemoteChanged;
             repository.LocksChanged -= RepositoryOnLocksChanged;
             repository.StatusEntriesChanged -= RepositoryOnStatusEntriesChanged;
@@ -594,36 +597,36 @@ namespace Unity.VersionControl.Git
                 return;
             }
 
-            if (keychainHasUpdate || currentRemoteHasUpdate)
-            {
-                var username = String.Empty;
-                if (Repository != null)
-                {
-                    Connection connection;
-                    if (!string.IsNullOrEmpty(Repository.CloneUrl))
-                    {
-                        var host = Repository.CloneUrl
-                                             .ToRepositoryUri()
-                                             .GetComponents(UriComponents.Host, UriFormat.SafeUnescaped);
+            //if (keychainHasUpdate || currentRemoteHasUpdate)
+            //{
+            //    var username = String.Empty;
+            //    if (Repository != null)
+            //    {
+            //        Connection connection;
+            //        if (!string.IsNullOrEmpty(Repository.CloneUrl))
+            //        {
+            //            var host = Repository.CloneUrl
+            //                                 .ToRepositoryUri()
+            //                                 .GetComponents(UriComponents.Host, UriFormat.SafeUnescaped);
 
-                        connection = Platform.Keychain.Connections.FirstOrDefault(x => x.Host == host);
-                    }
-                    else
-                    {
-                        connection = Platform.Keychain.Connections.FirstOrDefault(HostAddress.IsGitHubDotCom);
-                    }
+            //            connection = Platform.Keychain.Connections.FirstOrDefault(x => x.Host == host);
+            //        }
+            //        else
+            //        {
+            //            connection = Platform.Keychain.Connections.FirstOrDefault(HostAddress.IsGitHubDotCom);
+            //        }
 
-                    if (connection != null)
-                    {
-                        username = connection.Username;
-                    }
-                }
+            //        if (connection != null)
+            //        {
+            //            username = connection.Username;
+            //        }
+            //    }
 
-                currentUsername = username;
+            //    currentUsername = username;
 
-                keychainHasUpdate = false;
-                currentRemoteHasUpdate = false;
-            }
+            //    keychainHasUpdate = false;
+            //    currentRemoteHasUpdate = false;
+            //}
 
             if (currentLocksHasUpdate)
             {
@@ -650,7 +653,7 @@ namespace Unity.VersionControl.Git
                 locksControl = new LocksControl();
             }
 
-            locksControl.projectPath = Environment.UnityProjectPath;
+            locksControl.projectPath = Environment.UnityProjectPath.ToSPath();
             locksControl.Load(lockedFiles, gitStatusEntries);
         }
         public override void OnSelectionChange()

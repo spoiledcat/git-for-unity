@@ -5,6 +5,8 @@ using UnityEngine;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public class FileHistoryWindow : BaseWindow
     {
         [MenuItem("Assets/Git/History", false)]
@@ -14,7 +16,7 @@ namespace Unity.VersionControl.Git
             {
                 var assetPath =
                     AssetDatabase.GUIDToAssetPath(Selection.assetGUIDs.First())
-                                 .ToNPath();
+                                 .ToSPath();
 
                 var windowType = typeof(Window);
                 var fileHistoryWindow = GetWindow<FileHistoryWindow>(windowType);
@@ -47,13 +49,13 @@ namespace Unity.VersionControl.Git
             selectedObjectAssetPath = null;
             selectedObjectRepositoryPath = null;
 
-            if (selectedObjectAssetPath != NPath.Default)
+            if (selectedObjectAssetPath != SPath.Default)
             {
                 selectedObjectAssetPath = assetPath;
                 selectedObject = AssetDatabase.LoadMainAssetAtPath(selectedObjectAssetPath);
 
                 selectedObjectRepositoryPath =
-                    Environment.GetRepositoryPath(assetPath.ToNPath())
+                    Environment.GetRepositoryPath(assetPath.ToSPath())
                                .ToString(SlashMode.Forward);
             }
 
@@ -181,7 +183,7 @@ namespace Unity.VersionControl.Git
 
             if (!string.IsNullOrEmpty(selectedObjectAssetPath))
             {
-                if (selectedObjectAssetPath.ToNPath().DirectoryExists())
+                if (selectedObjectAssetPath.ToSPath().DirectoryExists())
                 {
                     nodeIcon = Styles.FolderIcon;
                 }
@@ -199,7 +201,7 @@ namespace Unity.VersionControl.Git
         private void ShowButton(Rect rect)
         {
             EditorGUI.BeginChangeCheck();
-            
+
             locked = GUI.Toggle(rect, locked, GUIContent.none, Styles.LockButtonStyle);
 
             if (!EditorGUI.EndChangeCheck())

@@ -1,15 +1,19 @@
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
-    public class FindExecTask : ProcessTask<NPath>
+    using IO;
+
+    public class FindExecTask : NativeProcessTask<SPath>
     {
         private readonly string arguments;
 
-        public FindExecTask(string executable, CancellationToken token)
-            : base(token, new FirstLineIsPathOutputProcessor())
+        public FindExecTask(ITaskManager taskManager, IEnvironment environment,
+            string executable, CancellationToken token = default)
+            : base(taskManager, environment, null, null, new FirstLineIsPathOutputProcessor(), token)
         {
-            Name = DefaultEnvironment.OnWindows ? "where" : "which";
+            Name = environment.IsWindows ? "where" : "which";
             arguments = executable;
         }
 

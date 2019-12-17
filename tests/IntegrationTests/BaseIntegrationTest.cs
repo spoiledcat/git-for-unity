@@ -12,7 +12,7 @@ namespace IntegrationTests
     [Isolated]
     class BaseIntegrationTest : BaseTest
     {
-        protected NPath TestApp => TestLocation.Combine("CommandLine.exe");
+        protected SPath TestApp => TestLocation.Combine("CommandLine.exe");
         public IRepositoryManager RepositoryManager { get; set; }
         protected IApplicationManager ApplicationManager { get; set; }
         protected ITaskManager TaskManager { get; set; }
@@ -22,23 +22,23 @@ namespace IntegrationTests
         protected IGitClient GitClient { get; set; }
         public IEnvironment Environment { get; set; }
 
-        protected NPath DotGitConfig { get; set; }
-        protected NPath DotGitHead { get; set; }
-        protected NPath DotGitIndex { get; set; }
-        protected NPath RemotesPath { get; set; }
-        protected NPath BranchesPath { get; set; }
-        protected NPath DotGitPath { get; set; }
-        protected NPath TestRepoMasterCleanSynchronized { get; set; }
-        protected NPath TestRepoMasterCleanUnsynchronized { get; set; }
-        protected NPath TestRepoMasterCleanUnsynchronizedRussianLanguage { get; set; }
-        protected NPath TestRepoMasterDirtyUnsynchronized { get; set; }
-        protected NPath TestRepoMasterTwoRemotes { get; set; }
+        protected SPath DotGitConfig { get; set; }
+        protected SPath DotGitHead { get; set; }
+        protected SPath DotGitIndex { get; set; }
+        protected SPath RemotesPath { get; set; }
+        protected SPath BranchesPath { get; set; }
+        protected SPath DotGitPath { get; set; }
+        protected SPath TestRepoMasterCleanSynchronized { get; set; }
+        protected SPath TestRepoMasterCleanUnsynchronized { get; set; }
+        protected SPath TestRepoMasterCleanUnsynchronizedRussianLanguage { get; set; }
+        protected SPath TestRepoMasterDirtyUnsynchronized { get; set; }
+        protected SPath TestRepoMasterTwoRemotes { get; set; }
 
         protected static string TestZipFilePath => Path.Combine(SolutionDirectory, "IOTestsRepo.zip");
 
         public IRepository Repository => Environment.Repository;
 
-        protected void InitializeEnvironment(NPath repoPath,
+        protected void InitializeEnvironment(SPath repoPath,
             bool enableEnvironmentTrace = false,
             bool initializeRepository = true
             )
@@ -52,7 +52,7 @@ namespace IntegrationTests
             Environment = environment;
         }
 
-        protected void InitializePlatform(NPath repoPath,
+        protected void InitializePlatform(SPath repoPath,
             bool enableEnvironmentTrace = true,
             string testName = "")
         {
@@ -71,7 +71,7 @@ namespace IntegrationTests
             return TaskManager;
         }
 
-        protected IEnvironment InitializePlatformAndEnvironment(NPath repoPath,
+        protected IEnvironment InitializePlatformAndEnvironment(SPath repoPath,
             bool enableEnvironmentTrace = false,
             Action<IRepositoryManager> onRepositoryManagerCreated = null,
             [CallerMemberName] string testName = "")
@@ -85,7 +85,7 @@ namespace IntegrationTests
             if (DotGitPath.FileExists())
             {
                 DotGitPath = DotGitPath.ReadAllLines().Where(x => x.StartsWith("gitdir:"))
-                                       .Select(x => x.Substring(7).Trim().ToNPath()).First();
+                                       .Select(x => x.Substring(7).Trim().ToSPath()).First();
             }
 
             BranchesPath = DotGitPath.Combine("refs", "heads");
@@ -106,7 +106,7 @@ namespace IntegrationTests
             return Environment;
         }
 
-        protected void SetupGit(NPath pathToSetupGitInto, string testName)
+        protected void SetupGit(SPath pathToSetupGitInto, string testName)
         {
             var installDetails = new GitInstaller.GitInstallDetails(pathToSetupGitInto, Environment);
             var state = installDetails.GetDefaults();

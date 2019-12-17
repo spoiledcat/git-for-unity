@@ -68,6 +68,8 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Unity.Editor.Tasks.Helpers;
+using Unity.VersionControl.Git.IO;
 using Unity.VersionControl.Git.Json;
 
 // ReSharper disable LoopCanBeConvertedToQuery
@@ -1356,8 +1358,8 @@ namespace Unity.VersionControl.Git.Json
             {
                 if (str.Length != 0) // We know it can't be null now.
                 {
-                    if (type == typeof(NPath) || (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(NPath)))
-                        return new NPath(str);
+                    if (type == typeof(SPath) || (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(SPath)))
+                        return new SPath(str);
                     if (type == typeof(DateTime) || (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(DateTime)))
                         return DateTime.ParseExact(str, Iso8601Format, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal);
                     if (type == typeof(DateTimeOffset) || (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(DateTimeOffset)))
@@ -1491,7 +1493,7 @@ namespace Unity.VersionControl.Git.Json
         protected virtual bool TrySerializeKnownTypes(object input, out object output)
         {
             bool returnValue = true;
-            if (input is NPath || input is UriString)
+            if (input is SPath || input is UriString)
                 output = input.ToString();
             else if (input is DateTime)
                 output = ((DateTime)input).ToUniversalTime().ToString(Iso8601Format[0], CultureInfo.InvariantCulture);
@@ -2157,7 +2159,7 @@ namespace Unity.VersionControl.Git.Json
 namespace Unity.VersionControl.Git
 {
     using Json;
-    
+
     [System.AttributeUsage(System.AttributeTargets.Property |
                        System.AttributeTargets.Field)]
     public sealed class NotSerializedAttribute : Attribute

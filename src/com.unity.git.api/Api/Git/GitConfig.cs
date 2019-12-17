@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     [Serializable]
     public struct ConfigRemote
     {
@@ -176,7 +178,7 @@ namespace Unity.VersionControl.Git
 
         public GitConfig(string filePath)
         {
-            manager = new ConfigFileManager(filePath.ToNPath());
+            manager = new ConfigFileManager(filePath.ToSPath());
             Reset();
         }
 
@@ -467,7 +469,7 @@ namespace Unity.VersionControl.Git
         {
             private static readonly string[] emptyContents = new string[0];
 
-            public ConfigFileManager(NPath filePath)
+            public ConfigFileManager(SPath filePath)
             {
                 FilePath = filePath;
             }
@@ -508,7 +510,7 @@ namespace Unity.VersionControl.Git
                 return WriteAllText(contents);
             }
 
-            public NPath FilePath { get; private set; }
+            public SPath FilePath { get; private set; }
             public string[] Lines { get; private set; }
         }
     }

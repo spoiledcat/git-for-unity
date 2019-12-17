@@ -14,13 +14,13 @@ namespace UnitTests
         [Test]
         public void ShouldParseNormalFile()
         {
-            NPath.FileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions() {
+            SPath.FileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions() {
                 CurrentDirectory = @"c:\Projects\UnityProject"
             });
 
             var environment = Substitute.For<IEnvironment>();
-            environment.RepositoryPath.Returns(@"c:\Projects\UnityProject".ToNPath());
-            environment.UnityProjectPath.Returns(@"c:\Projects\UnityProject".ToNPath());
+            environment.RepositoryPath.Returns(@"c:\Projects\UnityProject".ToSPath());
+            environment.UnityProjectPath.Returns(@"c:\Projects\UnityProject".ToSPath());
 
             var gitObjectFactory = new GitObjectFactory(environment);
             var gitStatusEntry = gitObjectFactory.CreateGitStatusEntry("hello.txt", GitFileStatus.None, GitFileStatus.Deleted);
@@ -32,14 +32,14 @@ namespace UnitTests
         [Test]
         public void ShouldParseOddFile()
         {
-            NPath.FileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions()
+            SPath.FileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions()
             {
                 CurrentDirectory = @"c:\Projects\UnityProject"
             });
 
             var environment = Substitute.For<IEnvironment>();
-            environment.RepositoryPath.Returns(@"c:\Projects\UnityProject".ToNPath());
-            environment.UnityProjectPath.Returns(@"c:\Projects\UnityProject".ToNPath());
+            environment.RepositoryPath.Returns(@"c:\Projects\UnityProject".ToSPath());
+            environment.UnityProjectPath.Returns(@"c:\Projects\UnityProject".ToSPath());
 
             var gitObjectFactory = new GitObjectFactory(environment);
             var gitStatusEntry = gitObjectFactory.CreateGitStatusEntry("c:UsersOculusGoVideo.mp4", GitFileStatus.None, GitFileStatus.Deleted);

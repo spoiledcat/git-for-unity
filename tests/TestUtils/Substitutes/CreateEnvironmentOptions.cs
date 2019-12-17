@@ -8,9 +8,9 @@ namespace TestUtils
         public const string DefaultUserProfilePath = "UserProfile";
         public const string DefaultUnityProjectPathAndRepositoryPath = "UnityProject";
 
-        public CreateEnvironmentOptions(NPath? basePath = null)
+        public CreateEnvironmentOptions(SPath? basePath = null)
         {
-            NPath path = basePath ?? NPath.SystemTemp.Combine(ApplicationInfo.ApplicationName);
+            SPath path = basePath ?? SPath.SystemTemp.Combine(ApplicationInfo.ApplicationName);
             path.EnsureDirectoryExists();
             Extensionfolder = path.Combine(DefaultExtensionFolder);
             UserProfilePath = path.Combine(DefaultUserProfilePath);
@@ -21,9 +21,9 @@ namespace TestUtils
             UnityProjectPath.EnsureDirectoryExists();
         }
 
-        public NPath Extensionfolder { get; set; }
-        public NPath UserProfilePath { get; set; }
-        public NPath UnityProjectPath { get; set; }
+        public SPath Extensionfolder { get; set; }
+        public SPath UserProfilePath { get; set; }
+        public SPath UnityProjectPath { get; set; }
         public string RepositoryPath { get; set; }
     }
 }

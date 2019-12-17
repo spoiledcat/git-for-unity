@@ -1,16 +1,20 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitConfigGetAllTask : ProcessTaskWithListOutput<string>
+    public class GitConfigGetAllTask : NativeProcessListTask<string>
     {
         private const string TaskName = "git config get";
         private readonly string arguments;
 
-        public GitConfigGetAllTask(string key, GitConfigSource configSource,
-            CancellationToken token, BaseOutputListProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleListOutputProcessor())
+        public GitConfigGetAllTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string key, GitConfigSource configSource,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringListOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(key, nameof(key));
             Name = TaskName;
@@ -27,14 +31,16 @@ namespace Unity.VersionControl.Git.Tasks
         public override TaskAffinity Affinity { get { return TaskAffinity.Concurrent; } }
     }
 
-    class GitConfigGetTask : ProcessTask<string>
+    class GitConfigGetTask : NativeProcessTask<string>
     {
         private const string TaskName = "git config get";
         private readonly string arguments;
 
-        public GitConfigGetTask(string key, GitConfigSource configSource,
-            CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new FirstNonNullLineOutputProcessor())
+        public GitConfigGetTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string key, GitConfigSource configSource,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new FirstNonNullOutputProcessor<string>(), token: token)
         {
             Name = TaskName;
             var source = "";

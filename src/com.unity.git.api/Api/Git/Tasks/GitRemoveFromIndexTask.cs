@@ -1,16 +1,21 @@
 using System.Collections.Generic;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitRemoveFromIndexTask : ProcessTask<string>
+    using IO;
+
+    public class GitRemoveFromIndexTask : NativeProcessTask<string>
     {
         private const string TaskName = "git reset HEAD";
         private readonly string arguments;
 
-        public GitRemoveFromIndexTask(IEnumerable<string> files,
-            CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleOutputProcessor())
+        public GitRemoveFromIndexTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            IEnumerable<string> files,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNull(files, "files");
 
@@ -20,7 +25,7 @@ namespace Unity.VersionControl.Git.Tasks
 
             foreach (var file in files)
             {
-                arguments += " \"" + file.ToNPath().ToString(SlashMode.Forward) + "\"";
+                arguments += " \"" + file.ToSPath().ToString(SlashMode.Forward) + "\"";
             }
         }
 

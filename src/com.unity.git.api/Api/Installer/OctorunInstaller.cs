@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Threading;
-using Unity.VersionControl.Git;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     class OctorunInstaller
     {
         private static readonly ILogging Logger = LogHelper.GetLogger<OctorunInstaller>();
@@ -24,16 +25,16 @@ namespace Unity.VersionControl.Git
             this.taskManager = taskManager;
         }
 
-        public NPath SetupOctorunIfNeeded()
+        public SPath SetupOctorunIfNeeded()
         {
-            NPath path = NPath.Default;
+            SPath path = SPath.Default;
             var isOctorunExtracted = IsOctorunExtracted();
             if (isOctorunExtracted)
                 return installDetails.ExecutablePath;
 
             GrabZipFromResources();
 
-            var extractPath = NPath.CreateTempDirectory("octorun_extract_archive_path");
+            var extractPath = SPath.CreateTempDirectory("octorun_extract_archive_path");
             var unzipTask = new UnzipTask(taskManager.Token, installDetails.ZipFile,
                     extractPath, sharpZipLibHelper,
                     fileSystem)
@@ -45,12 +46,12 @@ namespace Unity.VersionControl.Git
             return path;
         }
 
-        private NPath GrabZipFromResources()
+        private SPath GrabZipFromResources()
         {
             return AssemblyResources.ToFile(ResourceType.Generic, "octorun.zip", installDetails.BaseZipPath, environment);
         }
 
-        private NPath MoveOctorun(NPath fromPath)
+        private SPath MoveOctorun(SPath fromPath)
         {
             var toPath = installDetails.InstallationPath;
 
@@ -91,7 +92,7 @@ namespace Unity.VersionControl.Git
             private const string PackageName = "octorun";
             private const string zipFile = "octorun.zip";
 
-            public OctorunInstallDetails(NPath baseDataPath)
+            public OctorunInstallDetails(SPath baseDataPath)
             {
                 BaseZipPath = baseDataPath.Combine("downloads");
                 BaseZipPath.EnsureDirectoryExists();
@@ -104,14 +105,14 @@ namespace Unity.VersionControl.Git
                 ExecutablePath = installPath.Combine("src", "bin", Executable);
             }
 
-            public NPath BaseZipPath { get; }
-            public NPath ZipFile { get; }
-            public NPath InstallationPath { get; }
+            public SPath BaseZipPath { get; }
+            public SPath ZipFile { get; }
+            public SPath InstallationPath { get; }
             public string Executable { get; }
-            public NPath ExecutablePath { get; }
+            public SPath ExecutablePath { get; }
             public UriString ZipMd5Url { get; set; } = DefaultZipMd5Url;
             public UriString ZipUrl { get; set; } = DefaultZipUrl;
-            public NPath VersionFile => InstallationPath.Combine("version");
+            public SPath VersionFile => InstallationPath.Combine("version");
         }
     }
 }

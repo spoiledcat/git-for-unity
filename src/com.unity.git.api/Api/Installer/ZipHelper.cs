@@ -9,6 +9,7 @@ namespace Unity.VersionControl.Git
 	using ICSharpCode.SharpZipLib.GZip;
 	using ICSharpCode.SharpZipLib.Tar;
 	using ICSharpCode.SharpZipLib.Zip;
+    using IO;
 
 	public interface IZipHelper
 	{
@@ -36,18 +37,18 @@ namespace Unity.VersionControl.Git
 			Action<string, long> onStart, Func<long, long, string, bool> onProgress, Func<string, bool> onFilter = null)
 		{
 
-			var destDir = outFolder.ToNPath();
+			var destDir = outFolder.ToSPath();
 			destDir.EnsureDirectoryExists();
 			if (archive.EndsWith(".tar.gz") || archive.EndsWith(".tgz"))
 			{
-				var gzipFile = archive.ToNPath();
-                var tempDir = NPath.CreateTempDirectory("unzip");
+				var gzipFile = archive.ToSPath();
+                var tempDir = SPath.CreateTempDirectory("unzip");
                 string outFilename = gzipFile.FileNameWithoutExtension;
                 if (archive.EndsWith(".tgz"))
                     outFilename += ".tar";
                 archive = tempDir.Combine(outFilename);
-				using (var instream = NPath.FileSystem.OpenRead(gzipFile))
-				using (var outstream = NPath.FileSystem.OpenWrite(archive, FileMode.CreateNew))
+				using (var instream = SPath.FileSystem.OpenRead(gzipFile))
+				using (var outstream = SPath.FileSystem.OpenWrite(archive, FileMode.CreateNew))
 				{
 					GZip.Decompress(instream, outstream, false);
 				}
@@ -58,14 +59,14 @@ namespace Unity.VersionControl.Git
 			return ExtractTar(archive, destDir, cancellationToken, onStart, onProgress, onFilter);
 		}
 
-		private bool ExtractZip(string archive, NPath outFolder, CancellationToken cancellationToken,
+		private bool ExtractZip(string archive, SPath outFolder, CancellationToken cancellationToken,
 			Action<string, long> onStart, Func<long, long, string, bool> onProgress, Func<string, bool> onFilter = null)
 		{
 			ZipFile zf = null;
 
 			try
 			{
-				var fs = NPath.FileSystem.OpenRead(archive);
+				var fs = SPath.FileSystem.OpenRead(archive);
 				zf = new ZipFile(fs);
 				List<IArchiveEntry> entries = PreprocessEntries(outFolder, zf, onStart, onFilter);
 				return ExtractArchive(archive, outFolder, cancellationToken, zf, entries, onStart, onProgress, onFilter);
@@ -81,7 +82,7 @@ namespace Unity.VersionControl.Git
 			}
 		}
 
-		private bool ExtractTar(string archive, NPath outFolder, CancellationToken cancellationToken,
+		private bool ExtractTar(string archive, SPath outFolder, CancellationToken cancellationToken,
 			Action<string, long> onStart, Func<long, long, string, bool> onProgress, Func<string, bool> onFilter = null)
 		{
 			TarArchive zf = null;
@@ -89,11 +90,11 @@ namespace Unity.VersionControl.Git
 			try
 			{
 				List<IArchiveEntry> entries;
-				using (var read = TarArchive.CreateInputTarArchive(NPath.FileSystem.OpenRead(archive)))
+				using (var read = TarArchive.CreateInputTarArchive(SPath.FileSystem.OpenRead(archive)))
 				{
 					entries = PreprocessEntries(outFolder, read, onStart, onFilter);
 				}
-				zf = TarArchive.CreateInputTarArchive(NPath.FileSystem.OpenRead(archive));
+				zf = TarArchive.CreateInputTarArchive(SPath.FileSystem.OpenRead(archive));
 				return ExtractArchive(archive, outFolder, cancellationToken, zf, entries, onStart, onProgress, onFilter);
 			}
 			catch (Exception ex)
@@ -107,7 +108,7 @@ namespace Unity.VersionControl.Git
 			}
 		}
 
-		private static bool ExtractArchive(string archive, NPath outFolder, CancellationToken cancellationToken,
+		private static bool ExtractArchive(string archive, SPath outFolder, CancellationToken cancellationToken,
 			IArchive zf, List<IArchiveEntry> entries,
 			Action<string, long> onStart, Func<long, long, string, bool> onProgress, Func<string, bool> onFilter = null)
 		{
@@ -137,7 +138,7 @@ namespace Unity.VersionControl.Git
 			return true;
 		}
 
-		private static List<IArchiveEntry> PreprocessEntries(NPath outFolder, IArchive zf, Action<string, long> onStart, Func<string, bool> onFilter)
+		private static List<IArchiveEntry> PreprocessEntries(SPath outFolder, IArchive zf, Action<string, long> onStart, Func<string, bool> onFilter)
 		{
 			var entries = new List<IArchiveEntry>();
 
@@ -162,13 +163,13 @@ namespace Unity.VersionControl.Git
 			return entries;
 		}
 
-		private static NPath MaybeSetPermissions(NPath destDir, string entryFileName, int mode)
+		private static SPath MaybeSetPermissions(SPath destDir, string entryFileName, int mode)
 		{
 			var fullZipToPath = destDir.Combine(entryFileName);
 			fullZipToPath.EnsureParentDirectoryExists();
 			try
 			{
-				if (NPath.IsUnix)
+				if (SPath.IsUnix)
 				{
 					if (mode == -2115174400)
 					{

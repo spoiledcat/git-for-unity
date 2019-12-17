@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
-	public class UnzipTask : TaskBase<NPath>
+    using IO;
+	public class UnzipTask : TaskBase<SPath>
     {
         private readonly string archiveFilePath;
-        private readonly NPath extractedPath;
+        private readonly SPath extractedPath;
         private readonly IZipHelper zipHelper;
         private readonly IFileSystem fileSystem;
         private ProgressReporter progressReporter = new ProgressReporter();
         private Dictionary<string, TaskData> tasks = new Dictionary<string, TaskData>();
 
-        public UnzipTask(NPath archiveFilePath, NPath extractedPath)
-            : this(TaskManager.Instance.Token, archiveFilePath, extractedPath, null, NPath.FileSystem)
+        public UnzipTask(ITaskManager taskManager, SPath archiveFilePath, SPath extractedPath)
+            : this(taskManager, archiveFilePath, extractedPath, null, SPath.FileSystem)
         {}
 
-        public UnzipTask(CancellationToken token, NPath archiveFilePath, NPath extractedPath,
+        public UnzipTask(ITaskManager taskManager, SPath archiveFilePath, SPath extractedPath,
             IZipHelper zipHelper, IFileSystem fileSystem)
-            : base(token)
+            : base(taskManager)
         {
             this.archiveFilePath = archiveFilePath;
             this.extractedPath = extractedPath;
@@ -32,12 +34,12 @@ namespace Unity.VersionControl.Git
             };
         }
 
-        protected NPath BaseRun(bool success)
+        protected SPath BaseRun(bool success)
         {
             return base.RunWithReturn(success);
         }
 
-        protected override NPath RunWithReturn(bool success)
+        protected override SPath RunWithReturn(bool success)
         {
             var ret = BaseRun(success);
             try
@@ -47,12 +49,12 @@ namespace Unity.VersionControl.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    ThrownException.Rethrow();
+                    Exception.Rethrow();
             }
             return ret;
         }
 
-        protected virtual NPath RunUnzip(bool success)
+        protected virtual SPath RunUnzip(bool success)
         {
             Logger.Trace("Unzip File: {0} to Path: {1}", archiveFilePath, extractedPath);
 

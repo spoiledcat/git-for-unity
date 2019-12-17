@@ -1,16 +1,20 @@
 using System;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitBranchCreateTask : ProcessTask<string>
+    public class GitBranchCreateTask : NativeProcessTask<string>
     {
         private const string TaskName = "git branch";
         private readonly string arguments;
 
-        public GitBranchCreateTask(string newBranch, string baseBranch,
-            CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleOutputProcessor())
+
+        public GitBranchCreateTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string newBranch, string baseBranch,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(newBranch, "newBranch");
             Guard.ArgumentNotNullOrWhiteSpace(baseBranch, "baseBranch");

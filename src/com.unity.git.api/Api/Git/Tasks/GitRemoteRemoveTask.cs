@@ -1,16 +1,19 @@
 using System;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitRemoteRemoveTask : ProcessTask<string>
+    public class GitRemoteRemoveTask : NativeProcessTask<string>
     {
         private const string TaskName = "git remote rm";
         private readonly string arguments;
 
-        public GitRemoteRemoveTask(string remote,
-            CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleOutputProcessor())
+        public GitRemoteRemoveTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string remote,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(remote, "remote");
             Name = TaskName;

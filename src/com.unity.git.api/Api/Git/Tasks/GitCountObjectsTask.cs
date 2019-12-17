@@ -1,13 +1,16 @@
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitCountObjectsTask : ProcessTask<int>
+    public class GitCountObjectsTask : NativeProcessTask<int>
     {
         private const string TaskName = "git count-objects";
 
-        public GitCountObjectsTask(CancellationToken token, IOutputProcessor<int> processor = null)
-            : base(token, processor ?? new GitCountObjectsProcessor())
+        public GitCountObjectsTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new GitCountObjectsProcessor(), token: token)
         {
             Name = TaskName;
         }

@@ -475,7 +475,7 @@ namespace IntegrationTests
             }
         }
 
-        private RepositoryWatcher CreateRepositoryWatcher(NPath path)
+        private RepositoryWatcher CreateRepositoryWatcher(SPath path)
         {
             var paths = new RepositoryPathConfiguration(path);
             return new RepositoryWatcher(Platform, paths, CancellationToken.None);

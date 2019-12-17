@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using Unity.VersionControl.Git;
@@ -7,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Unity.Editor.Tasks;
 using Unity.VersionControl.Git.Json;
 
 namespace Unity.VersionControl.Git
@@ -92,8 +94,7 @@ namespace Unity.VersionControl.Git
 
                 var adapter = EnsureKeychainAdapter();
 
-                var octorunTask = new OctorunTask(taskManager.Token, environment, command.ToString(), adapter.Credential.Token)
-                    .Configure(processManager);
+                var octorunTask = new OctorunTask(taskManager.Token, environment, command.ToString(), adapter.Credential.Token).Configure((ProcessStartInfo)processManager);
 
                 var ret = octorunTask.RunSynchronously();
                 if (ret.IsSuccess && ret.Output.Length == 2)
@@ -125,8 +126,7 @@ namespace Unity.VersionControl.Git
             Guard.ArgumentNotNull(onSuccess, nameof(onSuccess));
             new FuncTask<GitHubHostMeta>(taskManager.Token, () =>
             {
-                var octorunTask = new OctorunTask(taskManager.Token, environment, "meta -h " + HostAddress.ApiUri.Host)
-                    .Configure(processManager);
+                var octorunTask = new OctorunTask(taskManager.Token, environment, "meta -h " + HostAddress.ApiUri.Host).Configure((ProcessStartInfo)processManager);
 
                 var ret = octorunTask.RunSynchronously();
                 if (ret.IsSuccess)
@@ -198,8 +198,7 @@ namespace Unity.VersionControl.Git
 
                 var command = HostAddress.IsGitHubDotCom() ? "organizations" : "organizations -h " + HostAddress.ApiUri.Host;
                 var octorunTask = new OctorunTask(taskManager.Token, environment,
-                        command, adapter.Credential.Token)
-                    .Configure(processManager);
+                    command, adapter.Credential.Token).Configure((ProcessStartInfo)processManager);
 
                 var ret = octorunTask.RunSynchronously();
                 if (ret.IsSuccess)
@@ -280,8 +279,7 @@ namespace Unity.VersionControl.Git
         public void CreateOAuthToken(string code, Action<bool, string> result)
         {
             var command = "token -h " + HostAddress.WebUri.Host;
-            var octorunTask = new OctorunTask(taskManager.Token, environment, command, code)
-                .Configure(processManager);
+            var octorunTask = new OctorunTask(taskManager.Token, environment, command, code).Configure((ProcessStartInfo)processManager);
 
             octorunTask
                 .Then((b, octorunResult) =>
@@ -433,8 +431,7 @@ namespace Unity.VersionControl.Git
                 var adapter = EnsureKeychainAdapter();
 
                 var command = HostAddress.IsGitHubDotCom() ? "validate" : "validate -h " + HostAddress.ApiUri.Host;
-                var octorunTask = new OctorunTask(taskManager.Token, environment, command, adapter.Credential.Token)
-                    .Configure(processManager);
+                var octorunTask = new OctorunTask(taskManager.Token, environment, command, adapter.Credential.Token).Configure((ProcessStartInfo)processManager);
 
                 var ret = octorunTask.RunSynchronously();
                 if (ret.IsSuccess)

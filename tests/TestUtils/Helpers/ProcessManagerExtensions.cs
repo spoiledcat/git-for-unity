@@ -9,11 +9,11 @@ namespace TestUtils
 {
     static class ProcessManagerExtensions
     {
-        static NPath defaultGitPath = "git".ToNPath();
+        static SPath defaultGitPath = "git".ToSPath();
 
         public static ITask<List<GitBranch>> GetGitBranches(this IProcessManager processManager,
-            NPath workingDirectory,
-            NPath? gitPath = null)
+            SPath workingDirectory,
+            SPath? gitPath = null)
         {
             var processor = new BranchListOutputProcessor();
 
@@ -22,10 +22,10 @@ namespace TestUtils
         }
 
         public static ITask<List<GitLogEntry>> GetGitLogEntries(this IProcessManager processManager,
-            NPath workingDirectory,
+            SPath workingDirectory,
             IEnvironment environment,
             int logCount = 0,
-            NPath? gitPath = null)
+            SPath? gitPath = null)
         {
             var gitStatusEntryFactory = new GitObjectFactory(environment);
 
@@ -36,9 +36,9 @@ namespace TestUtils
         }
 
         public static ITask<GitStatus> GetGitStatus(this IProcessManager processManager,
-            NPath workingDirectory,
+            SPath workingDirectory,
             IEnvironment environment,
-            NPath? gitPath = null)
+            SPath? gitPath = null)
         {
             var gitStatusEntryFactory = new GitObjectFactory(environment);
             var processor = new GitStatusOutputProcessor(gitStatusEntryFactory);
@@ -48,8 +48,8 @@ namespace TestUtils
         }
 
         public static ITask<List<GitRemote>> GetGitRemoteEntries(this IProcessManager processManager,
-            NPath workingDirectory,
-            NPath? gitPath = null)
+            SPath workingDirectory,
+            SPath? gitPath = null)
         {
             var processor = new RemoteListOutputProcessor();
 
@@ -58,12 +58,12 @@ namespace TestUtils
         }
 
         public static ITask<string> GetGitCreds(this IProcessManager processManager,
-            NPath workingDirectory,
-            NPath? gitPath = null)
+            SPath workingDirectory,
+            SPath? gitPath = null)
         {
             var processor = new FirstNonNullLineOutputProcessor();
 
-            NPath path = gitPath ?? defaultGitPath;
+            SPath path = gitPath ?? defaultGitPath;
 
             var task = new ProcessTask<string>(CancellationToken.None, processor)
                 .Configure(processManager, path, "credential-wincred get", workingDirectory, true);

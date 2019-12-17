@@ -1,45 +1,36 @@
 using System.Threading.Tasks;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
     public interface IPlatform
     {
-        IPlatform Initialize(IProcessManager processManager, ITaskManager taskManager);
-        IProcessEnvironment GitEnvironment { get; }
-        ICredentialManager CredentialManager { get; }
-        IEnvironment Environment { get; }
+        IPlatform Initialize();
+        IProcessEnvironment ProcessEnvironment { get; }
+        IGitEnvironment Environment { get; }
         IProcessManager ProcessManager { get; }
-        IKeychain Keychain { get; }
+        ITaskManager TaskManager { get; }
     }
 
     public class Platform : IPlatform
     {
-        public Platform(IEnvironment environment)
+        public Platform(ITaskManager taskManager, IGitEnvironment environment, IProcessManager processManager)
         {
+            ProcessManager = processManager;
             Environment = environment;
-            GitEnvironment = new ProcessEnvironment(environment);
             Instance = this;
         }
 
-        public IPlatform Initialize(IProcessManager processManager, ITaskManager taskManager)
+        public IPlatform Initialize()
         {
-            ProcessManager = processManager;
-
-            if (CredentialManager == null)
-            {
-                CredentialManager = new GitCredentialManager(processManager, taskManager);
-                Keychain = new Keychain(Environment, CredentialManager);
-                Keychain.Initialize();
-            }
-
+            ProcessEnvironment = new ProcessEnvironment(ProcessManager.DefaultProcessEnvironment, Environment);
             return this;
         }
 
         public static IPlatform Instance { get; private set; }
-        public IEnvironment Environment { get; private set; }
-        public IProcessEnvironment GitEnvironment { get; private set; }
-        public ICredentialManager CredentialManager { get; private set; }
+        public IGitEnvironment Environment { get; private set; }
+        public IProcessEnvironment ProcessEnvironment { get; private set; }
         public IProcessManager ProcessManager { get; private set; }
-        public IKeychain Keychain { get; private set; }
+        public ITaskManager TaskManager { get; private set; }
     }
 }

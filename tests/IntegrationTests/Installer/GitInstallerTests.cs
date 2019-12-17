@@ -77,7 +77,7 @@ namespace IntegrationTests
             var zipHelper = Substitute.For<IZipHelper>();
             zipHelper.Extract(Arg.Any<string>(), Arg.Do<string>(x =>
             {
-                var n = x.ToNPath();
+                var n = x.ToSPath();
                 n.EnsureDirectoryExists();
                 if (n.FileName == "git")
                 {
@@ -112,7 +112,7 @@ namespace IntegrationTests
             filesystem.DirectorySeparatorChar.Returns('/');
             Environment.FileSystem = filesystem;
 
-            var gitInstallationPath = "/usr/local".ToNPath();
+            var gitInstallationPath = "/usr/local".ToSPath();
             var gitExecutablePath = gitInstallationPath.Combine("bin/git");
             var gitLfsInstallationPath = gitInstallationPath;
             var gitLfsExecutablePath = gitLfsInstallationPath.Combine("bin/git-lfs");

@@ -1,16 +1,16 @@
 using System;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
     class LocksOutputProcessor : BaseOutputListProcessor<GitLock>
     {
-        public override void LineReceived(string line)
+        protected override bool ProcessLine(string line, out GitLock result)
         {
+            base.ProcessLine(line, out result);
+
             if (string.IsNullOrEmpty(line))
-            {
-                //Do Nothing
-                return;
-            }
+                return false;
 
             try
             {
@@ -24,6 +24,7 @@ namespace Unity.VersionControl.Git
             {
                 Logger.Error(ex, $"Failed to parse lock line {line}");
             }
+            return false;
         }
     }
 }

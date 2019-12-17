@@ -1,13 +1,16 @@
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitLfsVersionTask : ProcessTask<TheVersion>
+    public class GitLfsVersionTask : NativeProcessTask<TheVersion>
     {
         private const string TaskName = "git lfs version";
 
-        public GitLfsVersionTask(CancellationToken token, IOutputProcessor<TheVersion> processor = null)
-            : base(token, processor ?? new LfsVersionOutputProcessor())
+        public GitLfsVersionTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new LfsVersionOutputProcessor(), token: token)
         {
             Name = TaskName;
         }

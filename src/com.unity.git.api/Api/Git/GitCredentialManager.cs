@@ -2,10 +2,13 @@ using Unity.VersionControl.Git;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
 using Unity.VersionControl.Git.Tasks;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public class GitCredentialManager : ICredentialManager
     {
         private static ILogging Logger { get; } = LogHelper.GetLogger<GitCredentialManager>();
@@ -143,7 +146,7 @@ namespace Unity.VersionControl.Git
             if (credHelper.StartsWith('!'))
             {
                 // it's a separate app, run it as such
-                task = new SimpleProcessTask(taskManager.Token, credHelper.Substring(1).ToNPath(), action);
+                task = new SimpleProcessTask(taskManager.Token, credHelper.Substring(1).ToSPath(), action);
             }
             else
             {

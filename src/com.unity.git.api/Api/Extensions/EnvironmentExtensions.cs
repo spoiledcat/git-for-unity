@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public static class EnvironmentExtensions
     {
-        public static NPath GetRepositoryPath(this IEnvironment environment, NPath path)
+        public static SPath GetRepositoryPath(this IGitEnvironment environment, SPath path)
         {
             Guard.ArgumentNotNull(path, nameof(path));
 
-            NPath projectPath = environment.UnityProjectPath;
-            NPath repositoryPath = environment.RepositoryPath;
+            SPath projectPath = environment.UnityProjectPath.ToSPath();
+            SPath repositoryPath = environment.RepositoryPath;
             if (projectPath == repositoryPath)
             {
                 return path;
@@ -26,12 +29,12 @@ namespace Unity.VersionControl.Git
             return projectPath.RelativeTo(repositoryPath).Combine(path);
         }
 
-        public static NPath GetAssetPath(this IEnvironment environment, NPath path)
+        public static SPath GetAssetPath(this IGitEnvironment environment, SPath path)
         {
             Guard.ArgumentNotNull(path, nameof(path));
 
-            NPath projectPath = environment.UnityProjectPath;
-            NPath repositoryPath = environment.RepositoryPath;
+            SPath projectPath = environment.UnityProjectPath.ToSPath();
+            SPath repositoryPath = environment.RepositoryPath;
             if (projectPath == repositoryPath)
             {
                 return path;
@@ -45,14 +48,14 @@ namespace Unity.VersionControl.Git
             return repositoryPath.Combine(path).MakeAbsolute().RelativeTo(projectPath);
         }
 
-        public static IEnumerable<NPath> ToNPathList(this string envPath, IEnvironment environment)
+        public static IEnumerable<SPath> ToSPathList(this string envPath, IEnvironment environment)
         {
             return envPath
                     .Split(Path.PathSeparator)
-                    .Where(x => x != null)
+                    .Where(x => !string.IsNullOrEmpty(x))
                     .Select(x => environment.ExpandEnvironmentVariables(x.Trim('"', '\'')))
-                    .Where(x => !String.IsNullOrEmpty(x))
-                    .Select(x => x.ToNPath());
+                    .Where(x => !string.IsNullOrEmpty(x))
+                    .Select(x => x.ToSPath());
         }
     }
 }

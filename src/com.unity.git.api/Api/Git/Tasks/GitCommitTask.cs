@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitCommitTask : ProcessTask<string>
+    using IO;
+
+    public class GitCommitTask : NativeProcessTask<string>
     {
         private const string TaskName = "git commit";
 
@@ -11,11 +14,13 @@ namespace Unity.VersionControl.Git.Tasks
         private readonly string body;
         private readonly string arguments;
 
-        private NPath tempFile;
+        private SPath tempFile;
 
-        public GitCommitTask(string message, string body,
-            CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleOutputProcessor())
+        public GitCommitTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string message, string body,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(message, "message");
 
@@ -23,7 +28,7 @@ namespace Unity.VersionControl.Git.Tasks
             this.body = body ?? string.Empty;
 
             Name = TaskName;
-            tempFile = NPath.GetTempFilename("GitCommitTask");
+            tempFile = SPath.GetTempFilename("GitCommitTask");
             arguments = $"-c i18n.commitencoding=utf8 commit --file \"{tempFile}\"";
         }
 

@@ -16,15 +16,15 @@ namespace IntegrationTests
         private readonly DefaultEnvironment defaultEnvironment;
 
         public IntegrationTestEnvironment(ICacheContainer cacheContainer,
-            NPath repoPath,
-            NPath solutionDirectory,
+            SPath repoPath,
+            SPath solutionDirectory,
             CreateEnvironmentOptions options = null,
             bool enableTrace = false,
             bool initializeRepository = true)
         {
             this.enableTrace = enableTrace;
 
-            options = options ?? new CreateEnvironmentOptions(NPath.SystemTemp.Combine(ApplicationInfo.ApplicationName, "IntegrationTests"));
+            options = options ?? new CreateEnvironmentOptions(SPath.SystemTemp.Combine(ApplicationInfo.ApplicationName, "IntegrationTests"));
 
             defaultEnvironment = new DefaultEnvironment(cacheContainer);
             defaultEnvironment.FileSystem.SetCurrentDirectory(repoPath);
@@ -38,9 +38,9 @@ namespace IntegrationTests
 
             var installPath = solutionDirectory.Parent.Parent.Parent.Combine("src", "com.unity.git.api", "Api");
 
-            Initialize(UnityVersion, installPath, solutionDirectory, NPath.Default, repoPath.Combine("Assets"));
+            Initialize(UnityVersion, installPath, solutionDirectory, SPath.Default, repoPath.Combine("Assets"));
 
-            InitializeRepository(initializeRepository ? (NPath?)repoPath : null);
+            InitializeRepository(initializeRepository ? (SPath?)repoPath : null);
 
             GitDefaultInstallation = new GitInstaller.GitInstallDetails(UserCachePath, this);
 
@@ -51,7 +51,7 @@ namespace IntegrationTests
             }
         }
 
-        public void Initialize(string unityVersion, NPath extensionInstallPath, NPath unityPath, NPath unityContentsPath, NPath assetsPath)
+        public void Initialize(string unityVersion, SPath extensionInstallPath, SPath unityPath, SPath unityContentsPath, SPath assetsPath)
         {
             defaultEnvironment.Initialize(unityVersion, extensionInstallPath, unityPath, unityContentsPath, assetsPath);
             defaultEnvironment.LocalSettings.SettingsPath.DeleteIfExists();
@@ -59,7 +59,7 @@ namespace IntegrationTests
             defaultEnvironment.SystemSettings.SettingsPath.DeleteIfExists();
         }
 
-        public void InitializeRepository(NPath? expectedPath = null)
+        public void InitializeRepository(SPath? expectedPath = null)
         {
             defaultEnvironment.InitializeRepository(expectedPath);
         }
@@ -112,40 +112,40 @@ namespace IntegrationTests
         public string UnityVersion => "5.6";
 
         public bool IsCustomGitExecutable => defaultEnvironment.IsCustomGitExecutable;
-        public NPath GitExecutablePath => defaultEnvironment.GitExecutablePath;
-        public NPath GitInstallPath => defaultEnvironment.GitInstallPath;
-        public NPath GitLfsInstallPath => defaultEnvironment.GitLfsInstallPath;
-        public NPath GitLfsExecutablePath => defaultEnvironment.GitLfsExecutablePath;
+        public SPath GitExecutablePath => defaultEnvironment.GitExecutablePath;
+        public SPath GitInstallPath => defaultEnvironment.GitInstallPath;
+        public SPath GitLfsInstallPath => defaultEnvironment.GitLfsInstallPath;
+        public SPath GitLfsExecutablePath => defaultEnvironment.GitLfsExecutablePath;
         public GitInstaller.GitInstallationState GitInstallationState { get { return defaultEnvironment.GitInstallationState; } set { defaultEnvironment.GitInstallationState = value; } }
         public GitInstaller.GitInstallDetails GitDefaultInstallation { get => defaultEnvironment.GitDefaultInstallation; set => defaultEnvironment.GitDefaultInstallation = value; }
 
-        public NPath NodeJsExecutablePath { get; set; }
+        public SPath NodeJsExecutablePath { get; set; }
 
-        public NPath OctorunScriptPath { get; set; }
+        public SPath OctorunScriptPath { get; set; }
 
         public bool IsWindows => defaultEnvironment.IsWindows;
         public bool IsLinux => defaultEnvironment.IsLinux;
         public bool IsMac => defaultEnvironment.IsMac;
         public bool Is32Bit => defaultEnvironment.Is32Bit;
 
-        public NPath UnityApplication => defaultEnvironment.UnityApplication;
+        public SPath UnityApplication => defaultEnvironment.UnityApplication;
 
-        public NPath UnityApplicationContents => defaultEnvironment.UnityApplicationContents;
+        public SPath UnityApplicationContents => defaultEnvironment.UnityApplicationContents;
 
-        public NPath UnityAssetsPath => defaultEnvironment.UnityAssetsPath;
+        public SPath UnityAssetsPath => defaultEnvironment.UnityAssetsPath;
 
-        public NPath UnityProjectPath => defaultEnvironment.UnityProjectPath;
+        public SPath UnityProjectPath => defaultEnvironment.UnityProjectPath;
 
-        public NPath ExtensionInstallPath => defaultEnvironment.ExtensionInstallPath;
+        public SPath ExtensionInstallPath => defaultEnvironment.ExtensionInstallPath;
 
-        public NPath UserCachePath { get => defaultEnvironment.UserCachePath; set => defaultEnvironment.UserCachePath = value; }
-        public NPath SystemCachePath { get => defaultEnvironment.SystemCachePath; set => defaultEnvironment.SystemCachePath = value; }
-        public NPath LocalAppData { get => defaultEnvironment.LocalAppData; set => defaultEnvironment.LocalAppData = value; }
-        public NPath CommonAppData { get => defaultEnvironment.CommonAppData; set => defaultEnvironment.CommonAppData = value; }
+        public SPath UserCachePath { get => defaultEnvironment.UserCachePath; set => defaultEnvironment.UserCachePath = value; }
+        public SPath SystemCachePath { get => defaultEnvironment.SystemCachePath; set => defaultEnvironment.SystemCachePath = value; }
+        public SPath LocalAppData { get => defaultEnvironment.LocalAppData; set => defaultEnvironment.LocalAppData = value; }
+        public SPath CommonAppData { get => defaultEnvironment.CommonAppData; set => defaultEnvironment.CommonAppData = value; }
 
-        public NPath LogPath => defaultEnvironment.LogPath;
+        public SPath LogPath => defaultEnvironment.LogPath;
 
-        public NPath RepositoryPath => defaultEnvironment.RepositoryPath;
+        public SPath RepositoryPath => defaultEnvironment.RepositoryPath;
 
         public IRepository Repository { get { return defaultEnvironment.Repository; } set { defaultEnvironment.Repository = value; } }
         public IUser User { get { return defaultEnvironment.User; } set { defaultEnvironment.User = value; } }

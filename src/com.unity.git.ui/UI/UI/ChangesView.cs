@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
 using UnityEditor;
 using UnityEngine;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     [Serializable]
     class ChangesView : Subview
     {
@@ -32,7 +35,7 @@ namespace Unity.VersionControl.Git
         [SerializeField] private Vector2 treeScroll;
         [SerializeField] private ChangesTree treeChanges = new ChangesTree { DisplayRootNode = false, IsCheckable = true, IsUsingGlobalSelection = true };
 
-        [SerializeField] private HashSet<NPath> gitLocks = new HashSet<NPath>();
+        [SerializeField] private HashSet<SPath> gitLocks = new HashSet<SPath>();
         [SerializeField] private List<GitStatusEntry> gitStatusEntries = new List<GitStatusEntry>();
 
         [SerializeField] private string changedFilesText = NoChangedFilesLabel;
@@ -170,8 +173,8 @@ namespace Unity.VersionControl.Git
                 treeChanges.FocusedTreeNodeStyle = Styles.FocusedTreeNode;
                 treeChanges.FocusedActiveTreeNodeStyle = Styles.FocusedActiveTreeNode;
 
-                var treeRenderRect = treeChanges.Render(rect, treeScroll, 
-                    node => { }, 
+                var treeRenderRect = treeChanges.Render(rect, treeScroll,
+                    node => { },
                     node => { },
                     node => {
                         var menu = CreateContextMenu(node);
@@ -191,7 +194,7 @@ namespace Unity.VersionControl.Git
 
             genericMenu.AddItem(new GUIContent("Show Diff"), false, () =>
             {
-                ITask<NPath[]> calculateDiff = null;
+                ITask<SPath[]> calculateDiff = null;
                 if (node.IsFolder)
                 {
                     calculateDiff = CalculateFolderDiff(node);
@@ -251,45 +254,48 @@ namespace Unity.VersionControl.Git
             return genericMenu;
         }
 
-        private ITask<NPath[]> CalculateFolderDiff(ChangesTreeNode node)
+        private ITask<SPath[]> CalculateFolderDiff(ChangesTreeNode node)
         {
-            var rightFile = node.Path.ToNPath();
-            var tmpDir = Manager.Environment.UnityProjectPath.Combine("Temp").CreateTempDirectory();
-            var changedFiles = treeChanges.GetLeafNodes(node).Select(x => x.Path.ToNPath()).ToList();
-            return new FuncTask<List<NPath>, NPath[]>(TaskManager.Token, (s, files) =>
-            {
+            var rightFile = node.Path.ToSPath();
+            var tmpDir = Manager.Environment.UnityProjectPath.ToSPath().Combine("Temp").CreateTempDirectory();
+            var changedFiles = treeChanges.GetLeafNodes(node).Select(x => x.Path.ToSPath()).ToList();
+
+            return TaskManager.With(files => {
                 var leftFolder = tmpDir.Combine("left", rightFile.FileName);
                 var rightFolder = tmpDir.Combine("right", rightFile.FileName);
                 foreach (var file in files)
                 {
-                    var txt = new SimpleProcessTask(TaskManager.Token, "show HEAD:\"" + file.ToString(SlashMode.Forward) + "\"")
-                        .Configure(Manager.ProcessManager, false)
-                        .Catch(_ => true)
-                        .RunSynchronously();
+                    var txt = new NativeProcessTask(TaskManager, Platform.ProcessEnvironment, Environment.GitExecutablePath,
+                            "show HEAD:\"" + file.ToString(SlashMode.Forward) + "\"").Configure(Manager.ProcessManager)
+                                                                                     .Catch(_ => true)
+                                                                                     .RunSynchronously();
                     if (txt != null)
-                        leftFolder.Combine(file.RelativeTo(rightFile)).WriteAllText(txt);
+                        leftFolder.Combine(file.RelativeTo(rightFile))
+                                  .WriteAllText(txt);
                     if (file.FileExists())
-                        rightFolder.Combine(file.RelativeTo(rightFile)).WriteAllText(file.ReadAllText());
+                        rightFolder.Combine(file.RelativeTo(rightFile))
+                                   .WriteAllText(file.ReadAllText());
                 }
-                return new NPath[] { leftFolder, rightFolder };
-            }, () => changedFiles) { Message = "Calculating diff..." };
+                return new SPath[] { leftFolder, rightFolder };
+            }, changedFiles, "Calculating diff...");
         }
 
-        private ITask<NPath[]> CalculateFileDiff(ChangesTreeNode node)
+        private ITask<SPath[]> CalculateFileDiff(ChangesTreeNode node)
         {
-            var rightFile = node.Path.ToNPath();
-            var tmpDir = Manager.Environment.UnityProjectPath.Combine("Temp", "ghu-diffs").EnsureDirectoryExists();
+            var rightFile = node.Path.ToSPath();
+            var tmpDir = Manager.Environment.UnityProjectPath.ToSPath().Combine("Temp", "ghu-diffs").EnsureDirectoryExists();
             var leftFile = tmpDir.Combine(rightFile.FileName + "_" + Repository.CurrentHead + rightFile.ExtensionWithDot);
-            return new SimpleProcessTask(TaskManager.Token, "show HEAD:\"" + rightFile.ToString(SlashMode.Forward) + "\"")
-                   .Configure(Manager.ProcessManager, false)
+            return new NativeProcessTask(TaskManager, Platform.ProcessEnvironment, Environment.GitExecutablePath,
+                       "show HEAD:\"" + rightFile.ToString(SlashMode.Forward) + "\"")
+                   .Configure(Manager.ProcessManager)
                    .Catch(_ => true)
-                   .Then((success, txt) =>
+                   .Then((success, ex, txt) =>
                    {
                        // both files exist, just compare them
                        if (success && rightFile.FileExists())
                        {
                            leftFile.WriteAllText(txt);
-                           return new NPath[] { leftFile, rightFile };
+                           return new SPath[] { leftFile, rightFile };
                        }
 
                        var leftFolder = tmpDir.Combine("left", leftFile.FileName).EnsureDirectoryExists();
@@ -305,7 +311,7 @@ namespace Unity.VersionControl.Git
                        {
                            rightFolder.Combine(rightFile).WriteAllText(rightFile.ReadAllText());
                        }
-                       return new NPath[] { leftFolder, rightFolder };
+                       return new SPath[] { leftFolder, rightFolder };
                    });
         }
 
@@ -383,7 +389,7 @@ namespace Unity.VersionControl.Git
 
             if (currentLocksHasUpdate)
             {
-                gitLocks = new HashSet<NPath>(Repository.CurrentLocks.Select(gitLock => gitLock.Path));
+                gitLocks = new HashSet<SPath>(Repository.CurrentLocks.Select(gitLock => gitLock.Path));
             }
 
             if (currentStatusEntriesHasUpdate)
@@ -409,7 +415,7 @@ namespace Unity.VersionControl.Git
         private void BuildTree()
         {
             treeChanges.PathSeparator = Environment.FileSystem.DirectorySeparatorChar.ToString();
-            treeChanges.Load(gitStatusEntries.Select(entry => new GitStatusEntryTreeData(entry, gitLocks.Contains(entry.Path.ToNPath()))));
+            treeChanges.Load(gitStatusEntries.Select(entry => new GitStatusEntryTreeData(entry, gitLocks.Contains(entry.Path.ToSPath()))));
             Redraw();
         }
 
@@ -438,7 +444,7 @@ namespace Unity.VersionControl.Git
                     GUILayout.Space(Styles.CommitAreaPadding);
 
                     // Disable committing when already committing or if we don't have all the data needed
-                    //Debug.LogFormat("IsBusy:{0} string.IsNullOrEmpty(commitMessage): {1} treeChanges.GetCheckedFiles().Any(): {2}", 
+                    //Debug.LogFormat("IsBusy:{0} string.IsNullOrEmpty(commitMessage): {1} treeChanges.GetCheckedFiles().Any(): {2}",
                     //    IsBusy, string.IsNullOrEmpty(commitMessage), treeChanges.GetCheckedFiles().Any());
                     EditorGUI.BeginDisabledGroup(IsBusy || string.IsNullOrEmpty(commitMessage) || !treeChanges.GetCheckedFiles().Any());
                     {
@@ -501,7 +507,7 @@ namespace Unity.VersionControl.Git
                     {
                         if (success)
                         {
-                            UsageTracker.IncrementChangesViewButtonCommit();
+                            //UsageTracker.IncrementChangesViewButtonCommit();
 
                             commitMessage = "";
                             commitBody = "";

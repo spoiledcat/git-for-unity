@@ -1,12 +1,13 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
     public interface IApplicationManager : IDisposable
     {
-        IEnvironment Environment { get; }
+        IGitEnvironment Environment { get; }
         IPlatform Platform { get; }
         IProcessEnvironment GitEnvironment { get; }
         IProcessManager ProcessManager { get; }
@@ -15,8 +16,6 @@ namespace Unity.VersionControl.Git
         ISettings UserSettings { get; }
         ITaskManager TaskManager { get; }
         IGitClient GitClient { get; }
-        IUsageTracker UsageTracker { get; }
-        IOAuthCallbackManager OAuthCallbackManager { get; }
         bool IsBusy { get; }
         void Run();
         void InitializeRepository();

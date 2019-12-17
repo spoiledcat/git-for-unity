@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
@@ -19,8 +20,10 @@ namespace Unity.VersionControl.Git
             this.gitObjectFactory = gitObjectFactory;
         }
 
-        public override void LineReceived(string line)
+        protected override bool ProcessLine(string line, out GitStatus result)
         {
+            result = default;
+
             if (line == null)
             {
                 ReturnStatus();
@@ -93,7 +96,7 @@ namespace Unity.VersionControl.Git
                     if (gitStatusMarker == null)
                     {
                         HandleUnexpected(line);
-                        return;
+                        return false;
                     }
 
 
@@ -138,7 +141,7 @@ namespace Unity.VersionControl.Git
                     if (status == GitFileStatus.None)
                     {
                         HandleUnexpected(line);
-                        return;
+                        return false;
                     }
 
                     if (status == GitFileStatus.Copied || status == GitFileStatus.Renamed)
@@ -162,6 +165,7 @@ namespace Unity.VersionControl.Git
                     gitStatus.Entries.Add(gitStatusEntry);
                 }
             }
+            return false;
         }
 
         private void ReturnStatus()

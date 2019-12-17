@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
 using UnityEditor;
 using UnityEngine;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     [Serializable]
     public class HistoryControl
     {
@@ -87,7 +90,7 @@ namespace Unity.VersionControl.Git
             var summaryRect = new Rect(entryRect.x, entryRect.y + Styles.BaseSpacing / 2, entryRect.width, Styles.HistorySummaryHeight + Styles.BaseSpacing);
             var timestampRect = new Rect(entryRect.x, entryRect.yMax - Styles.HistoryDetailsHeight - Styles.BaseSpacing / 2, entryRect.width, Styles.HistoryDetailsHeight);
 
-            var hasKeyboardFocus = GUIUtility.keyboardControl == controlId; 
+            var hasKeyboardFocus = GUIUtility.keyboardControl == controlId;
 
             Styles.Label.Draw(entryRect, GUIContent.none, false, false, isSelected, hasKeyboardFocus);
             Styles.HistoryEntrySummaryStyle.Draw(summaryRect, entry.Summary, false, false, isSelected, hasKeyboardFocus);
@@ -320,7 +323,7 @@ namespace Unity.VersionControl.Git
             }
 
             HistoryControl.Load(loadAhead, gitLogEntries);
-            if (!SelectedEntry.Equals(GitLogEntry.Default) 
+            if (!SelectedEntry.Equals(GitLogEntry.Default)
                 && SelectedEntry.CommitID != HistoryControl.SelectedGitLogEntry.CommitID)
             {
                 SelectedEntry = GitLogEntry.Default;
@@ -787,7 +790,7 @@ namespace Unity.VersionControl.Git
 
         protected void Checkout(string commitId)
         {
-            var promptUser = gitStatusEntries.Count > 0 && gitStatusEntries.Any(statusEntry => gitFileLog.Path.Equals(statusEntry.Path.ToNPath()));
+            var promptUser = gitStatusEntries.Count > 0 && gitStatusEntries.Any(statusEntry => gitFileLog.Path.Equals(statusEntry.Path.ToSPath()));
 
             if (!promptUser || EditorUtility.DisplayDialog(ConfirmCheckoutTitle, string.Format(ConfirmCheckoutMessage, gitFileLog.Path), ConfirmCheckoutOK, ConfirmCheckoutCancel))
             {

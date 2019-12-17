@@ -18,13 +18,13 @@ namespace TestUtils
             var appData = userPath.Parent.Combine("AppData").ToString();
 
             var environment = Substitute.For<IEnvironment>();
-            environment.RepositoryPath.Returns(createEnvironmentOptions.RepositoryPath.ToNPath());
+            environment.RepositoryPath.Returns(createEnvironmentOptions.RepositoryPath.ToSPath());
             environment.ExtensionInstallPath.Returns(createEnvironmentOptions.Extensionfolder);
             environment.UnityProjectPath.Returns(createEnvironmentOptions.UnityProjectPath);
             environment.GetSpecialFolder(System.Environment.SpecialFolder.LocalApplicationData).Returns(localAppData);
             environment.GetSpecialFolder(System.Environment.SpecialFolder.ApplicationData).Returns(appData);
-            environment.LocalAppData.Returns(localAppData.ToNPath());
-            environment.CommonAppData.Returns(appData.ToNPath());
+            environment.LocalAppData.Returns(localAppData.ToSPath());
+            environment.CommonAppData.Returns(appData.ToSPath());
             return environment;
         }
 
@@ -319,7 +319,7 @@ namespace TestUtils
             return gitObjectFactory;
         }
 
-        public IProcessEnvironment CreateProcessEnvironment(NPath root)
+        public IProcessEnvironment CreateProcessEnvironment(SPath root)
         {
             var processEnvironment = Substitute.For<IProcessEnvironment>();
             return processEnvironment;
@@ -403,7 +403,7 @@ namespace TestUtils
 
                 logger.Trace(@"RunGitStatus() -> {0}",
                     $"Success: \"{result}\"");
-                
+
                 return ret;
             });
 

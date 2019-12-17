@@ -4,6 +4,8 @@ using System.IO;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public static class Utils
     {
         public static bool Copy(Stream source, Stream destination,
@@ -78,7 +80,7 @@ namespace Unity.VersionControl.Git
                 destination.Flush();
             return success;
         }
-        public static bool VerifyFileIntegrity(NPath file, string hash)
+        public static bool VerifyFileIntegrity(SPath file, string hash)
         {
             if (!file.IsInitialized || !file.FileExists())
                 return false;
@@ -90,12 +92,12 @@ namespace Unity.VersionControl.Git
             return hash.Equals(actual, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private static string ToMD5(this NPath path)
+        private static string ToMD5(this SPath path)
         {
             byte[] computeHash;
             using (var hash = System.Security.Cryptography.MD5.Create())
             {
-                using (var stream = NPath.FileSystem.OpenRead(path))
+                using (var stream = SPath.FileSystem.OpenRead(path))
                 {
                     computeHash = hash.ComputeHash(stream);
                 }
@@ -104,12 +106,12 @@ namespace Unity.VersionControl.Git
             return BitConverter.ToString(computeHash).Replace("-", string.Empty).ToLower();
         }
 
-        private static string ToSha256(this NPath path)
+        private static string ToSha256(this SPath path)
         {
             byte[] computeHash;
             using (var hash = System.Security.Cryptography.SHA256.Create())
             {
-                using (var stream = NPath.FileSystem.OpenRead(path))
+                using (var stream = SPath.FileSystem.OpenRead(path))
                 {
                     computeHash = hash.ComputeHash(stream);
                 }

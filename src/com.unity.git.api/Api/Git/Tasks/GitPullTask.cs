@@ -1,17 +1,20 @@
 using System;
 using System.Text;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitPullTask : ProcessTask<string>
+    public class GitPullTask : NativeProcessTask<string>
     {
         private const string TaskName = "git pull";
         private readonly string arguments;
 
-        public GitPullTask(string remote, string branch,
-            CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleOutputProcessor())
+        public GitPullTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string remote, string branch,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Name = TaskName;
             var stringBuilder = new StringBuilder();

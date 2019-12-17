@@ -1,15 +1,21 @@
 using System.Collections.Generic;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitCleanTask : ProcessTask<string>
+    using IO;
+
+    public class GitCleanTask : NativeProcessTask<string>
     {
         private const string TaskName = "git clean";
         private readonly string arguments;
 
-        public GitCleanTask(IEnumerable<string> files, CancellationToken token,
-            IOutputProcessor<string> processor = null) : base(token, processor ?? new SimpleOutputProcessor())
+        public GitCleanTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            IEnumerable<string> files,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNull(files, "files");
             Name = TaskName;
@@ -20,12 +26,14 @@ namespace Unity.VersionControl.Git.Tasks
 
             foreach (var file in files)
             {
-                arguments += " \"" + file.ToNPath().ToString(SlashMode.Forward) + "\"";
+                arguments += " \"" + file.ToSPath().ToString(SlashMode.Forward) + "\"";
             }
         }
 
-        public GitCleanTask(CancellationToken token,
-            IOutputProcessor<string> processor = null) : base(token, processor ?? new SimpleOutputProcessor())
+        public GitCleanTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             arguments = "clean ";
             arguments += "-f";

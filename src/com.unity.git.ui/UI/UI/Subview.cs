@@ -1,6 +1,7 @@
 using Unity.VersionControl.Git;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
 using UnityEngine;
 
 namespace Unity.VersionControl.Git
@@ -89,10 +90,10 @@ namespace Unity.VersionControl.Git
         public bool HasUser { get { return Parent.HasUser; } }
         protected ITaskManager TaskManager { get { return Manager.TaskManager; } }
         protected IGitClient GitClient { get { return Manager.GitClient; } }
-        protected IEnvironment Environment { get { return Manager.Environment; } }
+        protected IGitEnvironment Environment { get { return Manager.Environment; } }
         protected IPlatform Platform { get { return Manager.Platform; } }
-        protected IUsageTracker UsageTracker { get { return Manager.UsageTracker; } }
-        protected IOAuthCallbackManager OAuthCallbackManager { get { return Manager.OAuthCallbackManager; } }
+        //protected IUsageTracker UsageTracker { get { return Manager.UsageTracker; } }
+        //protected IOAuthCallbackManager OAuthCallbackManager { get { return Manager.OAuthCallbackManager; } }
 
         public bool HasFocus { get { return Parent != null && Parent.HasFocus; } }
         public virtual bool IsBusy

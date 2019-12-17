@@ -1,6 +1,7 @@
 using System;
 using System.Security.AccessControl;
 using System.Text.RegularExpressions;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
@@ -8,14 +9,16 @@ namespace Unity.VersionControl.Git
     {
         private static readonly Regex trackingBranchRegex = new Regex(@"\[[\w]+\/.*\]");
 
-        public override void LineReceived(string line)
+        protected override bool ProcessLine(string line, out GitBranch result)
         {
+            base.ProcessLine(line, out result);
+
             if (line == null)
-                return;
+                return false;
 
             var proc = new LineParser(line);
             if (proc.IsAtEnd)
-                return;
+                return false;
 
             try
             {
@@ -46,13 +49,15 @@ namespace Unity.VersionControl.Git
                     }
                 }
 
-                var branch = new GitBranch(name, trackingName);
-                RaiseOnEntry(branch);
+                result = new GitBranch(name, trackingName);
+                return true;
             }
             catch(Exception ex)
             {
                 Logger.Warning(ex, "Unexpected input when listing branches");
             }
+
+            return false;
         }
     }
 }

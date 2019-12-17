@@ -2,16 +2,25 @@
 using System.Collections.Generic;
 using System.Resources;
 using System.Threading;
+using Unity.Editor.Tasks.Helpers;
+using Downloader = Unity.Editor.Tasks.Downloader;
+using IEnvironment = Unity.Editor.Tasks.IEnvironment;
+using IProcessManager = Unity.Editor.Tasks.IProcessManager;
+using ProgressReporter = Unity.Editor.Tasks.ProgressReporter;
+using TaskData = Unity.Editor.Tasks.TaskData;
 
 namespace Unity.VersionControl.Git
 {
     using Tasks;
+    using IO;
+    using Unity.Editor.Tasks;
 
-    public class GitInstaller : TaskBase<GitInstaller.GitInstallationState>
+    public class GitInstaller : Editor.Tasks.TaskBase<GitInstaller.GitInstallationState>
     {
         private readonly CancellationToken cancellationToken;
-        private readonly IEnvironment environment;
+        private readonly IGitEnvironment environment;
         private readonly IProcessManager processManager;
+        private readonly IProcessEnvironment processEnvironment;
         private readonly GitInstallDetails installDetails;
         private readonly IZipHelper sharpZipLibHelper;
         private readonly Dictionary<string, TaskData> tasks = new Dictionary<string, TaskData>();
@@ -19,14 +28,18 @@ namespace Unity.VersionControl.Git
 
         private GitInstallationState currentState;
 
-        public GitInstaller(IEnvironment environment, IProcessManager processManager,
-            CancellationToken token,
+        public GitInstaller(ITaskManager taskManager,
+            IGitEnvironment environment,
+            IProcessManager processManager,
+            IProcessEnvironment processEnvironment,
             GitInstallationState state = null,
-            GitInstallDetails installDetails = null)
-            : base(token)
+            GitInstallDetails installDetails = null,
+            CancellationToken token = default)
+            : base(taskManager, token)
         {
             this.environment = environment;
             this.processManager = processManager;
+            this.processEnvironment = processEnvironment;
             this.currentState = state;
             this.sharpZipLibHelper = ZipHelper.Instance;
             this.cancellationToken = token;
@@ -44,7 +57,7 @@ namespace Unity.VersionControl.Git
             catch (Exception ex)
             {
                 if (!RaiseFaultHandlers(ex))
-                    ThrownException.Rethrow();
+                    Exception.Rethrow();
             }
             return ret;
         }
@@ -152,8 +165,8 @@ namespace Unity.VersionControl.Git
         {
             if (!state.GitIsValid)
             {
-                var gitPath = new FindExecTask("git", cancellationToken)
-                    .Configure(processManager, dontSetupGit: true)
+                var gitPath = new FindExecTask(TaskManager, environment, "git", cancellationToken)
+                    .Configure(processManager)
                     .Progress(progressReporter.UpdateProgress)
                     .Catch(e => true)
                     .RunSynchronously();
@@ -169,8 +182,8 @@ namespace Unity.VersionControl.Git
         {
             if (!state.GitLfsIsValid)
             {
-                var gitLfsPath = new FindExecTask("git-lfs", cancellationToken)
-                    .Configure(processManager, dontSetupGit: true)
+                var gitLfsPath = new FindExecTask(TaskManager, environment, "git-lfs", cancellationToken)
+                    .Configure(processManager)
                     .Progress(progressReporter.UpdateProgress)
                     .Catch(e => true)
                     .RunSynchronously();
@@ -199,11 +212,13 @@ namespace Unity.VersionControl.Git
                 state.GitIsValid = false;
                 return state;
             }
-            var version = new GitVersionTask(cancellationToken)
-                .Configure(processManager, state.GitExecutablePath, dontSetupGit: true)
-                .Progress(progressReporter.UpdateProgress)
-                .Catch(e => true)
-                .RunSynchronously();
+            var version = new NativeProcessTask<TheVersion>(TaskManager, processManager,
+                              state.GitExecutablePath, "--version",
+                              new VersionOutputProcessor())
+                          .Progress(progressReporter.UpdateProgress)
+                          .Catch(e => true)
+                          .RunSynchronously();
+
             state.GitIsValid = version >= Constants.MinimumGitVersion;
             state.GitVersion = version;
             return state;
@@ -216,8 +231,9 @@ namespace Unity.VersionControl.Git
                 state.GitLfsIsValid = false;
                 return state;
             }
-            var version = new ProcessTask<TheVersion>(cancellationToken, "version", new LfsVersionOutputProcessor())
-                    .Configure(processManager, state.GitLfsExecutablePath, dontSetupGit: true)
+            var version = new NativeProcessTask<TheVersion>(TaskManager, processManager,
+                              state.GitLfsExecutablePath, "version",
+                              new LfsVersionOutputProcessor())
                     .Progress(progressReporter.UpdateProgress)
                     .Catch(e => true)
                     .RunSynchronously();
@@ -234,7 +250,7 @@ namespace Unity.VersionControl.Git
             if (state.GitInstallationPath != installDetails.GitInstallationPath)
                 return state;
 
-            state.GitPackage = DugiteReleaseManifest.Load(installDetails.GitManifest, GitInstallDetails.GitPackageFeed, environment);
+            state.GitPackage = DugiteReleaseManifest.Load(TaskManager, installDetails.GitManifest, GitInstallDetails.GitPackageFeed, environment);
             if (state.GitPackage == null)
                 return state;
 
@@ -277,7 +293,7 @@ namespace Unity.VersionControl.Git
                 return state;
 
             var asset = state.GitPackage.DugitePackage;
-            var downloader = new Downloader(environment.FileSystem);
+            var downloader = new Downloader(TaskManager);
             downloader.QueueDownload(asset.Url, installDetails.ZipPath, asset.Name);
 
             downloader
@@ -297,12 +313,12 @@ namespace Unity.VersionControl.Git
 
         private GitInstallationState ExtractGit(GitInstallationState state)
         {
-            var tempZipExtractPath = NPath.CreateTempDirectory("ghu_extract_git");
+            var tempZipExtractPath = SPath.CreateTempDirectory("ghu_extract_git");
 
             if (state.GitZipExists && !state.GitIsValid)
             {
                 var gitExtractPath = tempZipExtractPath.Combine("git").CreateDirectory();
-                var unzipTask = new UnzipTask(cancellationToken, state.GitZipPath,
+                var unzipTask = new UnzipTask(TaskManager, state.GitZipPath,
                         gitExtractPath, sharpZipLibHelper,
                         environment.FileSystem)
                     .Progress(progressReporter.UpdateProgress)
@@ -346,11 +362,11 @@ namespace Unity.VersionControl.Git
             public bool GitIsValid { get => TryGetField<bool>(nameof(GitIsValid)); set => fields[nameof(GitIsValid)] = value; }
             public bool GitLfsIsValid { get => TryGetField<bool>(nameof(GitLfsIsValid)); set => fields[nameof(GitLfsIsValid)] = value; }
             public bool GitZipExists { get => TryGetField<bool>(nameof(GitZipExists)); set => fields[nameof(GitZipExists)] = value; }
-            public NPath GitZipPath { get => TryGetField<NPath>(nameof(GitZipPath)); set => fields[nameof(GitZipPath)] = value; }
-            public NPath GitInstallationPath { get => TryGetField<NPath>(nameof(GitInstallationPath)); set => fields[nameof(GitInstallationPath)] = value; }
-            public NPath GitExecutablePath { get => TryGetField<NPath>(nameof(GitExecutablePath)); set => fields[nameof(GitExecutablePath)] = value; }
-            public NPath GitLfsInstallationPath { get => TryGetField<NPath>(nameof(GitLfsInstallationPath)); set => fields[nameof(GitLfsInstallationPath)] = value; }
-            public NPath GitLfsExecutablePath { get => TryGetField<NPath>(nameof(GitLfsExecutablePath)); set => fields[nameof(GitLfsExecutablePath)] = value; }
+            public SPath GitZipPath { get => TryGetField<SPath>(nameof(GitZipPath)); set => fields[nameof(GitZipPath)] = value; }
+            public SPath GitInstallationPath { get => TryGetField<SPath>(nameof(GitInstallationPath)); set => fields[nameof(GitInstallationPath)] = value; }
+            public SPath GitExecutablePath { get => TryGetField<SPath>(nameof(GitExecutablePath)); set => fields[nameof(GitExecutablePath)] = value; }
+            public SPath GitLfsInstallationPath { get => TryGetField<SPath>(nameof(GitLfsInstallationPath)); set => fields[nameof(GitLfsInstallationPath)] = value; }
+            public SPath GitLfsExecutablePath { get => TryGetField<SPath>(nameof(GitLfsExecutablePath)); set => fields[nameof(GitLfsExecutablePath)] = value; }
             public DugiteReleaseManifest GitPackage { get => TryGetField<DugiteReleaseManifest>(nameof(GitPackage)); set => fields[nameof(GitPackage)] = value; }
             public DateTimeOffset GitLastCheckTime { get; set; }
             public bool IsCustomGitPath { get => TryGetField<bool>(nameof(IsCustomGitPath)); set => fields[nameof(IsCustomGitPath)] = value; }
@@ -360,7 +376,7 @@ namespace Unity.VersionControl.Git
             public GitInstallationState()
             {
                 GitIsValid = GitLfsIsValid = GitZipExists = IsCustomGitPath = default(bool);
-                GitZipPath = GitInstallationPath = GitExecutablePath = GitLfsInstallationPath = GitLfsExecutablePath = default(NPath);
+                GitZipPath = GitInstallationPath = GitExecutablePath = GitLfsInstallationPath = GitLfsExecutablePath = default(SPath);
                 GitPackage = default(DugiteReleaseManifest);
                 GitVersion = GitLfsVersion = default(TheVersion);
             }
@@ -416,19 +432,19 @@ namespace Unity.VersionControl.Git
 
             public const string GitDirectory = "git";
 
-            public GitInstallDetails(NPath baseDataPath, IEnvironment environment)
+            public GitInstallDetails(SPath baseDataPath, IGitEnvironment environment)
             {
                 ZipPath = baseDataPath.Combine("downloads");
                 ZipPath.EnsureDirectoryExists();
 
                 GitInstallationPath = baseDataPath.Combine(GitDirectory);
-                GitExecutablePath = GitInstallationPath.Combine(environment.IsWindows ? "cmd" : "bin", "git" + DefaultEnvironment.ExecutableExt);
+                GitExecutablePath = GitInstallationPath.Combine(environment.IsWindows ? "cmd" : "bin", "git" + environment.ExecutableExtension);
 
                 GitLfsInstallationPath = GitLfsExecutablePath = GitInstallationPath;
                 if (environment.IsWindows)
                     GitLfsExecutablePath = GitLfsInstallationPath.Combine(environment.Is32Bit ? "mingw32" : "mingw64");
                 GitLfsExecutablePath = GitLfsExecutablePath.Combine("libexec", "git-core");
-                GitLfsExecutablePath = GitLfsExecutablePath.Combine("git-lfs" + DefaultEnvironment.ExecutableExt);
+                GitLfsExecutablePath = GitLfsExecutablePath.Combine("git-lfs" + environment.ExecutableExtension);
                 GitManifest = baseDataPath.Combine(GitPackageName);
             }
 
@@ -442,13 +458,13 @@ namespace Unity.VersionControl.Git
                 };
             }
 
-            public NPath ZipPath { get; }
-            public NPath GitInstallationPath { get; }
-            public NPath GitLfsInstallationPath { get; }
-            public NPath GitExecutablePath { get; }
-            public NPath GitLfsExecutablePath { get; }
+            public SPath ZipPath { get; }
+            public SPath GitInstallationPath { get; }
+            public SPath GitLfsInstallationPath { get; }
+            public SPath GitExecutablePath { get; }
+            public SPath GitLfsExecutablePath { get; }
             public static UriString GitPackageFeed { get; set; } = packageFeed;
-            public NPath GitManifest { get; set; }
+            public SPath GitManifest { get; set; }
         }
     }
 }

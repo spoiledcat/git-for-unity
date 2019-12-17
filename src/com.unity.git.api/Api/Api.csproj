@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFrameworks>net35;net471</TargetFrameworks>
     <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\..\</SolutionDir>
     <ProjectGuid>{B389ADAF-62CC-486E-85B4-2D8B078DF76B}</ProjectGuid>
     <AssemblyName>Unity.VersionControl.Git</AssemblyName>
     <RootNamespace>Unity.VersionControl.Git</RootNamespace>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <Import Project="$(SolutionDir)\common\properties.props" />
@@ -27,6 +27,7 @@
       <HintPath>..\sfw\sfw.net.dll</HintPath>
       <Private>True</Private>
     </Reference>
+
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
@@ -44,6 +45,54 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Application\ApiClient.cs" />
+    <Compile Remove="Application\IApiClient.cs" />
+    <Compile Remove="Application\LoginResult.cs" />
+    <Compile Remove="Application\Organization.cs" />
+    <Compile Remove="Authentication\AuthenticationResult.cs" />
+    <Compile Remove="Authentication\AuthenticationResultExtensions.cs" />
+    <Compile Remove="Authentication\Credential.cs" />
+    <Compile Remove="Authentication\ICredentialManager.cs" />
+    <Compile Remove="Authentication\IKeychain.cs" />
+    <Compile Remove="Authentication\ILoginManager.cs" />
+    <Compile Remove="Authentication\Keychain.cs" />
+    <Compile Remove="Authentication\KeychainAdapter.cs" />
+    <Compile Remove="Authentication\LoginManager.cs" />
+    <Compile Remove="Authentication\OAuthCallbackManager.cs" />
+    <Compile Remove="Git\GitCredentialManager.cs" />
+    <Compile Remove="Helpers\Progress.cs" />
+    <Compile Remove="Installer\OctorunInstaller.cs" />
+    <Compile Remove="Metrics\IMetricsService.cs" />
+    <Compile Remove="Metrics\IUsageTracker.cs" />
+    <Compile Remove="Metrics\UsageModel.cs" />
+    <Compile Remove="Metrics\UsageTracker.cs" />
+    <Compile Remove="OutputProcessors\LinuxDiskUsageOutputProcessor.cs" />
+    <Compile Remove="OutputProcessors\WindowsDiskUsageOutputProcessor.cs" />
+    <Compile Remove="Platform\LinuxDiskUsageTask.cs" />
+    <Compile Remove="Platform\WindowsDiskUsageTask.cs" />
+    <Compile Remove="Primitives\UriString.cs" />
+    <Compile Remove="Process\IProcessEnvironment.cs" />
+    <Compile Remove="Process\IProcessManager.cs" />
+    <Compile Remove="Process\ProcessManager.cs" />
+    <Compile Remove="Tasks\ActionTask.cs" />
+    <Compile Remove="Tasks\BaseOutputProcessor.cs" />
+    <Compile Remove="Tasks\ConcurrentExclusiveInterleave.cs" />
+    <Compile Remove="Tasks\Downloader.cs" />
+    <Compile Remove="Tasks\DownloadTask.cs" />
+    <Compile Remove="Tasks\ITaskManager.cs" />
+    <Compile Remove="Tasks\OctorunTask.cs" />
+    <Compile Remove="Tasks\ProcessTask.cs" />
+    <Compile Remove="Tasks\TaskBase.cs" />
+    <Compile Remove="Tasks\TaskCanceledExceptions.cs" />
+    <Compile Remove="Tasks\TaskExtensions.cs" />
+    <Compile Remove="Tasks\TaskManager.cs" />
+    <Compile Remove="Threading\IAwaitable.cs" />
+    <Compile Remove="Threading\IAwaiter.cs" />
+    <Compile Remove="Threading\IMainThreadSynchronizationContext.cs" />
+    <Compile Remove="Threading\ThreadingHelper.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Condition=" '$(Buildtype)' == 'Internal'" Include="$(SolutionDir)\script\src\ApplicationInfo_Local.cs">
       <Link>Properties\ApplicationInfo_Local.cs</Link>
     </Compile>
@@ -53,6 +102,51 @@
     <None Include="$(SolutionDir)\common\ApplicationInfo_Local.cs-example">
       <Link>Properties\ApplicationInfo_Local.cs-example</Link>
     </None>
+    <None Include="Application\ApiClient.cs" />
+    <None Include="Application\IApiClient.cs" />
+    <None Include="Application\LoginResult.cs" />
+    <None Include="Application\Organization.cs" />
+    <None Include="Authentication\AuthenticationResult.cs" />
+    <None Include="Authentication\AuthenticationResultExtensions.cs" />
+    <None Include="Authentication\Credential.cs" />
+    <None Include="Authentication\ICredentialManager.cs" />
+    <None Include="Authentication\IKeychain.cs" />
+    <None Include="Authentication\ILoginManager.cs" />
+    <None Include="Authentication\Keychain.cs" />
+    <None Include="Authentication\KeychainAdapter.cs" />
+    <None Include="Authentication\LoginManager.cs" />
+    <None Include="Authentication\OAuthCallbackManager.cs" />
+    <None Include="Git\GitCredentialManager.cs" />
+    <None Include="Helpers\Progress.cs" />
+    <None Include="Installer\OctorunInstaller.cs" />
+    <None Include="Metrics\IMetricsService.cs" />
+    <None Include="Metrics\IUsageTracker.cs" />
+    <None Include="Metrics\UsageModel.cs" />
+    <None Include="Metrics\UsageTracker.cs" />
+    <None Include="OutputProcessors\LinuxDiskUsageOutputProcessor.cs" />
+    <None Include="OutputProcessors\WindowsDiskUsageOutputProcessor.cs" />
+    <None Include="Platform\LinuxDiskUsageTask.cs" />
+    <None Include="Platform\WindowsDiskUsageTask.cs" />
+    <None Include="Primitives\UriString.cs" />
+    <None Include="Process\IProcessEnvironment.cs" />
+    <None Include="Process\IProcessManager.cs" />
+    <None Include="Process\ProcessManager.cs" />
+    <None Include="Tasks\ActionTask.cs" />
+    <None Include="Tasks\BaseOutputProcessor.cs" />
+    <None Include="Tasks\ConcurrentExclusiveInterleave.cs" />
+    <None Include="Tasks\Downloader.cs" />
+    <None Include="Tasks\DownloadTask.cs" />
+    <None Include="Tasks\ITaskManager.cs" />
+    <None Include="Tasks\OctorunTask.cs" />
+    <None Include="Tasks\ProcessTask.cs" />
+    <None Include="Tasks\TaskBase.cs" />
+    <None Include="Tasks\TaskCanceledExceptions.cs" />
+    <None Include="Tasks\TaskExtensions.cs" />
+    <None Include="Tasks\TaskManager.cs" />
+    <None Include="Threading\IAwaitable.cs" />
+    <None Include="Threading\IAwaiter.cs" />
+    <None Include="Threading\IMainThreadSynchronizationContext.cs" />
+    <None Include="Threading\ThreadingHelper.cs" />
   </ItemGroup>
 
   <!-- copy source files to packman package folder -->
@@ -67,6 +161,12 @@
     <VersionFiles Include="$(IntermediateOutputPath)\$(RootNamespace).Logging.Version.cs">
       <Project>Logging</Project>
     </VersionFiles>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
+    <PackageReference Include="com.unity.editor.tasks" Version="1.2.17" />
+    <PackageReference Include="com.unity.process-server.client" Version="0.1.26-preview" />
+    <PackageReference Include="com.unity.process-server.server" Version="0.1.26-preview" />
+    <PackageReference Include="com.unity.rpc" Version="1.0.11-preview" />
   </ItemGroup>
 
   <Import Project="$(SolutionDir)\common\packaging.targets" Condition=" '$(TargetFramework)' == 'net471' " />

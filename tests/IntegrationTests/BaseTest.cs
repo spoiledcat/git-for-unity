@@ -12,9 +12,9 @@ namespace IntegrationTests
     [Isolated]
     class BaseTest
     {
-        protected NPath TestLocation => System.Reflection.Assembly.GetExecutingAssembly().Location.ToNPath().Parent;
-        protected NPath TestBasePath { get; set; }
-        protected static NPath SolutionDirectory => TestContext.CurrentContext.TestDirectory.ToNPath();
+        protected SPath TestLocation => System.Reflection.Assembly.GetExecutingAssembly().Location.ToSPath().Parent;
+        protected SPath TestBasePath { get; set; }
+        protected static SPath SolutionDirectory => TestContext.CurrentContext.TestDirectory.ToSPath();
         protected ILogging Logger { get; set; }
         protected TestSubstituteFactory Factory { get; set; }
         protected SynchronizationContext SyncContext { get; set; }
@@ -35,8 +35,8 @@ namespace IntegrationTests
         [SetUp]
         public virtual void OnSetup()
         {
-            TestBasePath = NPath.CreateTempDirectory("integration tests");
-            NPath.FileSystem.SetCurrentDirectory(TestBasePath);
+            TestBasePath = SPath.CreateTempDirectory("integration tests");
+            SPath.FileSystem.SetCurrentDirectory(TestBasePath);
         }
 
         [TearDown]
@@ -58,7 +58,7 @@ namespace IntegrationTests
             if (TestBasePath.Exists())
                 Logger.Warning("Error deleting TestBasePath: {0}", TestBasePath.ToString());
 
-            NPath.FileSystem = null;
+            SPath.FileSystem = null;
         }
 
         protected virtual void StartTest(out Stopwatch watch, out ILogging logger, [CallerMemberName] string testName = "test")
@@ -88,7 +88,7 @@ namespace IntegrationTests
         }
 
 
-        protected IntegrationTestEnvironment CreateEnvironmentInPersistentLocation(NPath repoPath, bool enableEnvironmentTrace = false)
+        protected IntegrationTestEnvironment CreateEnvironmentInPersistentLocation(SPath repoPath, bool enableEnvironmentTrace = false)
         {
             var cacheContainer = new CacheContainer();
             cacheContainer.SetCacheInitializer(CacheType.Branches, () => BranchesCache.Instance);
@@ -100,16 +100,16 @@ namespace IntegrationTests
             cacheContainer.SetCacheInitializer(CacheType.RepositoryInfo, () => RepositoryInfoCache.Instance);
 
             return new IntegrationTestEnvironment(cacheContainer, repoPath, SolutionDirectory,
-                new CreateEnvironmentOptions(NPath.SystemTemp.Combine(ApplicationInfo.ApplicationName, "IntegrationTests")),
+                new CreateEnvironmentOptions(SPath.SystemTemp.Combine(ApplicationInfo.ApplicationName, "IntegrationTests")),
                 enableEnvironmentTrace, false);
         }
 
-        protected IntegrationTestEnvironment CreateCleanEnvironment(ICacheContainer container, NPath repoPath, bool enableEnvironmentTrace = false)
+        protected IntegrationTestEnvironment CreateCleanEnvironment(ICacheContainer container, SPath repoPath, bool enableEnvironmentTrace = false)
         {
             return new IntegrationTestEnvironment(container,
                 repoPath,
                 SolutionDirectory,
-                new CreateEnvironmentOptions(NPath.CreateTempDirectory("gfu")),
+                new CreateEnvironmentOptions(SPath.CreateTempDirectory("gfu")),
                 enableEnvironmentTrace,
                 false);
         }

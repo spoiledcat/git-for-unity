@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
@@ -56,13 +57,16 @@ namespace Unity.VersionControl.Git
             seenBodyEnd = false;
         }
 
-        public override void LineReceived(string line)
+        protected override bool ProcessLine(string line, out GitLogEntry result)
         {
+            base.ProcessLine(line, out result);
+
             if (line == null)
             {
                 ReturnGitLogEntry();
-                return;
+                return false;
             }
+
             sb.AppendLine(line);
 
             if (phase == ProcessingPhase.Files && seenBodyEnd)
@@ -178,13 +182,13 @@ namespace Unity.VersionControl.Git
                     if (string.IsNullOrEmpty(line))
                     {
                         ReturnGitLogEntry();
-                        return;
+                        return false;
                     }
 
                     if (line.IndexOf("---GHUBODYEND---", StringComparison.InvariantCulture) >= 0)
                     {
                         seenBodyEnd = true;
-                        return;
+                        return false;
                     }
 
                     var proc = new LineParser(line);
@@ -197,7 +201,7 @@ namespace Unity.VersionControl.Git
                     {
                         // there's no files on this commit, it's a new one!
                         ReturnGitLogEntry();
-                        return;
+                        return false;
                     }
                     else
                     {
@@ -207,7 +211,7 @@ namespace Unity.VersionControl.Git
                     if (status == GitFileStatus.None)
                     {
                         HandleUnexpected(line);
-                        return;
+                        return false;
                     }
 
                     proc.ReadUntilWhitespace();
@@ -236,6 +240,7 @@ namespace Unity.VersionControl.Git
                     HandleUnexpected(line);
                     break;
             }
+            return false;
         }
 
         private void PopNewlines()

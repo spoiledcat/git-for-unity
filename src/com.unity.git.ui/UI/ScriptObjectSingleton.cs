@@ -6,6 +6,8 @@ using UnityEngine;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     [AttributeUsage(AttributeTargets.Class)]
     sealed class LocationAttribute : Attribute
     {
@@ -27,7 +29,7 @@ namespace Unity.VersionControl.Git
                 else if (location == Location.UserFolder)
                     filePath = EntryPoint.ApplicationManager.Environment.UserCachePath.Combine(relativePath).ToString(SlashMode.Forward);
                 else if (location == Location.LibraryFolder)
-                    filePath = EntryPoint.ApplicationManager.Environment.UnityProjectPath.Combine("Library", "gfu", relativePath);
+                    filePath = EntryPoint.ApplicationManager.Environment.UnityProjectPath.ToSPath().Combine("Library", "gfu", relativePath);
 
                 return filePath;
             }
@@ -96,7 +98,7 @@ namespace Unity.VersionControl.Git
                 return;
             }
 
-            NPath? locationFilePath = GetFilePath();
+            SPath? locationFilePath = GetFilePath();
             if (locationFilePath != null)
             {
                 locationFilePath.Value.Parent.EnsureDirectoryExists();
@@ -104,16 +106,16 @@ namespace Unity.VersionControl.Git
             }
         }
 
-        private static NPath? GetFilePath()
+        private static SPath? GetFilePath()
         {
             var attr = typeof(T).GetCustomAttributes(true)
                                 .Select(t => t as LocationAttribute)
                                 .FirstOrDefault(t => t != null);
             //LogHelper.Instance.Debug("FilePath {0}", attr != null ? attr.filepath : null);
-            
+
             if (attr == null)
                 return null;
-            return attr.FilePath.ToNPath();
+            return attr.FilePath.ToSPath();
         }
     }
 }

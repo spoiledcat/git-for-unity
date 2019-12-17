@@ -1,16 +1,19 @@
 using System;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitRemoteChangeTask : ProcessTask<string>
+    public class GitRemoteChangeTask : NativeProcessTask<string>
     {
         private const string TaskName = "git remote set-url";
         private readonly string arguments;
 
-        public GitRemoteChangeTask(string remote, string url,
-            CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleOutputProcessor())
+        public GitRemoteChangeTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string remote, string url,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(remote, "remote");
             Guard.ArgumentNotNullOrWhiteSpace(url, "url");

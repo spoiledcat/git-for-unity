@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
 using Unity.VersionControl.Git.Helpers;
 using UnityEditor;
 using UnityEngine;
@@ -319,7 +320,7 @@ namespace Unity.VersionControl.Git
                             {
                                 if (success)
                                 {
-                                    UsageTracker.IncrementBranchesViewButtonCreateBranch();
+                                    //UsageTracker.IncrementBranchesViewButtonCreateBranch();
                                     Redraw();
                                 }
                                 else
@@ -489,7 +490,7 @@ namespace Unity.VersionControl.Git
                         {
                             if (success)
                             {
-                                UsageTracker.IncrementBranchesViewButtonCheckoutRemoteBranch();
+                                //UsageTracker.IncrementBranchesViewButtonCheckoutRemoteBranch();
                                 Redraw();
                             }
                             else
@@ -512,7 +513,7 @@ namespace Unity.VersionControl.Git
                     {
                         if (success)
                         {
-                            UsageTracker.IncrementBranchesViewButtonCheckoutLocalBranch();
+                            //UsageTracker.IncrementBranchesViewButtonCheckoutLocalBranch();
                             Redraw();
                             AssetDatabase.Refresh();
                         }
@@ -531,7 +532,7 @@ namespace Unity.VersionControl.Git
             if (EditorUtility.DisplayDialog(DeleteBranchTitle, dialogMessage, DeleteBranchButton, CancelButtonLabel))
             {
                 Repository.DeleteBranch(branch, true)
-                    .Finally(s => { if (s) UsageTracker.IncrementBranchesViewButtonDeleteBranch(); } )
+                    //.Finally(s => { if (s) UsageTracker.IncrementBranchesViewButtonDeleteBranch(); } )
                     .Start();
             }
         }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
@@ -14,14 +15,16 @@ namespace Unity.VersionControl.Git
             Reset();
         }
 
-        public override void LineReceived(string line)
+        protected override bool ProcessLine(string line, out GitRemote result)
         {
+            base.ProcessLine(line, out result);
+
             //origin https://github.com/github/VisualStudio.git (fetch)
 
             if (line == null)
             {
-                ReturnRemote();
-                return;
+                result = ReturnRemote();
+                return true;
             }
 
             var proc = new LineParser(line);
@@ -52,9 +55,10 @@ namespace Unity.VersionControl.Git
                 currentUrl = url;
                 currentModes.Add(mode);
             }
+            return false;
         }
 
-        private void ReturnRemote()
+        private GitRemote ReturnRemote()
         {
             var modes = currentModes.Select(s => s.ToUpperInvariant()).ToArray();
 
@@ -99,8 +103,9 @@ namespace Unity.VersionControl.Git
                 currentUrl = currentUrl.Substring(user.Length + 1);
             }
 
-            RaiseOnEntry(new GitRemote(currentName, host, currentUrl, remoteFunction, user, null, null));
+            var remote = new GitRemote(currentName, host, currentUrl, remoteFunction, user, null, null);
             Reset();
+            return remote;
         }
 
         private void Reset()

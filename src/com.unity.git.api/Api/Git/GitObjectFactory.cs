@@ -3,22 +3,24 @@ using Unity.VersionControl.Git;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public class GitObjectFactory : IGitObjectFactory
     {
-        private readonly IEnvironment environment;
+        private readonly IGitEnvironment environment;
 
-        public GitObjectFactory(IEnvironment environment)
+        public GitObjectFactory(IGitEnvironment environment)
         {
             this.environment = environment;
         }
 
         public GitStatusEntry CreateGitStatusEntry(string path, GitFileStatus indexStatus, GitFileStatus workTreeStatus = GitFileStatus.None, string originalPath = null)
         {
-            var absolutePath = new NPath(path).MakeAbsolute();
+            var absolutePath = new SPath(path).MakeAbsolute();
             var relativePath = absolutePath.RelativeTo(environment.RepositoryPath);
-            var projectPath = absolutePath.RelativeTo(environment.UnityProjectPath);
+            var projectPath = absolutePath.RelativeTo(environment.UnityProjectPath.ToSPath());
 
-            return new GitStatusEntry(relativePath, absolutePath, projectPath, indexStatus, workTreeStatus, originalPath?.ToNPath());
+            return new GitStatusEntry(relativePath, absolutePath, projectPath, indexStatus, workTreeStatus, originalPath?.ToSPath());
         }
     }
 }

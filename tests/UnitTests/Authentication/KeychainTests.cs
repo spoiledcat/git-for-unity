@@ -24,12 +24,12 @@ namespace UnitTests
 
             var fileSystem = SubstituteFactory.CreateFileSystem();
 
-            NPath.FileSystem = fileSystem;
+            SPath.FileSystem = fileSystem;
 
             var credentialManager = Substitute.For<ICredentialManager>();
 
             var environment = SubstituteFactory.CreateEnvironment();
-            environment.UserCachePath.Returns(info => connectionsCachePath.ToNPath());
+            environment.UserCachePath.Returns(info => connectionsCachePath.ToSPath());
             environment.FileSystem.Returns(fileSystem);
 
             var keychain = new Keychain(environment, credentialManager);
@@ -64,10 +64,10 @@ namespace UnitTests
                 }
             });
 
-            NPath.FileSystem = fileSystem;
+            SPath.FileSystem = fileSystem;
 
             var environment = SubstituteFactory.CreateEnvironment();
-            environment.UserCachePath.Returns(info => connectionsCachePath.ToNPath());
+            environment.UserCachePath.Returns(info => connectionsCachePath.ToSPath());
             environment.FileSystem.Returns(fileSystem);
 
             var credentialManager = Substitute.For<ICredentialManager>();
@@ -105,10 +105,10 @@ namespace UnitTests
                 }
             });
 
-            NPath.FileSystem = fileSystem;
+            SPath.FileSystem = fileSystem;
 
             var environment = SubstituteFactory.CreateEnvironment();
-            environment.UserCachePath.Returns(info => connectionsCachePath.ToNPath());
+            environment.UserCachePath.Returns(info => connectionsCachePath.ToSPath());
             environment.FileSystem.Returns(fileSystem);
 
             var credentialManager = Substitute.For<ICredentialManager>();
@@ -147,10 +147,10 @@ namespace UnitTests
                 }
             });
 
-            NPath.FileSystem = fileSystem;
+            SPath.FileSystem = fileSystem;
 
             var environment = SubstituteFactory.CreateEnvironment();
-            environment.UserCachePath.Returns(info => connectionsCachePath.ToNPath());
+            environment.UserCachePath.Returns(info => connectionsCachePath.ToSPath());
             environment.FileSystem.Returns(fileSystem);
 
             const string username = "SomeUser";
@@ -203,10 +203,10 @@ namespace UnitTests
                 }
             });
 
-            NPath.FileSystem = fileSystem;
+            SPath.FileSystem = fileSystem;
 
             var environment = SubstituteFactory.CreateEnvironment();
-            environment.UserCachePath.Returns(info => connectionsCachePath.ToNPath());
+            environment.UserCachePath.Returns(info => connectionsCachePath.ToSPath());
             environment.FileSystem.Returns(fileSystem);
 
             var credentialManager = Substitute.For<ICredentialManager>();
@@ -252,10 +252,10 @@ namespace UnitTests
 
             var fileSystem = SubstituteFactory.CreateFileSystem();
 
-            NPath.FileSystem = fileSystem;
+            SPath.FileSystem = fileSystem;
 
             var environment = SubstituteFactory.CreateEnvironment();
-            environment.UserCachePath.Returns(info => connectionsCachePath.ToNPath());
+            environment.UserCachePath.Returns(info => connectionsCachePath.ToSPath());
             environment.FileSystem.Returns(fileSystem);
 
             var credentialManager = Substitute.For<ICredentialManager>();
@@ -323,10 +323,10 @@ namespace UnitTests
 
             var fileSystem = SubstituteFactory.CreateFileSystem();
 
-            NPath.FileSystem = fileSystem;
+            SPath.FileSystem = fileSystem;
 
             var environment = SubstituteFactory.CreateEnvironment();
-            environment.UserCachePath.Returns(info => connectionsCachePath.ToNPath());
+            environment.UserCachePath.Returns(info => connectionsCachePath.ToSPath());
             environment.FileSystem.Returns(fileSystem);
 
             var credentialManager = Substitute.For<ICredentialManager>();

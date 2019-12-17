@@ -8,21 +8,23 @@ using System.Threading;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     class DownloadData
     {
         public UriString Url { get; }
-        public NPath File { get; }
-        public DownloadData(UriString url, NPath file)
+        public SPath File { get; }
+        public DownloadData(UriString url, SPath file)
         {
             this.Url = url;
             this.File = file;
         }
     }
 
-    class Downloader : TaskQueue<NPath, DownloadData>
+    class Downloader : TaskQueue<SPath, DownloadData>
     {
         public event Action<UriString> OnDownloadStart;
-        public event Action<UriString, NPath> OnDownloadComplete;
+        public event Action<UriString, SPath> OnDownloadComplete;
         public event Action<UriString, Exception> OnDownloadFailed;
 
         private readonly IFileSystem fileSystem;
@@ -34,12 +36,12 @@ namespace Unity.VersionControl.Git
                 return new DownloadData(dt.Url, destinationFile);
             })
         {
-            this.fileSystem = fileSystem ?? NPath.FileSystem;
+            this.fileSystem = fileSystem ?? SPath.FileSystem;
             Name = "Downloader";
             Message = "Downloading...";
         }
 
-        public void QueueDownload(UriString url, NPath targetDirectory, string filename = null, int retryCount = 0)
+        public void QueueDownload(UriString url, SPath targetDirectory, string filename = null, int retryCount = 0)
         {
             var download = new DownloadTask(TaskToken, fileSystem, url, targetDirectory, filename, retryCount);
             download.OnStart += t => OnDownloadStart?.Invoke(((DownloadTask)t).Url);

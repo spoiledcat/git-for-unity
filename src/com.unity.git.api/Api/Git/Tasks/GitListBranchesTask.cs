@@ -1,14 +1,17 @@
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitListLocalBranchesTask : ProcessTaskWithListOutput<GitBranch>
+    public class GitListLocalBranchesTask : NativeProcessListTask<GitBranch>
     {
         private const string TaskName = "git list local branches";
         private const string Arguments = "branch -vv";
 
-        public GitListLocalBranchesTask(CancellationToken token, BaseOutputListProcessor<GitBranch> processor = null)
-            : base(token, processor ?? new BranchListOutputProcessor())
+        public GitListLocalBranchesTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new BranchListOutputProcessor(), token: token)
         {
             Name = TaskName;
         }
@@ -23,8 +26,10 @@ namespace Unity.VersionControl.Git.Tasks
         private const string TaskName = "git list remote branches";
         private const string Arguments = "branch -vvr";
 
-        public GitListRemoteBranchesTask(CancellationToken token)
-            : base(token, new BranchListOutputProcessor())
+        public GitListRemoteBranchesTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new BranchListOutputProcessor(), token: token)
         {
             Name = TaskName;
         }

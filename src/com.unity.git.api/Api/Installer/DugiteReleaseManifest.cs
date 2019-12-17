@@ -3,10 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
+using Unity.Editor.Tasks.Helpers;
 
 namespace Unity.VersionControl.Git
 {
     using Json;
+    using IO;
 
     public class DugiteReleaseManifest
     {
@@ -55,14 +58,14 @@ namespace Unity.VersionControl.Git
                 assets.FirstOrDefault(x => x.Name.EndsWith(name + ".sha256")));
         }
 
-        public static DugiteReleaseManifest Load(NPath path, IEnvironment environment)
+        public static DugiteReleaseManifest Load(ITaskManager taskManager, SPath path, IGitEnvironment environment)
         {
             var manifest = path.ReadAllText().FromJson<DugiteReleaseManifest>(true, false);
             var (zipAsset, shaAsset) = manifest.GetAsset(environment);
             var shaAssetPath = environment.UserCachePath.Combine("downloads", shaAsset.Name);
                 if (!shaAssetPath.FileExists())
             {
-                var downloader = new Downloader();
+                var downloader = new Downloader(taskManager);
                 downloader.QueueDownload(shaAsset.Url, shaAssetPath.Parent, shaAssetPath.FileName);
                 downloader.RunSynchronously();
             }
@@ -71,7 +74,7 @@ namespace Unity.VersionControl.Git
             return manifest;
         }
 
-        public static DugiteReleaseManifest Load(NPath localCacheFile, UriString packageFeed, IEnvironment environment,
+        public static DugiteReleaseManifest Load(ITaskManager taskManager, SPath localCacheFile, UriString packageFeed, IGitEnvironment environment,
             bool alwaysDownload = false)
         {
             DugiteReleaseManifest package = null;
@@ -83,13 +86,14 @@ namespace Unity.VersionControl.Git
             if (!localCacheFile.FileExists() ||
                 (alwaysDownload || now.Date > environment.UserSettings.Get<DateTimeOffset>(key).Date))
             {
-                localCacheFile = new DownloadTask(TaskManager.Instance.Token, environment.FileSystem, packageFeed,
-                    localCacheFile.Parent, filename).Catch(ex => {
+                var result = new DownloadTask(taskManager, packageFeed,
+                    localCacheFile.Parent, filename)
+                .Catch(ex => {
                     LogHelper.Warning(@"Error downloading package feed:{0} ""{1}"" Message:""{2}""", packageFeed,
                         ex.GetType().ToString(), ex.GetExceptionMessageShort());
                     return true;
                 }).RunSynchronously();
-
+                localCacheFile = result.ToSPath();
                 if (localCacheFile.IsInitialized && !alwaysDownload)
                     environment.UserSettings.Set<DateTimeOffset>(key, now);
             }
@@ -104,7 +108,7 @@ namespace Unity.VersionControl.Git
             {
                 try
                 {
-                    package = Load(localCacheFile, environment);
+                    package = Load(taskManager, localCacheFile, environment);
                 }
                 catch (Exception ex)
                 {

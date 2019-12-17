@@ -6,6 +6,8 @@ using System.Threading;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public static class WebRequestExtensions
     {
         public static WebResponse GetResponseWithoutException(this WebRequest request)
@@ -26,14 +28,14 @@ namespace Unity.VersionControl.Git
         }
     }
 
-    public class DownloadTask : TaskBase<NPath>
+    public class DownloadTask : TaskBase<SPath>
     {
         protected readonly IFileSystem fileSystem;
 
         public DownloadTask(CancellationToken token,
             IFileSystem fileSystem,
             UriString url,
-            NPath targetDirectory,
+            SPath targetDirectory,
             string filename = null,
             int retryCount = 0)
             : base(token)
@@ -46,7 +48,7 @@ namespace Unity.VersionControl.Git
             this.Name = $"Downloading {Url}";
         }
 
-        protected override NPath RunWithReturn(bool success)
+        protected override SPath RunWithReturn(bool success)
         {
             var result = base.RunWithReturn(success);
             try
@@ -68,7 +70,7 @@ namespace Unity.VersionControl.Git
         /// </summary>
         /// <param name="success"></param>
         /// <returns></returns>
-        protected virtual NPath RunDownload(bool success)
+        protected virtual SPath RunDownload(bool success)
         {
             Exception exception = null;
             var attempts = 0;
@@ -124,11 +126,11 @@ namespace Unity.VersionControl.Git
 
         public UriString Url { get; }
 
-        public NPath TargetDirectory { get; }
+        public SPath TargetDirectory { get; }
 
         public string Filename { get; }
 
-        public NPath Destination { get { return TargetDirectory.Combine(Filename); } }
+        public SPath Destination { get { return TargetDirectory.Combine(Filename); } }
 
         protected int RetryCount { get; }
     }

@@ -17,11 +17,11 @@ class DugiteManifestWindow : BaseWindow
 		var unityAssetsPath = Application.dataPath;
 		var unityApplication = EditorApplication.applicationPath;
 		var unityApplicationContents = EditorApplication.applicationContentsPath;
-		var extensionInstallPath = Application.dataPath.ToNPath().Parent;
+		var extensionInstallPath = Application.dataPath.ToSPath().Parent;
 		var unityVersion = Application.unityVersion;
 		var env = new DefaultEnvironment();
-		env.Initialize(unityVersion, extensionInstallPath, unityApplication.ToNPath(),
-			unityApplicationContents.ToNPath(), unityAssetsPath.ToNPath());
+		env.Initialize(unityVersion, extensionInstallPath, unityApplication.ToSPath(),
+			unityApplicationContents.ToSPath(), unityAssetsPath.ToSPath());
 		env.InitializeRepository();
 		TaskManager.Instance.Initialize(new UnityUIThreadSynchronizationContext());
 

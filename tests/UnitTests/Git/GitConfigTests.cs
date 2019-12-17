@@ -25,35 +25,35 @@ namespace UnitTests
                     FileContents = new Dictionary<string, IList<string>> { { configFilePath, input } }
                 });
 
-            NPath.FileSystem = fileSystem;
+            SPath.FileSystem = fileSystem;
 
             return new GitConfig(configFilePath);
         }
 
-        private const string NormalConfig = 
-            "[core]\r\n" 
-            + "\tintValue = 1234\r\n" 
-            + "\tfloatValue = 1234.5\r\n" 
-            + "\tstringValue = refs/heads/string-value\r\n" 
-            + "[branch \"working-branch-1\"]\r\n" 
-            + "\tintValue = 5678\r\n" 
-            + "\tfloatValue = 5678.9\r\n" 
-            + "\tstringValue = refs/heads/working-branch-1\r\n" 
-            + "[branch \"working-branch-2\"]\r\n" 
-            + "\tintValue = 3456\r\n" 
-            + "\tfloatValue = 3456.7\r\n" 
+        private const string NormalConfig =
+            "[core]\r\n"
+            + "\tintValue = 1234\r\n"
+            + "\tfloatValue = 1234.5\r\n"
+            + "\tstringValue = refs/heads/string-value\r\n"
+            + "[branch \"working-branch-1\"]\r\n"
+            + "\tintValue = 5678\r\n"
+            + "\tfloatValue = 5678.9\r\n"
+            + "\tstringValue = refs/heads/working-branch-1\r\n"
+            + "[branch \"working-branch-2\"]\r\n"
+            + "\tintValue = 3456\r\n"
+            + "\tfloatValue = 3456.7\r\n"
             + "\tstringValue = refs/heads/working-branch-2";
 
-        private const string MalformedConfig = 
-            "[branch \"troublesome-branch\"]\r\n" 
-            + "\tsomeValue = refs/heads/test-parse\r\n" 
-            + "[branch \"unsuspecting-branch\"]\r\n" 
-            + "\tintValue = 1234\r\n" 
-            + "\tfloatValue = 1234.5\r\n" 
-            + "\tstringValue = refs/heads/unsuspecting-branch-value\r\n" 
-            + "[branch \"troublesome-branch\"]\r\n" 
-            + "\tintValue = 5678\r\n" 
-            + "\tfloatValue = 5678.9\r\n" 
+        private const string MalformedConfig =
+            "[branch \"troublesome-branch\"]\r\n"
+            + "\tsomeValue = refs/heads/test-parse\r\n"
+            + "[branch \"unsuspecting-branch\"]\r\n"
+            + "\tintValue = 1234\r\n"
+            + "\tfloatValue = 1234.5\r\n"
+            + "\tstringValue = refs/heads/unsuspecting-branch-value\r\n"
+            + "[branch \"troublesome-branch\"]\r\n"
+            + "\tintValue = 5678\r\n"
+            + "\tfloatValue = 5678.9\r\n"
             + "\tstringValue = refs/heads/troublesome-branch-value";
 
         [TestCase(NormalConfig, "core", 1234, TestName = "Can Get Root Section Int Value")]

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFrameworks>net35;net471</TargetFrameworks>
+    <TargetFramework>net471</TargetFramework>
     <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\..\</SolutionDir>
     <ProjectGuid>{F94F8AE1-C171-4A83-89E8-6557CA91A188}</ProjectGuid>
     <AssemblyName>UnityShim</AssemblyName>

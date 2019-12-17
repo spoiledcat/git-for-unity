@@ -1,16 +1,19 @@
 using System;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitRemoteAddTask : ProcessTask<string>
+    public class GitRemoteAddTask : NativeProcessTask<string>
     {
         private const string TaskName = "git remote add";
         private readonly string arguments;
 
-        public GitRemoteAddTask(string remote, string url,
-            CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleOutputProcessor())
+        public GitRemoteAddTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string remote, string url,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(remote, "remote");
             Guard.ArgumentNotNullOrWhiteSpace(url, "url");

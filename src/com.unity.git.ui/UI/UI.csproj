@@ -12,7 +12,7 @@
     <ProjectReference Include="..\..\com.unity.git.api\Api\Api.csproj" />
     <ProjectReference Include="..\..\com.unity.git.api\Logging\Logging.csproj" />
     <ProjectReference Include="..\Shim\UnityShim.csproj" />
-    <ProjectReference Include="..\..\Localization\Localization.csproj" Condition="'$(MSBuildRuntimeType)' != 'Core'"/>
+    <ProjectReference Include="..\..\Localization\Localization.csproj" Condition="'$(MSBuildRuntimeType)' != 'Core'" />
     <Reference Include="Unity.VersionControl.Git.Localization.dll" Condition="'$(MSBuildRuntimeType)' == 'Core'">
       <HintPath>..\..\com.unity.git.api\Localization\Unity.VersionControl.Git.Localization.dll</HintPath>
       <Private>True</Private>
@@ -42,6 +42,20 @@
     <PackageName>com.unity.git.ui</PackageName>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Services\AuthenticationService.cs" />
+    <Compile Remove="UI\AuthenticationView.cs" />
+    <Compile Remove="UI\GitHubAuthenticationView.cs" />
+    <Compile Remove="UI\GitHubEnterpriseAuthenticationView.cs" />
+    <Compile Remove="UI\PublishView.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Services\AuthenticationService.cs" />
+    <None Include="UI\AuthenticationView.cs" />
+    <None Include="UI\GitHubAuthenticationView.cs" />
+    <None Include="UI\GitHubEnterpriseAuthenticationView.cs" />
+    <None Include="UI\PublishView.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <VersionFiles Include="$(IntermediateOutputPath)\$(AssemblyName).Version.cs">
       <Project>UI</Project>
     </VersionFiles>
@@ -52,11 +66,7 @@
   <Import Project="$(SolutionDir)\common\nativelibraries.props" />
 
   <!-- copy native libraries to output path  -->
-  <Target Name="CopyNativeLibrariesToOutput"
-    AfterTargets="AfterBuild"
-    Inputs="@(NativeLibraries"
-    Outputs="@(NativeLibraries->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')"
-  >
+  <Target Name="CopyNativeLibrariesToOutput" AfterTargets="AfterBuild" Inputs="@(NativeLibraries" Outputs="@(NativeLibraries->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')">
 
     <Copy SourceFiles="@(NativeLibraries)" DestinationFiles="@(NativeLibraries->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
 

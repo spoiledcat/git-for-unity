@@ -6,6 +6,8 @@ using System.Text;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     static class FileSystemExtensions
     {
         public static string CalculateFileMD5(this IFileSystem fileSystem, string file)

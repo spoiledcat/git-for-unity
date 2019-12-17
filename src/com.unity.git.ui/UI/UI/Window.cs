@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Unity.Editor.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -54,7 +55,7 @@ namespace Unity.VersionControl.Git
         [SerializeField] private string repositoryProgressMessage;
         [SerializeField] private float appManagerProgressValue;
         [SerializeField] private string appManagerProgressMessage;
-        [SerializeField] private Connection[] connections;
+        //[SerializeField] private Connection[] connections;
         [SerializeField] private string primaryConnectionUsername;
 
         public static Window GetWindow()
@@ -186,36 +187,36 @@ namespace Unity.VersionControl.Git
                                      .ToRepositoryUri()
                                      .GetComponents(UriComponents.Host, UriFormat.SafeUnescaped);
 
-                connections = Platform.Keychain.Connections.OrderByDescending(x => x.Host == host).ToArray();
+                //connections = Platform.Keychain.Connections.OrderByDescending(x => x.Host == host).ToArray();
             }
             else
             {
-                connections = Platform.Keychain.Connections.OrderByDescending(HostAddress.IsGitHubDotCom).ToArray();
+                //connections = Platform.Keychain.Connections.OrderByDescending(HostAddress.IsGitHubDotCom).ToArray();
             }
 
-            var connectionCount = connections.Length;
-            if (connectionCount > 1)
-            {
-                var connection = connections.First();
-                var isGitHubDotCom = HostAddress.IsGitHubDotCom(connection);
+            //var connectionCount = connections.Length;
+            //if (connectionCount > 1)
+            //{
+            //    var connection = connections.First();
+            //    var isGitHubDotCom = HostAddress.IsGitHubDotCom(connection);
 
-                if (isGitHubDotCom)
-                {
-                    primaryConnectionUsername = "GitHub: " + connection.Username;
-                }
-                else
-                {
-                    primaryConnectionUsername = connection.Host + ": " + connection.Username;
-                }
-            }
-            else if(connectionCount == 1)
-            {
-                primaryConnectionUsername = connections.First().Username;
-            }
-            else
-            {
-                primaryConnectionUsername = null;
-            }
+            //    if (isGitHubDotCom)
+            //    {
+            //        primaryConnectionUsername = "GitHub: " + connection.Username;
+            //    }
+            //    else
+            //    {
+            //        primaryConnectionUsername = connection.Host + ": " + connection.Username;
+            //    }
+            //}
+            //else if(connectionCount == 1)
+            //{
+            //    primaryConnectionUsername = connections.First().Username;
+            //}
+            //else
+            //{
+            //    primaryConnectionUsername = null;
+            //}
 
 
             if (repositoryProgressHasUpdate)
@@ -371,7 +372,7 @@ namespace Unity.VersionControl.Git
             repository.TrackingStatusChanged += RepositoryOnTrackingStatusChanged;
             repository.StatusEntriesChanged += RepositoryOnStatusEntriesChanged;
             repository.OnProgress += UpdateProgress;
-            Platform.Keychain.ConnectionsChanged += ConnectionsChanged;
+            //Platform.Keychain.ConnectionsChanged += ConnectionsChanged;
         }
 
         private void DetachHandlers(IRepository repository)
@@ -383,7 +384,7 @@ namespace Unity.VersionControl.Git
             repository.StatusEntriesChanged -= RepositoryOnStatusEntriesChanged;
             repository.OnProgress -= UpdateProgress;
             Manager.OnProgress -= ApplicationManagerOnProgress;
-            Platform.Keychain.ConnectionsChanged -= ConnectionsChanged;
+            //Platform.Keychain.ConnectionsChanged -= ConnectionsChanged;
         }
 
         private void RepositoryOnCurrentBranchAndRemoteChanged(CacheUpdateEvent cacheUpdateEvent)
@@ -429,7 +430,7 @@ namespace Unity.VersionControl.Git
                 repositoryProgressHasUpdate = true;
             }
 
-            if (!ThreadingHelper.InUIThread)
+            if (!TaskManager.InUIThread)
                 TaskManager.RunInUI(Redraw);
             else
                 Redraw();
@@ -443,7 +444,7 @@ namespace Unity.VersionControl.Git
 
         private void ConnectionsChanged()
         {
-            if (!ThreadingHelper.InUIThread)
+            if (!TaskManager.InUIThread)
                 TaskManager.RunInUI(Redraw);
             else
                 Redraw();
@@ -576,18 +577,18 @@ namespace Unity.VersionControl.Git
                 {
                     GUILayout.FlexibleSpace();
 
-                    if (!connections.Any())
-                    {
-                        if (GUILayout.Button("Sign in", EditorStyles.toolbarButton))
-                            SignIn(null);
-                    }
-                    else
-                    {
-                        if (GUILayout.Button(primaryConnectionUsername, EditorStyles.toolbarDropDown))
-                        {
-                            DoAccountDropdown();
-                        }
-                    }
+                    //if (!connections.Any())
+                    //{
+                    //    if (GUILayout.Button("Sign in", EditorStyles.toolbarButton))
+                    //        SignIn(null);
+                    //}
+                    //else
+                    //{
+                    //    if (GUILayout.Button(primaryConnectionUsername, EditorStyles.toolbarDropDown))
+                    //    {
+                    //        DoAccountDropdown();
+                    //    }
+                    //}
                 }
             }
             EditorGUILayout.EndHorizontal();
@@ -658,19 +659,19 @@ namespace Unity.VersionControl.Git
 
                 GUILayout.FlexibleSpace();
 
-                if (!connections.Any())
-                {
-                    if (GUILayout.Button("Sign in", EditorStyles.toolbarButton))
-                        SignIn(null);
-                }
-                else
-                {
-                    var connection = connections.First();
-                    if (GUILayout.Button(connection.Username, EditorStyles.toolbarDropDown))
-                    {
-                        DoAccountDropdown();
-                    }
-                }
+                //if (!connections.Any())
+                //{
+                //    if (GUILayout.Button("Sign in", EditorStyles.toolbarButton))
+                //        SignIn(null);
+                //}
+                //else
+                //{
+                //    var connection = connections.First();
+                //    if (GUILayout.Button(connection.Username, EditorStyles.toolbarDropDown))
+                //    {
+                //        DoAccountDropdown();
+                //    }
+                //}
             }
             EditorGUILayout.EndHorizontal();
         }
@@ -741,7 +742,7 @@ namespace Unity.VersionControl.Git
                         if (success)
                         {
                             SetProgressMessage(Localization.MessagePulled, 100);
-                            Manager.UsageTracker.IncrementHistoryViewToolbarPull();
+                            //Manager.UsageTracker.IncrementHistoryViewToolbarPull();
 
                             EditorUtility.DisplayDialog(Localization.PullActionTitle,
                                 String.Format(Localization.PullSuccessDescription, currentRemoteName),
@@ -771,7 +772,7 @@ namespace Unity.VersionControl.Git
                     if (success)
                     {
                         SetProgressMessage(Localization.MessagePushed, 100);
-                        Manager.UsageTracker.IncrementHistoryViewToolbarPush();
+                        //Manager.UsageTracker.IncrementHistoryViewToolbarPush();
 
                         EditorUtility.DisplayDialog(Localization.PushActionTitle,
                             String.Format(Localization.PushSuccessDescription, currentRemoteName),
@@ -798,7 +799,7 @@ namespace Unity.VersionControl.Git
                     if (success)
                     {
                         SetProgressMessage(Localization.MessageFetched, 100);
-                        Manager.UsageTracker.IncrementHistoryViewToolbarFetch();
+                        //Manager.UsageTracker.IncrementHistoryViewToolbarFetch();
                     }
                     else
                     {
@@ -836,59 +837,59 @@ namespace Unity.VersionControl.Git
 
         private void DoAccountDropdown()
         {
-            GenericMenu accountMenu = new GenericMenu();
+            //GenericMenu accountMenu = new GenericMenu();
 
-            if (connections.Length == 1)
-            {
-                var connection = connections.First();
-                accountMenu.AddItem(new GUIContent("Go to Profile"), false, GoToProfile, connection);
-                accountMenu.AddItem(new GUIContent("Sign out"), false, SignOut, connection);
-                accountMenu.AddSeparator("");
-                accountMenu.AddItem(new GUIContent("Sign In"), false, SignIn, "sign in");
-            }
-            else
-            {
-                for (var index = 0; index < connections.Length; index++)
-                {
-                    var connection = connections[index];
-                    var isGitHubDotCom = HostAddress.IsGitHubDotCom(connection);
+            //if (connections.Length == 1)
+            //{
+            //    var connection = connections.First();
+            //    accountMenu.AddItem(new GUIContent("Go to Profile"), false, GoToProfile, connection);
+            //    accountMenu.AddItem(new GUIContent("Sign out"), false, SignOut, connection);
+            //    accountMenu.AddSeparator("");
+            //    accountMenu.AddItem(new GUIContent("Sign In"), false, SignIn, "sign in");
+            //}
+            //else
+            //{
+            //    for (var index = 0; index < connections.Length; index++)
+            //    {
+            //        var connection = connections[index];
+            //        var isGitHubDotCom = HostAddress.IsGitHubDotCom(connection);
 
-                    string rootPath;
-                    if (isGitHubDotCom)
-                    {
-                        rootPath = "GitHub/";
-                    }
-                    else
-                    {
-                        var uriString = connection.Host.ToUriString();
-                        rootPath =  uriString.Host + "/";
-                    }
+            //        string rootPath;
+            //        if (isGitHubDotCom)
+            //        {
+            //            rootPath = "GitHub/";
+            //        }
+            //        else
+            //        {
+            //            var uriString = connection.Host.ToUriString();
+            //            rootPath =  uriString.Host + "/";
+            //        }
 
-                    accountMenu.AddItem(new GUIContent(rootPath + "Go to Profile"), false, GoToProfile, connection);
-                    accountMenu.AddItem(new GUIContent(rootPath + "Sign out"), false, SignOut, connection);
-                }
-            }
+            //        accountMenu.AddItem(new GUIContent(rootPath + "Go to Profile"), false, GoToProfile, connection);
+            //        accountMenu.AddItem(new GUIContent(rootPath + "Sign out"), false, SignOut, connection);
+            //    }
+            //}
 
-            accountMenu.ShowAsContext();
+            //accountMenu.ShowAsContext();
         }
 
         private void SignIn(object obj)
         {
-            PopupWindow.OpenWindow(PopupWindow.PopupViewType.AuthenticationView);
+            //PopupWindow.OpenWindow(PopupWindow.PopupViewType.AuthenticationView);
         }
 
         private void GoToProfile(object obj)
         {
-            var connection = (Connection) obj;
-            var uriString = new UriString(connection.Host).Combine(connection.Username);
-            Application.OpenURL(uriString);
+            //var connection = (Connection) obj;
+            //var uriString = new UriString(connection.Host).Combine(connection.Username);
+            //Application.OpenURL(uriString);
         }
 
         private void SignOut(object obj)
         {
-            var connection = (Connection)obj;
-            var loginManager = new LoginManager(Platform.Keychain, Manager.ProcessManager, Manager.TaskManager, Environment);
-            loginManager.Logout(connection.Host).FinallyInUI((s, e) => Redraw());
+            //var connection = (Connection)obj;
+            //var loginManager = new LoginManager(Platform.Keychain, Manager.ProcessManager, Manager.TaskManager, Environment);
+            //loginManager.Logout(connection.Host).FinallyInUI((s, e) => Redraw());
         }
 
         public new void ShowNotification(GUIContent content)

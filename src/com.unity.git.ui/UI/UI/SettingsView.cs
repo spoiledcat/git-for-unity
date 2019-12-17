@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Unity.Editor.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -148,11 +149,11 @@ namespace Unity.VersionControl.Git
 
         private void MaybeUpdateData()
         {
-            if (metricsHasChanged)
-            {
-                metricsEnabled = Manager.UsageTracker != null ? Manager.UsageTracker.Enabled : false;
-                metricsHasChanged = false;
-            }
+            //if (metricsHasChanged)
+            //{
+            //    metricsEnabled = Manager.UsageTracker != null ? Manager.UsageTracker.Enabled : false;
+            //    metricsHasChanged = false;
+            //}
 
             if (Repository == null)
                 return;
@@ -219,8 +220,8 @@ namespace Unity.VersionControl.Git
             }
             if (EditorGUI.EndChangeCheck())
             {
-                if (Manager.UsageTracker != null)
-                    Manager.UsageTracker.Enabled = metricsEnabled;
+                //if (Manager.UsageTracker != null)
+                //    Manager.UsageTracker.Enabled = metricsEnabled;
             }
             EditorGUI.EndDisabledGroup();
         }

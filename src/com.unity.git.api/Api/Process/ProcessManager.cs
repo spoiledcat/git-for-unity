@@ -4,9 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public class ProcessManager : IProcessManager
     {
         private static readonly ILogging logger = LogHelper.GetLogger<ProcessManager>();
@@ -23,13 +26,13 @@ namespace Unity.VersionControl.Git
             this.cancellationToken = cancellationToken;
         }
 
-        public T Configure<T>(T processTask, NPath? executable = null, string arguments = null,
-            NPath? workingDirectory = null,
+        public T Configure<T>(T processTask, SPath? executable = null, string arguments = null,
+            SPath? workingDirectory = null,
             bool withInput = false,
             bool dontSetupGit = false)
              where T : IProcess
         {
-            executable = executable ?? processTask.ProcessName?.ToNPath() ?? environment.GitExecutablePath;
+            executable = executable ?? processTask.ProcessName?.ToSPath() ?? environment.GitExecutablePath;
 
             //If this null check fails, be sure you called Configure() on your task
             Guard.ArgumentNotNull(executable, nameof(executable));
@@ -50,7 +53,7 @@ namespace Unity.VersionControl.Git
             string filename = executable.Value;
             if (executable.Value.IsRelative && filename.StartsWith("git"))
             {
-                var file = FindExecutableInPath(executable.Value.FileName, false, startInfo.EnvironmentVariables["PATH"].ToNPathList(environment).ToArray());
+                var file = FindExecutableInPath(executable.Value.FileName, false, startInfo.EnvironmentVariables["PATH"].ToSPathList(environment).ToArray());
                 filename = file.IsInitialized ? file : executable.Value.FileName;
             }
             startInfo.FileName = filename;
@@ -64,7 +67,7 @@ namespace Unity.VersionControl.Git
             return processTask;
         }
 
-        public void RunCommandLineWindow(NPath workingDirectory)
+        public void RunCommandLineWindow(SPath workingDirectory)
         {
             var startInfo = new ProcessStartInfo
             {
@@ -85,7 +88,7 @@ namespace Unity.VersionControl.Git
                 // we need to create a temp bash script to set up the environment properly, because
                 // osx terminal app doesn't inherit the PATH env var and there's no way to pass it in
 
-                var envVarFile = NPath.GetTempFilename();
+                var envVarFile = SPath.GetTempFilename();
                 startInfo.FileName = "open";
                 startInfo.Arguments = $"-a Terminal {envVarFile}";
                 gitEnvironment.Configure(startInfo, workingDirectory);
@@ -124,7 +127,7 @@ namespace Unity.VersionControl.Git
                 p.Stop();
         }
 
-        public static NPath FindExecutableInPath(string executable, bool recurse = false, params NPath[] searchPaths)
+        public static SPath FindExecutableInPath(string executable, bool recurse = false, params SPath[] searchPaths)
         {
             Guard.ArgumentNotNullOrWhiteSpace(executable, "executable");
 

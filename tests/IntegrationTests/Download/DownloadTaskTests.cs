@@ -97,7 +97,7 @@ namespace IntegrationTests.Download
             ILogging logger;
             StartTest(out watch, out logger);
 
-            var fileSystem = NPath.FileSystem;
+            var fileSystem = SPath.FileSystem;
             var package = Package.Load(Environment, new UriString($"http://localhost:{server.Port}/unity/git/windows/git-lfs.json"));
 
             var downloader = new Downloader(fileSystem);
@@ -137,7 +137,7 @@ namespace IntegrationTests.Download
             ILogging logger;
             StartTest(out watch, out logger);
 
-            var fileSystem = NPath.FileSystem;
+            var fileSystem = SPath.FileSystem;
             var package = Package.Load(Environment, new UriString($"http://localhost:{server.Port}/unity/git/windows/git-lfs.json"));
 
             var downloader = new Downloader(fileSystem);
@@ -211,7 +211,7 @@ namespace IntegrationTests.Download
 
             InitializeEnvironment(TestBasePath, false, false);
 
-            var fileSystem = NPath.FileSystem;
+            var fileSystem = SPath.FileSystem;
 
             var baseUrl = new UriString($"http://localhost:{server.Port}/unity/git/windows");
             var package = Package.Load(Environment, baseUrl.ToString() + "/git-lfs.json");
@@ -231,7 +231,7 @@ namespace IntegrationTests.Download
 
             var cutDownloadPathBytes = downloadPathBytes.Take(downloadPathBytes.Length - 1000).ToArray();
             downloadPath.Delete();
-            new NPath(downloadPath + ".partial").WriteAllBytes(cutDownloadPathBytes);
+            new SPath(downloadPath + ".partial").WriteAllBytes(cutDownloadPathBytes);
 
             downloadTask = new DownloadTask(TaskManager.Token, fileSystem, package.Uri, TestBasePath);
 
@@ -252,7 +252,7 @@ namespace IntegrationTests.Download
             ILogging logger;
             StartTest(out watch, out logger);
 
-            var fileSystem = NPath.FileSystem;
+            var fileSystem = SPath.FileSystem;
 
             var taskFailed = false;
             Exception exceptionThrown = null;
@@ -286,7 +286,7 @@ namespace IntegrationTests.Download
         //    ILogging logger;
         //    StartTest(out watch, out logger);
 
-        //    var fileSystem = NPath.FileSystem;
+        //    var fileSystem = SPath.FileSystem;
 
         //    var gitLfsMd5 = new UriString($"http://localhost:{server.Port}/unity/git/windows/git-lfs.zip.md5");
 
@@ -316,7 +316,7 @@ namespace IntegrationTests.Download
             ILogging logger;
             StartTest(out watch, out logger);
 
-            var fileSystem = NPath.FileSystem;
+            var fileSystem = SPath.FileSystem;
 
             var downloadTask = new DownloadTask(TaskManager.Token, fileSystem, "http://ggggithub.com/robots.txt", TestBasePath);
             var exceptionThrown = false;
@@ -344,7 +344,7 @@ namespace IntegrationTests.Download
         //    ILogging logger;
         //    StartTest(out watch, out logger);
 
-        //    var fileSystem = NPath.FileSystem;
+        //    var fileSystem = SPath.FileSystem;
 
         //    var gitLfs = new UriString($"http://localhost:{server.Port}/unity/git/windows/git-lfs.zip");
         //    var gitLfsMd5 = new UriString($"http://localhost:{server.Port}/unity/git/windows/git-lfs.zip.md5");
@@ -383,7 +383,7 @@ namespace IntegrationTests.Download
 
             server.Delay = 100;
 
-            var fileSystem = NPath.FileSystem;
+            var fileSystem = SPath.FileSystem;
 
             var evtStop = new AutoResetEvent(false);
             var evtFinally = new AutoResetEvent(false);

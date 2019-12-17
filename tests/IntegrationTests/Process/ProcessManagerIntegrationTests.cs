@@ -43,20 +43,20 @@ namespace IntegrationTests
 
             logEntries.AssertEqual(new[]
             {
-                new GitLogEntry("018997938335742f8be694240a7c2b352ec0835f", 
-                    "Author Person", "author@example.com", "Author Person", 
-                    "author@example.com", 
+                new GitLogEntry("018997938335742f8be694240a7c2b352ec0835f",
+                    "Author Person", "author@example.com", "Author Person",
+                    "author@example.com",
                     "Moving project files where they should be kept",
                     "",
                     firstCommitTime,
                     firstCommitTime, new List<GitStatusEntry>
                     {
-                        new GitStatusEntry("Assets/TestDocument.txt".ToNPath(),
-                            TestRepoMasterCleanUnsynchronized + "/Assets/TestDocument.txt".ToNPath(), "Assets/TestDocument.txt".ToNPath(),
+                        new GitStatusEntry("Assets/TestDocument.txt".ToSPath(),
+                            TestRepoMasterCleanUnsynchronized + "/Assets/TestDocument.txt".ToSPath(), "Assets/TestDocument.txt".ToSPath(),
                             GitFileStatus.Renamed, GitFileStatus.None, "TestDocument.txt")
                     }),
 
-                new GitLogEntry("03939ffb3eb8486dba0259b43db00842bbe6eca1", 
+                new GitLogEntry("03939ffb3eb8486dba0259b43db00842bbe6eca1",
                     "Author Person", "author@example.com", "Author Person",
                     "author@example.com",
                     "Initial Commit",
@@ -64,8 +64,8 @@ namespace IntegrationTests
                     secondCommitTime,
                     secondCommitTime, new List<GitStatusEntry>
                     {
-                        new GitStatusEntry("TestDocument.txt".ToNPath(),
-                            TestRepoMasterCleanUnsynchronized + "/TestDocument.txt".ToNPath(), "TestDocument.txt".ToNPath(),
+                        new GitStatusEntry("TestDocument.txt".ToSPath(),
+                            TestRepoMasterCleanUnsynchronized + "/TestDocument.txt".ToSPath(), "TestDocument.txt".ToSPath(),
                             GitFileStatus.Added, GitFileStatus.None),
                     }),
             });
@@ -93,8 +93,8 @@ namespace IntegrationTests
                     commitTime,
                     commitTime, new List<GitStatusEntry>
                     {
-                        new GitStatusEntry(@"Assets\A new file.txt".ToNPath(),
-                            TestRepoMasterCleanUnsynchronizedRussianLanguage + "/Assets/A new file.txt".ToNPath(), "Assets/A new file.txt".ToNPath(),
+                        new GitStatusEntry(@"Assets\A new file.txt".ToSPath(),
+                            TestRepoMasterCleanUnsynchronizedRussianLanguage + "/Assets/A new file.txt".ToSPath(), "Assets/A new file.txt".ToSPath(),
                             GitFileStatus.Added, GitFileStatus.None),
                     }),
             });
@@ -130,19 +130,19 @@ namespace IntegrationTests
                 Behind = 1,
                 Entries = new List<GitStatusEntry>
                 {
-                    new GitStatusEntry("Assets/Added Document.txt".ToNPath(),
+                    new GitStatusEntry("Assets/Added Document.txt".ToSPath(),
                         TestRepoMasterDirtyUnsynchronized.Combine("Assets/Added Document.txt"),
-                        "Assets/Added Document.txt".ToNPath(),
+                        "Assets/Added Document.txt".ToSPath(),
                         GitFileStatus.Added, GitFileStatus.None),
 
-                    new GitStatusEntry("Assets/Renamed TestDocument.txt".ToNPath(),
+                    new GitStatusEntry("Assets/Renamed TestDocument.txt".ToSPath(),
                         TestRepoMasterDirtyUnsynchronized.Combine("Assets/Renamed TestDocument.txt"),
-                        "Assets/Renamed TestDocument.txt".ToNPath(),
-                        GitFileStatus.Renamed,  GitFileStatus.None, "Assets/TestDocument.txt".ToNPath()),
+                        "Assets/Renamed TestDocument.txt".ToSPath(),
+                        GitFileStatus.Renamed,  GitFileStatus.None, "Assets/TestDocument.txt".ToSPath()),
 
-                    new GitStatusEntry("Assets/Untracked Document.txt".ToNPath(),
+                    new GitStatusEntry("Assets/Untracked Document.txt".ToSPath(),
                         TestRepoMasterDirtyUnsynchronized.Combine("Assets/Untracked Document.txt"),
-                        "Assets/Untracked Document.txt".ToNPath(),
+                        "Assets/Untracked Document.txt".ToSPath(),
                         GitFileStatus.Untracked, GitFileStatus.Untracked),
                 }
             });

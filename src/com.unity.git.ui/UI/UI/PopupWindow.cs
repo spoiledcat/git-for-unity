@@ -17,9 +17,9 @@ namespace Unity.VersionControl.Git
         }
 
         [SerializeField] private PopupViewType activeViewType;
-        [SerializeField] private AuthenticationView authenticationView;
+        //[SerializeField] private AuthenticationView authenticationView;
         [SerializeField] private LoadingView loadingView;
-        [SerializeField] private PublishView publishView;
+        //[SerializeField] private PublishView publishView;
         [SerializeField] private bool shouldCloseOnFinish;
 
         public event Action<bool> OnClose;
@@ -37,12 +37,12 @@ namespace Unity.VersionControl.Git
         {
             base.Initialize(applicationManager);
 
-            publishView = publishView ?? new PublishView();
-            authenticationView = authenticationView ?? new AuthenticationView();
+            //publishView = publishView ?? new PublishView();
+            //authenticationView = authenticationView ?? new AuthenticationView();
             loadingView = loadingView ?? new LoadingView();
 
-            publishView.InitializeView(this);
-            authenticationView.InitializeView(this);
+            //publishView.InitializeView(this);
+            //authenticationView.InitializeView(this);
             loadingView.InitializeView(this);
 
             titleContent = new GUIContent(ActiveView.Title, Styles.SmallLogo);
@@ -117,42 +117,42 @@ namespace Unity.VersionControl.Git
 
             if (viewNeedsAuthentication)
             {
-                var userHasAuthentication = false;
-                foreach (var keychainConnection in Platform.Keychain.Connections.OrderByDescending(HostAddress.IsGitHubDotCom))
-                {
-                    var apiClient = new ApiClient(Platform.Keychain, Platform.ProcessManager, TaskManager,
-                        Environment, keychainConnection.Host);
+                //var userHasAuthentication = false;
+                //foreach (var keychainConnection in Platform.Keychain.Connections.OrderByDescending(HostAddress.IsGitHubDotCom))
+                //{
+                //    var apiClient = new ApiClient(Platform.Keychain, Platform.ProcessManager, TaskManager,
+                //        Environment, keychainConnection.Host);
 
-                    try
-                    {
-                        apiClient.EnsureValidCredentials();
-                        userHasAuthentication = true;
-                        break;
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.Trace(ex, "Exception validating host {0}", keychainConnection.Host);
-                    }
-                }
+                //    try
+                //    {
+                //        apiClient.EnsureValidCredentials();
+                //        userHasAuthentication = true;
+                //        break;
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        Logger.Trace(ex, "Exception validating host {0}", keychainConnection.Host);
+                //    }
+                //}
 
-                if (userHasAuthentication)
-                {
-                    OpenInternal(popupViewType, onClose);
-                    shouldCloseOnFinish = true;
-                }
-                else
-                {
-                    authenticationView.Initialize(null);
-                    OpenInternal(PopupViewType.AuthenticationView, completedAuthentication =>
-                    {
-                        if (completedAuthentication)
-                        {
-                            Open(popupViewType, onClose);
-                        }
-                    });
+                //if (userHasAuthentication)
+                //{
+                //    OpenInternal(popupViewType, onClose);
+                //    shouldCloseOnFinish = true;
+                //}
+                //else
+                //{
+                //    authenticationView.Initialize(null);
+                //    OpenInternal(PopupViewType.AuthenticationView, completedAuthentication =>
+                //    {
+                //        if (completedAuthentication)
+                //        {
+                //            Open(popupViewType, onClose);
+                //        }
+                //    });
 
-                    shouldCloseOnFinish = false;
-                }
+                //    shouldCloseOnFinish = false;
+                //}
             }
             else
             {
@@ -193,10 +193,10 @@ namespace Unity.VersionControl.Git
             {
                 switch (activeViewType)
                 {
-                    case PopupViewType.PublishView:
-                        return publishView;
-                    case PopupViewType.AuthenticationView:
-                        return authenticationView;
+                    //case PopupViewType.PublishView:
+                    //    return publishView;
+                    //case PopupViewType.AuthenticationView:
+                    //    return authenticationView;
                     default:
                         return loadingView;
                 }

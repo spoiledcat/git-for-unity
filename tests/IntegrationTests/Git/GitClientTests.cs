@@ -57,14 +57,14 @@ namespace IntegrationTests
 
             foreach (var file in m_CleanFiles)
             {
-                file.ToNPath().WriteAllText("Some test text.");
+                file.ToSPath().WriteAllText("Some test text.");
             }
 
             GitClient.Clean(new List<string> { m_CleanFiles[0], m_CleanFiles[2] }).RunSynchronously();
 
-            m_CleanFiles[0].ToNPath().Exists().Should().BeFalse();
-            m_CleanFiles[1].ToNPath().Exists().Should().BeTrue();
-            m_CleanFiles[2].ToNPath().Exists().Should().BeFalse();
+            m_CleanFiles[0].ToSPath().Exists().Should().BeFalse();
+            m_CleanFiles[1].ToSPath().Exists().Should().BeTrue();
+            m_CleanFiles[2].ToSPath().Exists().Should().BeFalse();
         }
 
         [Test]
@@ -74,14 +74,14 @@ namespace IntegrationTests
 
             foreach (var file in m_CleanFiles)
             {
-                file.ToNPath().WriteAllText("Some test text.");
+                file.ToSPath().WriteAllText("Some test text.");
             }
 
             GitClient.CleanAll().RunSynchronously();
 
-            m_CleanFiles[0].ToNPath().Exists().Should().BeFalse();
-            m_CleanFiles[1].ToNPath().Exists().Should().BeFalse();
-            m_CleanFiles[2].ToNPath().Exists().Should().BeFalse();
+            m_CleanFiles[0].ToSPath().Exists().Should().BeFalse();
+            m_CleanFiles[1].ToSPath().Exists().Should().BeFalse();
+            m_CleanFiles[2].ToSPath().Exists().Should().BeFalse();
         }
 
         [Test]
@@ -93,19 +93,19 @@ namespace IntegrationTests
             const string testFile = "reset-file.txt";
 
             // Initial commit
-            initialFile.ToNPath().WriteAllText("Some test text.");
+            initialFile.ToSPath().WriteAllText("Some test text.");
             GitClient.Add(new List<string> { initialFile }).RunSynchronously();
             GitClient.Commit("initial", "commit").RunSynchronously();
 
             // Add file
-            testFile.ToNPath().WriteAllText("Some test text.");
+            testFile.ToSPath().WriteAllText("Some test text.");
             GitClient.Add(new List<string> { testFile }).RunSynchronously();
             GitClient.Commit("test", "commit").RunSynchronously();
-            testFile.ToNPath().Exists().Should().BeTrue();
+            testFile.ToSPath().Exists().Should().BeTrue();
 
             // Reset to commit without file
             GitClient.Reset("HEAD~1", GitResetMode.Hard).RunSynchronously();
-            testFile.ToNPath().Exists().Should().BeFalse();
+            testFile.ToSPath().Exists().Should().BeFalse();
         }
     }
 }

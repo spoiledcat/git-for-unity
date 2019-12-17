@@ -1,12 +1,15 @@
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     class LinuxDiskUsageTask : ProcessTask<int>
     {
         private readonly string arguments;
 
-        public LinuxDiskUsageTask(NPath directory, CancellationToken token)
+        public LinuxDiskUsageTask(SPath directory, CancellationToken token)
             : base(token, new LinuxDiskUsageOutputProcessor())
         {
             Name = "du" + DefaultEnvironment.ExecutableExt;

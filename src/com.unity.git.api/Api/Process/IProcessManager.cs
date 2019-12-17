@@ -2,14 +2,16 @@
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public interface IProcessManager
     {
-        T Configure<T>(T processTask, NPath? executable = null, string arguments = null, NPath? workingDirectory = null,
+        T Configure<T>(T processTask, SPath? executable = null, string arguments = null, SPath? workingDirectory = null,
         	bool withInput = false, bool dontSetupGit = false)
             where T : IProcess;
         IProcess Reconnect(IProcess processTask, int i);
         CancellationToken CancellationToken { get; }
-        void RunCommandLineWindow(NPath workingDirectory);
+        void RunCommandLineWindow(SPath workingDirectory);
         void Stop();
     }
 }

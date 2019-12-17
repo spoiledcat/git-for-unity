@@ -6,6 +6,8 @@ using Unity.VersionControl.Git;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     class UsageTrackerSync : IUsageTracker
     {
 
@@ -443,9 +445,9 @@ namespace Unity.VersionControl.Git
 
     class UsageLoader : IUsageLoader
     {
-        private readonly NPath path;
+        private readonly SPath path;
 
-        public UsageLoader(NPath path)
+        public UsageLoader(SPath path)
         {
             this.path = path;
         }

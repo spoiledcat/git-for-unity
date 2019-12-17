@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading;
+using Unity.Editor.Tasks;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
@@ -15,7 +16,7 @@ namespace Unity.VersionControl.Git
         private FieldInfo quitActionField;
 
         public ApplicationManager(IMainThreadSynchronizationContext synchronizationContext,
-            IEnvironment environment)
+            IGitEnvironment environment)
             : base(synchronizationContext as SynchronizationContext, environment)
         {
             FirstRun = ApplicationCache.Instance.FirstRun;
@@ -107,6 +108,6 @@ namespace Unity.VersionControl.Git
             base.Dispose(disposing);
         }
 
-        public override IProcessEnvironment GitEnvironment { get { return Platform.GitEnvironment; } }
+        public override IProcessEnvironment GitEnvironment { get { return Platform.ProcessEnvironment; } }
     }
 }

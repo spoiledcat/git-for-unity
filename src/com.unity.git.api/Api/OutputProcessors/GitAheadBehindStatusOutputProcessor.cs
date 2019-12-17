@@ -1,12 +1,16 @@
+using Unity.Editor.Tasks;
+
 namespace Unity.VersionControl.Git
 {
     class GitAheadBehindStatusOutputProcessor : BaseOutputProcessor<GitAheadBehindStatus>
     {
-        public override void LineReceived(string line)
+        protected override bool ProcessLine(string line, out GitAheadBehindStatus result)
         {
+            base.ProcessLine(line, out result);
+
             if (line == null)
             {
-                return;
+                return false;
             }
 
             var proc = new LineParser(line);
@@ -14,7 +18,8 @@ namespace Unity.VersionControl.Git
             var ahead = int.Parse(proc.ReadUntilWhitespace());
             var behind = int.Parse(proc.ReadToEnd());
 
-            RaiseOnEntry(new GitAheadBehindStatus(ahead, behind));
+            result = new GitAheadBehindStatus(ahead, behind);
+            return true;
         }
     }
 }

@@ -18,13 +18,13 @@ namespace UnitTests
         public void TestSetup()
         {
             var fileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions());
-            NPath.FileSystem = fileSystem;
+            SPath.FileSystem = fileSystem;
         }
 
         [TearDown]
         public void TestTearDown()
         {
-            NPath.FileSystem = null;
+            SPath.FileSystem = null;
         }
 
         [Test, Sequential]
@@ -35,11 +35,11 @@ namespace UnitTests
             [Values(@"test.txt", "UnityProject/test.txt", "test.txt")]string expected)
         {
             var environment = Substitute.For<IEnvironment>();
-            environment.RepositoryPath.Returns(repositoryPath.ToNPath());
-            environment.UnityProjectPath.Returns(projectPath.ToNPath());
+            environment.RepositoryPath.Returns(repositoryPath.ToSPath());
+            environment.UnityProjectPath.Returns(projectPath.ToSPath());
 
-            NPath nExpected = expected.ToNPath();
-            var repositoryFilePath = environment.GetRepositoryPath(path.ToNPath());
+            SPath nExpected = expected.ToSPath();
+            var repositoryFilePath = environment.GetRepositoryPath(path.ToSPath());
             repositoryFilePath.Should().Be(nExpected);
         }
 
@@ -50,10 +50,10 @@ namespace UnitTests
             [Values(@"test.txt")]string path)
         {
             var environment = Substitute.For<IEnvironment>();
-            environment.RepositoryPath.Returns(repositoryPath.ToNPath());
-            environment.UnityProjectPath.Returns(projectPath.ToNPath());
+            environment.RepositoryPath.Returns(repositoryPath.ToSPath());
+            environment.UnityProjectPath.Returns(projectPath.ToSPath());
 
-            Action act = () => environment.GetRepositoryPath(path.ToNPath());
+            Action act = () => environment.GetRepositoryPath(path.ToSPath());
             act.Should().Throw<InvalidOperationException>();
         }
 
@@ -65,11 +65,11 @@ namespace UnitTests
             [Values("test.txt", "Assets/test.txt", "test.txt")] string expected)
         {
             var environment = Substitute.For<IEnvironment>();
-            environment.RepositoryPath.Returns(repositoryPath.ToNPath());
-            environment.UnityProjectPath.Returns(projectPath.ToNPath());
+            environment.RepositoryPath.Returns(repositoryPath.ToSPath());
+            environment.UnityProjectPath.Returns(projectPath.ToSPath());
 
-            NPath nExpected = expected.ToNPath();
-            var repositoryFilePath = environment.GetAssetPath(path.ToNPath());
+            SPath nExpected = expected.ToSPath();
+            var repositoryFilePath = environment.GetAssetPath(path.ToSPath());
             repositoryFilePath.Should().Be(nExpected);
         }
 
@@ -80,10 +80,10 @@ namespace UnitTests
             [Values("test.txt")] string path)
         {
             var environment = Substitute.For<IEnvironment>();
-            environment.RepositoryPath.Returns(repositoryPath.ToNPath());
-            environment.UnityProjectPath.Returns(projectPath.ToNPath());
+            environment.RepositoryPath.Returns(repositoryPath.ToSPath());
+            environment.UnityProjectPath.Returns(projectPath.ToSPath());
 
-            Action act = () => environment.GetAssetPath(path.ToNPath());
+            Action act = () => environment.GetAssetPath(path.ToSPath());
             act.Should().Throw<InvalidOperationException>();
         }
     }

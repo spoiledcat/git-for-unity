@@ -33,7 +33,7 @@ namespace Unity.VersionControl.Git
         [NonSerialized] private bool isBusy;
         [NonSerialized] private bool enterPressed;
         [NonSerialized] private string password = string.Empty;
-        [NonSerialized] private AuthenticationService authenticationService;
+        //[NonSerialized] private AuthenticationService authenticationService;
         [NonSerialized] private string oAuthState;
         [NonSerialized] private string oAuthOpenUrl;
 
@@ -47,10 +47,10 @@ namespace Unity.VersionControl.Git
             Title = WindowTitle;
             Size = viewSize;
 
-            oAuthState = Guid.NewGuid().ToString();
-            oAuthOpenUrl = AuthenticationService.GetLoginUrl(oAuthState).ToString();
+            //oAuthState = Guid.NewGuid().ToString();
+            //oAuthOpenUrl = AuthenticationService.GetLoginUrl(oAuthState).ToString();
 
-            OAuthCallbackManager.OnCallback += OnOAuthCallback;
+            //OAuthCallbackManager.OnCallback += OnOAuthCallback;
         }
 
         public void Initialize(Exception exception)
@@ -149,25 +149,25 @@ namespace Unity.VersionControl.Git
                     {
                         GUI.FocusControl(null);
                         isBusy = true;
-                        AuthenticationService.Login(username, password, DoRequire2fa, DoResult);
+                        //AuthenticationService.Login(username, password, DoRequire2fa, DoResult);
                     }
                 }
                 GUILayout.EndHorizontal();
 
-                if (OAuthCallbackManager.IsRunning)
-                {
-                    GUILayout.Space(Styles.BaseSpacing + 3);
-                    GUILayout.BeginHorizontal();
-                    {
-                        GUILayout.FlexibleSpace();
-                        if (GUILayout.Button("Sign in with your browser", Styles.HyperlinkStyle))
-                        {
-                            GUI.FocusControl(null);
-                            Application.OpenURL(oAuthOpenUrl);
-                        }
-                    }
-                    GUILayout.EndHorizontal();
-                }
+                //if (OAuthCallbackManager.IsRunning)
+                //{
+                //    GUILayout.Space(Styles.BaseSpacing + 3);
+                //    GUILayout.BeginHorizontal();
+                //    {
+                //        GUILayout.FlexibleSpace();
+                //        if (GUILayout.Button("Sign in with your browser", Styles.HyperlinkStyle))
+                //        {
+                //            GUI.FocusControl(null);
+                //            Application.OpenURL(oAuthOpenUrl);
+                //        }
+                //    }
+                //    GUILayout.EndHorizontal();
+                //}
             }
             EditorGUI.EndDisabledGroup();
         }
@@ -199,7 +199,7 @@ namespace Unity.VersionControl.Git
                         {
                             GUI.FocusControl(null);
                             isBusy = true;
-                            AuthenticationService.LoginWith2fa(two2fa);
+                            //AuthenticationService.LoginWith2fa(two2fa);
                         }
                     }
                     GUILayout.EndHorizontal();
@@ -216,7 +216,7 @@ namespace Unity.VersionControl.Git
             if (state.Equals(oAuthState))
             {
                 isBusy = true;
-                authenticationService.LoginWithOAuthCode(code, (b, s) => TaskManager.RunInUI(() => DoOAuthCodeResult(b, s)));
+                //authenticationService.LoginWithOAuthCode(code, (b, s) => TaskManager.RunInUI(() => DoOAuthCodeResult(b, s)));
             }
         }
 
@@ -241,7 +241,7 @@ namespace Unity.VersionControl.Git
             isBusy = false;
             if (success)
             {
-                UsageTracker.IncrementAuthenticationViewButtonAuthentication();
+                //UsageTracker.IncrementAuthenticationViewButtonAuthentication();
 
                 Clear();
                 Finish(true);
@@ -258,7 +258,7 @@ namespace Unity.VersionControl.Git
             isBusy = false;
             if (success)
             {
-                UsageTracker.IncrementAuthenticationViewButtonAuthentication();
+                //UsageTracker.IncrementAuthenticationViewButtonAuthentication();
 
                 Clear();
                 Finish(true);
@@ -286,21 +286,21 @@ namespace Unity.VersionControl.Git
             }
         }
 
-        private AuthenticationService AuthenticationService
-        {
-            get
-            {
-                if (authenticationService == null)
-                {
-                    AuthenticationService = new AuthenticationService(UriString.ToUriString(HostAddress.GitHubDotComHostAddress.WebUri), Platform.Keychain, Manager.ProcessManager, Manager.TaskManager, Environment);
-                }
-                return authenticationService;
-            }
-            set
-            {
-                authenticationService = value;
-            }
-        }
+        //private AuthenticationService AuthenticationService
+        //{
+        //    get
+        //    {
+        //        if (authenticationService == null)
+        //        {
+        //            AuthenticationService = new AuthenticationService(UriString.ToUriString(HostAddress.GitHubDotComHostAddress.WebUri), Platform.Keychain, Manager.ProcessManager, Manager.TaskManager, Environment);
+        //        }
+        //        return authenticationService;
+        //    }
+        //    set
+        //    {
+        //        authenticationService = value;
+        //    }
+        //}
 
         public override bool IsBusy
         {

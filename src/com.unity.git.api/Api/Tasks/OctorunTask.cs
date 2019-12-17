@@ -4,9 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     class OctorunResultOutputProcessor : BaseOutputProcessor<OctorunResult>
     {
         private int lineCount;
@@ -56,8 +59,8 @@ namespace Unity.VersionControl.Git
         private readonly string clientSecret;
         private readonly string userToken;
 
-        private readonly NPath pathToNodeJs;
-        private readonly NPath pathToOctorunJs;
+        private readonly SPath pathToNodeJs;
+        private readonly SPath pathToOctorunJs;
         private readonly string arguments;
 
         public OctorunTask(CancellationToken token, IEnvironment environment,

@@ -1,16 +1,19 @@
 using System;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitRemoteBranchDeleteTask : ProcessTask<string>
+    public class GitRemoteBranchDeleteTask : NativeProcessTask<string>
     {
         private const string TaskName = "git push --delete";
         private readonly string arguments;
 
-        public GitRemoteBranchDeleteTask(string remote, string branch,
-            CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleOutputProcessor())
+        public GitRemoteBranchDeleteTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string remote, string branch,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(remote, "remote");
             Guard.ArgumentNotNullOrWhiteSpace(branch, "branch");

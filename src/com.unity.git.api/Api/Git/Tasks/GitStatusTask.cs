@@ -1,14 +1,18 @@
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitStatusTask : ProcessTask<GitStatus>
+    public class GitStatusTask : NativeProcessTask<GitStatus>
     {
         private const string TaskName = "git status";
 
-        public GitStatusTask(IGitObjectFactory gitObjectFactory,
-            CancellationToken token, IOutputProcessor<GitStatus> processor = null)
-            : base(token, processor ?? new GitStatusOutputProcessor(gitObjectFactory))
+        public GitStatusTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            IGitObjectFactory gitObjectFactory,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new GitStatusOutputProcessor(gitObjectFactory), token: token)
+               
         {
             Name = TaskName;
         }

@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using sfw.net;
-using Unity.VersionControl.Git;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public interface IRepositoryWatcher : IDisposable
     {
         void Start();
@@ -27,7 +28,7 @@ namespace Unity.VersionControl.Git
     {
         private readonly RepositoryPathConfiguration paths;
         private readonly CancellationToken cancellationToken;
-        private readonly NPath[] ignoredPaths;
+        private readonly SPath[] ignoredPaths;
         private readonly ManualResetEventSlim pauseEvent;
         private NativeInterface nativeInterface;
         private NativeInterface worktreeNativeInterface;
@@ -50,8 +51,8 @@ namespace Unity.VersionControl.Git
             this.cancellationToken = cancellationToken;
 
             ignoredPaths = new[] {
-                platform.Environment.UnityProjectPath.Combine("Library"),
-                platform.Environment.UnityProjectPath.Combine("Temp")
+                platform.Environment.UnityProjectPath.ToSPath().Combine("Library"),
+                platform.Environment.UnityProjectPath.ToSPath().Combine("Temp")
             };
 
             pauseEvent = new ManualResetEventSlim();
@@ -181,7 +182,7 @@ namespace Unity.VersionControl.Git
                     break;
                 }
 
-                var eventDirectory = new NPath(fileEvent.Directory);
+                var eventDirectory = new SPath(fileEvent.Directory);
                 var fileA = eventDirectory.Combine(fileEvent.FileA);
 
                 // handling events in .git/*

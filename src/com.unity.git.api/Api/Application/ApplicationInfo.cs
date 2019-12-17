@@ -1,8 +1,10 @@
 #pragma warning disable 436
 using Unity.VersionControl.Git;
+using Unity.VersionControl.Git.IO;
 
 namespace Unity.VersionControl.Git
 {
+
     public static partial class ApplicationInfo
     {
 #if GFU_DEBUG_BUILD
@@ -54,7 +56,7 @@ internal static partial class ThisAssembly {
             var attr = System.Attribute.GetCustomAttribute(typeof(ThisAssembly).Assembly, typeof(System.Reflection.AssemblyInformationalVersionAttribute)) as System.Reflection.AssemblyInformationalVersionAttribute;
             if (attr != null)
                 return attr.InformationalVersion;
-            var basePath = Platform.Instance?.Environment.ExtensionInstallPath ?? NPath.Default;
+            var basePath = Platform.Instance?.Environment.ExtensionInstallPath ?? SPath.Default;
             if (!basePath.IsInitialized)
                 return "0";
             var version = basePath.Parent.Combine("version.json").ReadAllText().FromJson<VersionJson>(true);

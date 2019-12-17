@@ -1,16 +1,19 @@
 using System;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitResetTask : ProcessTask<string>
+    public class GitResetTask : NativeProcessTask<string>
     {
         private const string TaskName = "git reset";
         private readonly string arguments;
 
-        public GitResetTask(string changeset, GitResetMode resetMode,
-            CancellationToken token, IOutputProcessor<string> processor = null)
-            : base(token, processor ?? new SimpleOutputProcessor())
+        public GitResetTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string changeset, GitResetMode resetMode,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Name = TaskName;
             arguments = $"reset {GetModeString(resetMode)} {changeset}";

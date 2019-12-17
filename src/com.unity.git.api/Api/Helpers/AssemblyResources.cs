@@ -1,10 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Net.NetworkInformation;
+﻿using System.IO;
 using System.Reflection;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public enum ResourceType
     {
         Icon,
@@ -40,7 +41,7 @@ namespace Unity.VersionControl.Git
             return asm.GetManifestResourceStream($"Unity.VersionControl.Git.{type}{(!string.IsNullOrEmpty(os) ? "." + os : os)}.{resource}");
         }
 
-        private static Stream TryGetStream(ResourceType resourceType, string resource, IEnvironment environment)
+        private static Stream TryGetStream(ResourceType resourceType, string resource, IGitEnvironment environment)
         {
             /*
                 This function attempts to get files embedded in the callers assembly.
@@ -62,7 +63,7 @@ namespace Unity.VersionControl.Git
             if (stream != null)
                 return stream;
 
-            NPath possiblePath = environment.ExtensionInstallPath.Combine(type, os, resource);
+            SPath possiblePath = environment.ExtensionInstallPath.Combine(type, os, resource);
             if (possiblePath.FileExists())
             {
                 return new MemoryStream(possiblePath.ReadAllBytes());
@@ -78,7 +79,7 @@ namespace Unity.VersionControl.Git
             return null;
         }
 
-        private static NPath TryGetFile(ResourceType resourceType, string resource, IEnvironment environment)
+        private static SPath TryGetFile(ResourceType resourceType, string resource, IGitEnvironment environment)
         {
             /*
                 This function attempts to get files embedded in the callers assembly.
@@ -99,11 +100,11 @@ namespace Unity.VersionControl.Git
             var stream = TryGetResource(resourceType, type, os, resource);
             if (stream != null)
             {
-                var target = NPath.GetTempFilename();
+                var target = SPath.GetTempFilename();
                 return target.WriteAllBytes(stream.ToByteArray());
             }
 
-            NPath possiblePath = environment.ExtensionInstallPath.Combine(type, os, resource);
+            SPath possiblePath = environment.ExtensionInstallPath.Combine(type, os, resource);
             if (possiblePath.FileExists())
             {
                 return possiblePath;
@@ -116,11 +117,11 @@ namespace Unity.VersionControl.Git
                 return possiblePath;
             }
 
-            return NPath.Default;
+            return SPath.Default;
         }
 
 
-        public static NPath ToFile(ResourceType resourceType, string resource, NPath destinationPath, IEnvironment environment)
+        public static SPath ToFile(ResourceType resourceType, string resource, SPath destinationPath, IGitEnvironment environment)
         {
             var target = destinationPath.Combine(resource);
             var source = TryGetFile(resourceType, resource, environment);
@@ -129,10 +130,10 @@ namespace Unity.VersionControl.Git
                 target.DeleteIfExists();
                 return source.Copy(target);
             }
-            return NPath.Default;
+            return SPath.Default;
         }
 
-        public static Stream ToStream(ResourceType resourceType, string resource, IEnvironment environment)
+        public static Stream ToStream(ResourceType resourceType, string resource, IGitEnvironment environment)
         {
             return TryGetStream(resourceType, resource, environment);
         }

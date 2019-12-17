@@ -10,6 +10,8 @@ using Application = UnityEngine.Application;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     sealed class ApplicationCache : ScriptObjectSingleton<ApplicationCache>
     {
         [SerializeField] private bool firstRun = true;
@@ -108,35 +110,37 @@ namespace Unity.VersionControl.Git
 
     sealed class EnvironmentCache : ScriptObjectSingleton<EnvironmentCache>
     {
-        [NonSerialized] private IEnvironment environment;
-        [SerializeField] private string extensionInstallPath;
-        [SerializeField] private string repositoryPath;
+        [NonSerialized] private IGitEnvironment environment;
+
         [SerializeField] private string unityApplication;
         [SerializeField] private string unityApplicationContents;
-        [SerializeField] private string unityAssetsPath;
         [SerializeField] private string unityVersion;
+        [SerializeField] private string projectPath;
+
+        [SerializeField] private string extensionInstallPath;
+        [SerializeField] private string repositoryPath;
 
         public void Flush()
         {
-            repositoryPath = Environment.RepositoryPath;
             unityApplication = Environment.UnityApplication;
             unityApplicationContents = Environment.UnityApplicationContents;
-            unityAssetsPath = Environment.UnityAssetsPath;
+            unityVersion = Environment.UnityVersion;
+            repositoryPath = Environment.RepositoryPath;
             extensionInstallPath = Environment.ExtensionInstallPath;
             Save(true);
         }
 
-        private NPath DetermineInstallationPath()
+        private SPath DetermineInstallationPath()
         {
             // Juggling to find out where we got installed
             var shim = CreateInstance<RunLocationShim>();
             var script = MonoScript.FromScriptableObject(shim);
-            var scriptPath = Application.dataPath.ToNPath().Parent.Combine(AssetDatabase.GetAssetPath(script).ToNPath());
+            var scriptPath = Application.dataPath.ToSPath().Parent.Combine(AssetDatabase.GetAssetPath(script).ToSPath());
             DestroyImmediate(shim);
             return scriptPath.Parent;
         }
 
-        public IEnvironment Environment
+        public IGitEnvironment Environment
         {
             get
             {
@@ -153,19 +157,21 @@ namespace Unity.VersionControl.Git
                     cacheContainer.SetCacheInitializer(CacheType.RepositoryInfo, () => RepositoryInfoCache.Instance);
 
                     environment = new DefaultEnvironment(cacheContainer);
-                    if (unityApplication == null)
+
+                    if (projectPath == null)
                     {
-                        unityAssetsPath = Application.dataPath;
+						projectPath = ".".ToSPath().Resolve().ToString(SlashMode.Forward);
+                        unityVersion = Application.unityVersion;
                         unityApplication = EditorApplication.applicationPath;
                         unityApplicationContents = EditorApplication.applicationContentsPath;
                         extensionInstallPath = DetermineInstallationPath();
-                        unityVersion = Application.unityVersion;
                     }
-                    environment.Initialize(unityVersion, extensionInstallPath.ToNPath(), unityApplication.ToNPath(),
-                        unityApplicationContents.ToNPath(), unityAssetsPath.ToNPath());
-                    NPath? path = null;
+
+                    environment.Initialize(projectPath, unityVersion, unityApplication, unityApplicationContents);
+                    environment.Initialize(extensionInstallPath);
+                    SPath? path = null;
                     if (!String.IsNullOrEmpty(repositoryPath))
-                        path = repositoryPath.ToNPath();
+                        path = repositoryPath.ToSPath();
                     environment.InitializeRepository(path);
                     Flush();
                 }

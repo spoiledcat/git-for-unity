@@ -1,10 +1,13 @@
 using System;
 using System.Text;
+using Unity.Editor.Tasks;
 using UnityEditor;
 using UnityEngine;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     [Serializable]
     class GitPathView : Subview
     {
@@ -85,12 +88,12 @@ namespace Unity.VersionControl.Git
                                 GUI.FocusControl(null);
 
                                 var newPath = EditorUtility.OpenFilePanel(GitInstallBrowseTitle,
-                                    !String.IsNullOrEmpty(gitPath) ? gitPath.ToNPath().Parent : "",
+                                    !String.IsNullOrEmpty(gitPath) ? gitPath.ToSPath().Parent : "",
                                     Environment.ExecutableExtension.TrimStart('.'));
 
                                 if (!string.IsNullOrEmpty(newPath))
                                 {
-                                    gitPath = newPath.ToNPath().ToString();
+                                    gitPath = newPath.ToSPath().ToString();
                                 }
                             }
                         }
@@ -112,12 +115,12 @@ namespace Unity.VersionControl.Git
                                 GUI.FocusControl(null);
 
                                 var newPath = EditorUtility.OpenFilePanel(GitInstallBrowseTitle,
-                                    !String.IsNullOrEmpty(gitLfsPath) ? gitLfsPath.ToNPath().Parent : "",
+                                    !String.IsNullOrEmpty(gitLfsPath) ? gitLfsPath.ToSPath().Parent : "",
                                     Environment.ExecutableExtension.TrimStart('.'));
 
                                 if (!string.IsNullOrEmpty(newPath))
                                 {
-                                    gitLfsPath = newPath.ToNPath().ToString();
+                                    gitLfsPath = newPath.ToSPath().ToString();
                                 }
                             }
                         }
@@ -173,12 +176,11 @@ namespace Unity.VersionControl.Git
                     {
                         GUI.FocusControl(null);
                         isBusy = true;
-                        new FuncTask<GitInstaller.GitInstallationState>(TaskManager.Token, () =>
+                        TaskManager.With(() =>
                             {
-                                var gitInstaller = new GitInstaller(Environment, Manager.ProcessManager, TaskManager.Token);
+                                var gitInstaller = new GitInstaller(TaskManager, Environment, Manager.ProcessManager, Platform.ProcessEnvironment);
                                 return gitInstaller.FindSystemGit(new GitInstaller.GitInstallationState());
-                            })
-                            { Message = "Locating git..." }
+                            }, "Locating git...")
                             .FinallyInUI((success, ex, state) =>
                             {
                                 if (success)
@@ -224,9 +226,9 @@ namespace Unity.VersionControl.Git
         {
             if (resetToBundled)
             {
-                new FuncTask<GitInstaller.GitInstallationState>(TaskManager.Token, () => {
+                TaskManager.With(() => {
                         var state = Environment.GitDefaultInstallation.GetDefaults();
-                        var gitInstaller = new GitInstaller(Environment, Manager.ProcessManager, TaskManager.Token, state);
+                        var gitInstaller = new GitInstaller(TaskManager, Environment, Manager.ProcessManager, Platform.ProcessEnvironment, state);
                         state = gitInstaller.RunSynchronously();
                         if (state.GitIsValid && state.GitLfsIsValid)
                         {
@@ -234,8 +236,7 @@ namespace Unity.VersionControl.Git
                             Manager.RestartRepository();
                         }
                         return state;
-                    })
-                    { Message = "Setting up git... " }
+                    }, "Setting up git... ")
                     .FinallyInUI((success, exception, state) =>
                     {
                         if (!success)
@@ -257,16 +258,16 @@ namespace Unity.VersionControl.Git
             else
             {
                 var newState = new GitInstaller.GitInstallationState();
-                newState.GitExecutablePath = gitPath.ToNPath();
-                newState.GitLfsExecutablePath = gitLfsPath.ToNPath();
-                var installer = new GitInstaller(Environment, Manager.ProcessManager, TaskManager.Token, newState);
+                newState.GitExecutablePath = gitPath.ToSPath();
+                newState.GitLfsExecutablePath = gitLfsPath.ToSPath();
+                var installer = new GitInstaller(TaskManager, Environment, Manager.ProcessManager, Platform.ProcessEnvironment, newState);
                 installer.Progress(UpdateProgress);
 
-                new FuncTask<GitInstaller.GitInstallationState>(TaskManager.Token, () =>
+                TaskManager.With(() =>
                     {
                         return installer.RunSynchronously();
                     })
-                    .Then((success, state) => 
+                    .Then(state =>
                     {
                         if (state.GitIsValid && state.GitLfsIsValid)
                         {
@@ -326,7 +327,7 @@ namespace Unity.VersionControl.Git
                             Logger.Trace("Software versions meet minimums Git:{0} GitLfs:{1}",
                                 state.GitVersion,
                                 state.GitLfsVersion);
-                           
+
                             refresh = true;
                         }
                         isBusy = false;

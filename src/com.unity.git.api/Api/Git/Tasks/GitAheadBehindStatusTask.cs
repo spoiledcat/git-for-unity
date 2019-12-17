@@ -1,15 +1,18 @@
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitAheadBehindStatusTask : ProcessTask<GitAheadBehindStatus>
+    public class GitAheadBehindStatusTask : NativeProcessTask<GitAheadBehindStatus>
     {
         private const string TaskName = "git rev-list";
         private readonly string arguments;
 
-        public GitAheadBehindStatusTask(string gitRef, string otherRef,
-            CancellationToken token, IOutputProcessor<GitAheadBehindStatus> processor = null)
-            : base(token, processor ?? new GitAheadBehindStatusOutputProcessor())
+        public GitAheadBehindStatusTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            string gitRef, string otherRef,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new GitAheadBehindStatusOutputProcessor(), token: token)
         {
             Name = TaskName;
             arguments = $"rev-list --left-right --count {gitRef}...{otherRef}";

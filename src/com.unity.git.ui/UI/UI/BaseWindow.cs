@@ -2,6 +2,7 @@ using Unity.VersionControl.Git;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
 using UnityEditor;
 using UnityEngine;
 
@@ -167,7 +168,7 @@ namespace Unity.VersionControl.Git
 
         protected ITaskManager TaskManager { get { return Manager.TaskManager; } }
         protected IGitClient GitClient { get { return Manager.GitClient; } }
-        protected IEnvironment Environment { get { return Manager.Environment; } }
+        protected IGitEnvironment Environment { get { return Manager.Environment; } }
         protected IPlatform Platform { get { return Manager.Platform; } }
         public Dictionary<CacheType, int> RefreshEvents { get; set; }
         private ILogging logger;

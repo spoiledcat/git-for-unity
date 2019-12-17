@@ -1,29 +1,33 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Editor.Tasks;
 using Unity.VersionControl.Git;
 using UnityEditor;
 using UnityEngine;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     class LfsLocksModificationProcessor : UnityEditor.AssetModificationProcessor
     {
         private static ILogging Logger = LogHelper.GetLogger<LfsLocksModificationProcessor>();
         private static IRepository repository;
         private static IPlatform platform;
-        private static IEnvironment environment;
+        private static IGitEnvironment environment;
 
-        private static Dictionary<NPath, GitLock> locks = new Dictionary<NPath, GitLock>();
+        private static Dictionary<SPath, GitLock> locks = new Dictionary<SPath, GitLock>();
         private static CacheUpdateEvent lastLocksChangedEvent;
         private static string loggedInUser;
 
-        public static void Initialize(IEnvironment env, IPlatform plat)
+        public static void Initialize(IGitEnvironment env, IPlatform plat)
         {
             environment = env;
             platform = plat;
-            platform.Keychain.ConnectionsChanged += UserMayHaveChanged;
+            //platform.Keychain.ConnectionsChanged += UserMayHaveChanged;
+
             // we need to do this to get the initial user information up front
-            UserMayHaveChanged();
+            //UserMayHaveChanged();
 
             repository = environment.Repository;
             UnityShim.Editor_finishedDefaultHeaderGUI += InspectorHeaderFinished;
@@ -76,7 +80,7 @@ namespace Unity.VersionControl.Git
 
         private static void UserMayHaveChanged()
         {
-            loggedInUser = platform.Keychain.Connections.Select(x => x.Username).FirstOrDefault();
+            //loggedInUser = platform.Keychain.Connections.Select(x => x.Username).FirstOrDefault();
         }
 
         private static bool IsLockedBySomeoneElse(GitLock? lck)
@@ -95,13 +99,13 @@ namespace Unity.VersionControl.Git
                 return null;
 
             GitLock lck;
-            var repositoryPath = environment.GetRepositoryPath(assetPath.ToNPath());
+            var repositoryPath = environment.GetRepositoryPath(assetPath.ToSPath());
             if (locks.TryGetValue(repositoryPath, out lck))
                 return lck;
             return null;
         }
 
-        private static void InspectorHeaderFinished(Editor editor)
+        private static void InspectorHeaderFinished(UnityEditor.Editor editor)
         {
             string message = "";
             if (!IsOpenForEdit(AssetDatabase.GetAssetPath(editor.target), out message))

@@ -1,72 +1,55 @@
-using Unity.VersionControl.Git;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Resources;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+    using Unity.Editor.Tasks;
+
     public class ProcessEnvironment : IProcessEnvironment
     {
-        protected IEnvironment Environment { get; private set; }
+        private readonly IProcessEnvironment defaultEnvironment;
+        protected IGitEnvironment GitEnvironment { get; private set; }
         protected ILogging Logger { get; private set; }
 
-        private NPath basePath;
+        private SPath basePath;
         private string[] envPath;
-        private NPath gitInstallPath;
-        private NPath libExecPath;
+        private SPath gitInstallPath;
+        private SPath libExecPath;
 
-
-        public ProcessEnvironment(IEnvironment environment)
+        public ProcessEnvironment(IProcessEnvironment defaultEnvironment, IGitEnvironment environment)
         {
+            this.defaultEnvironment = defaultEnvironment;
+            GitEnvironment = environment;
+
             Logger = LogHelper.GetLogger(GetType());
-            Environment = environment;
         }
 
         private void Reset()
         {
-            basePath = libExecPath = NPath.Default;
+            basePath = libExecPath = SPath.Default;
             envPath = null;
-            gitInstallPath = Environment.GitInstallPath;
+            gitInstallPath = GitEnvironment.GitInstallPath;
 
             if (!gitInstallPath.IsInitialized)
                 return;
 
             basePath = ResolveBasePath();
             envPath = CreateEnvPath().ToArray();
-            if (ResolveGitExecPath(out NPath p))
+            if (ResolveGitExecPath(out SPath p))
                 libExecPath = p;
         }
 
-        private void GeneralConfigure(ProcessStartInfo psi, NPath workingDirectory)
+        public void Configure(ProcessStartInfo psi)
         {
-            Guard.ArgumentNotNull(psi, "psi");
+            defaultEnvironment.Configure(psi);
 
-            psi.WorkingDirectory = workingDirectory;
-            psi.EnvironmentVariables["HOME"] = NPath.HomeDirectory;
-            psi.EnvironmentVariables["TMP"] = psi.EnvironmentVariables["TEMP"] = NPath.SystemTemp;
-
-            var path = Environment.Path;
-            psi.EnvironmentVariables["PROCESS_WORKINGDIR"] = workingDirectory;
-
-            var pathEnvVarKey = Environment.GetEnvironmentVariableKey("PATH");
-            psi.EnvironmentVariables["PROCESS_FULLPATH"] = path;
-            psi.EnvironmentVariables[pathEnvVarKey] = path;
-
-        }
-
-        public void Configure(ProcessStartInfo psi, NPath workingDirectory, bool dontSetupGit = false)
-        {
-            GeneralConfigure(psi, workingDirectory);
-
-            if (dontSetupGit)
-                return;
-
-            //if (gitInstallPath == NPath.Default || gitInstallPath != Environment.GitInstallPath)
+            //if (gitInstallPath == SPath.Default || gitInstallPath != Environment.GitInstallPath)
                 Reset();
 
             var pathEntries = new List<string>(envPath);
-            string separator = Environment.IsWindows ? ";" : ":";
+            string separator = GitEnvironment.IsWindows ? ";" : ":";
 
             // we can only set this env var if there is a libexec/git-core. git will bypass internally bundled tools if this env var
             // is set, which will break Apple's system git on certain tools (like osx-credentialmanager)
@@ -75,9 +58,9 @@ namespace Unity.VersionControl.Git
 
             pathEntries.Add("END");
 
-            var path = string.Join(separator, pathEntries.ToArray()) + separator + Environment.Path;
+            var path = string.Join(separator, pathEntries.ToArray()) + separator + GitEnvironment.Path;
 
-            var pathEnvVarKey = Environment.GetEnvironmentVariableKey("PATH");
+            var pathEnvVarKey = GitEnvironment.GetEnvironmentVariableKey("PATH");
             psi.EnvironmentVariables[pathEnvVarKey] = path;
 
             //if (Environment.IsWindows)
@@ -86,26 +69,26 @@ namespace Unity.VersionControl.Git
             //    psi.EnvironmentVariables["TERM"] = "msys";
             //}
 
-            var httpProxy = Environment.GetEnvironmentVariable("HTTP_PROXY");
+            var httpProxy = GitEnvironment.GetEnvironmentVariable("HTTP_PROXY");
             if (!string.IsNullOrEmpty(httpProxy))
                 psi.EnvironmentVariables["HTTP_PROXY"] = httpProxy;
 
-            var httpsProxy = Environment.GetEnvironmentVariable("HTTPS_PROXY");
+            var httpsProxy = GitEnvironment.GetEnvironmentVariable("HTTPS_PROXY");
             if (!string.IsNullOrEmpty(httpsProxy))
                 psi.EnvironmentVariables["HTTPS_PROXY"] = httpsProxy;
             psi.EnvironmentVariables["DISPLAY"] = "0";
 
-            if (!Environment.IsWindows)
+            if (!GitEnvironment.IsWindows)
             {
-                psi.EnvironmentVariables["GIT_TEMPLATE_DIR"] = Environment.GitInstallPath.Combine("share/git-core/templates");
+                psi.EnvironmentVariables["GIT_TEMPLATE_DIR"] = GitEnvironment.GitInstallPath.Combine("share/git-core/templates");
             }
 
-            if (Environment.IsLinux)
+            if (GitEnvironment.IsLinux)
             {
-                psi.EnvironmentVariables["PREFIX"] = Environment.GitExecutablePath.Parent;
+                psi.EnvironmentVariables["PREFIX"] = GitEnvironment.GitExecutablePath.Parent;
             }
 
-            var sslCAInfo = Environment.GetEnvironmentVariable("GIT_SSL_CAINFO");
+            var sslCAInfo = GitEnvironment.GetEnvironmentVariable("GIT_SSL_CAINFO");
             if (string.IsNullOrEmpty(sslCAInfo))
             {
                 var certFile = basePath.Combine("ssl/cacert.pem");
@@ -114,8 +97,8 @@ namespace Unity.VersionControl.Git
             }
 /*
             psi.WorkingDirectory = workingDirectory;
-            psi.EnvironmentVariables["HOME"] = NPath.HomeDirectory;
-            psi.EnvironmentVariables["TMP"] = psi.EnvironmentVariables["TEMP"] = NPath.SystemTemp;
+            psi.EnvironmentVariables["HOME"] = SPath.HomeDirectory;
+            psi.EnvironmentVariables["TMP"] = psi.EnvironmentVariables["TEMP"] = SPath.SystemTemp;
 
             var path = Environment.Path;
             psi.EnvironmentVariables["GHU_WORKINGDIR"] = workingDirectory;
@@ -133,7 +116,7 @@ namespace Unity.VersionControl.Git
             var pathEntries = new List<string>();
             string separator = Environment.IsWindows ? ";" : ":";
 
-            NPath libexecPath = NPath.Default;
+            SPath libexecPath = SPath.Default;
             List<string> gitPathEntries = new List<string>();
             if (Environment.GitInstallPath.IsInitialized)
             {
@@ -153,7 +136,7 @@ namespace Unity.VersionControl.Git
 
                 libexecPath = baseExecPath.Combine("libexec", "git-core");
                 if (!libexecPath.DirectoryExists())
-                    libexecPath = NPath.Default;
+                    libexecPath = SPath.Default;
 
                 if (Environment.IsWindows)
                 {
@@ -209,34 +192,36 @@ namespace Unity.VersionControl.Git
         }
 
 
-        private bool ResolveGitExecPath(out NPath path)
+        private bool ResolveGitExecPath(out SPath path)
         {
             path = ResolveBasePath().Combine("libexec", "git-core");
             return path.DirectoryExists();
         }
 
-        private NPath ResolveBasePath()
+        private SPath ResolveBasePath()
         {
-            var path = Environment.GitInstallPath;
-            if (Environment.IsWindows)
+            var path = GitEnvironment.GitInstallPath;
+            if (GitEnvironment.IsWindows)
             {
-                if (Environment.Is32Bit)
-                    path = Environment.GitInstallPath.Combine("mingw32");
+                if (GitEnvironment.Is32Bit)
+                    path = GitEnvironment.GitInstallPath.Combine("mingw32");
                 else
-                    path = Environment.GitInstallPath.Combine("mingw64");
+                    path = GitEnvironment.GitInstallPath.Combine("mingw64");
             }
             return path;
         }
 
         private IEnumerable<string> CreateEnvPath()
         {
-            yield return Environment.GitExecutablePath.Parent.ToString();
+            yield return GitEnvironment.GitExecutablePath.Parent.ToString();
             var basep = ResolveBasePath();
             yield return basep.Combine("bin").ToString();
-            if (Environment.IsWindows)
-                yield return Environment.GitInstallPath.Combine("usr/bin").ToString();
-            if (Environment.GitInstallPath.IsInitialized && Environment.GitLfsExecutablePath.Parent != Environment.GitExecutablePath.Parent)
-                yield return Environment.GitLfsExecutablePath.Parent.ToString();
+            if (GitEnvironment.IsWindows)
+                yield return GitEnvironment.GitInstallPath.Combine("usr/bin").ToString();
+            if (GitEnvironment.GitInstallPath.IsInitialized && GitEnvironment.GitLfsExecutablePath.Parent != GitEnvironment.GitExecutablePath.Parent)
+                yield return GitEnvironment.GitLfsExecutablePath.Parent.ToString();
         }
+
+        public IEnvironment Environment => defaultEnvironment.Environment;
     }
 }

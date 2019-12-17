@@ -21,7 +21,7 @@ namespace UnitTests
         [Test]
         public void CreateObjectWhenProjectRootIsChildOfGitRootAndFileInGitRoot()
         {
-            var repositoryPath = "/Source".ToNPath();
+            var repositoryPath = "/Source".ToSPath();
             var unityProjectPath = repositoryPath.Combine("UnityProject");
 
             SubstituteFactory.CreateProcessEnvironment(repositoryPath);
@@ -30,7 +30,7 @@ namespace UnitTests
                 UnityProjectPath = unityProjectPath
             });
 
-            NPath.FileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions {
+            SPath.FileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions {
                 CurrentDirectory = repositoryPath
             });
 
@@ -52,7 +52,7 @@ namespace UnitTests
         [Test]
         public void CreateObjectWhenProjectRootIsChildOfGitRootAndFileInProjectRoot()
         {
-            var repositoryPath = "/Source".ToNPath();
+            var repositoryPath = "/Source".ToSPath();
             var unityProjectPath = repositoryPath.Combine("UnityProject");
 
             SubstituteFactory.CreateProcessEnvironment(repositoryPath);
@@ -60,11 +60,11 @@ namespace UnitTests
                 RepositoryPath = repositoryPath,
                 UnityProjectPath = unityProjectPath
             });
-            NPath.FileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions {
+            SPath.FileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions {
                 CurrentDirectory = repositoryPath
             });
 
-            var inputPath = "UnityProject/Something.sln".ToNPath().ToString();
+            var inputPath = "UnityProject/Something.sln".ToSPath().ToString();
             const GitFileStatus inputStatus = GitFileStatus.Added;
 
             var expectedFullPath = repositoryPath.Combine(inputPath);
@@ -82,7 +82,7 @@ namespace UnitTests
         [Test]
         public void CreateObjectWhenProjectRootIsSameAsGitRootAndFileInGitRoot()
         {
-            var repositoryPath = "/Source".ToNPath();
+            var repositoryPath = "/Source".ToSPath();
             var unityProjectPath = repositoryPath;
 
             SubstituteFactory.CreateProcessEnvironment(repositoryPath);
@@ -90,7 +90,7 @@ namespace UnitTests
                 RepositoryPath = repositoryPath,
                 UnityProjectPath = unityProjectPath
             });
-            NPath.FileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions {
+            SPath.FileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions {
                 CurrentDirectory = repositoryPath
             });
 

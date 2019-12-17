@@ -8,6 +8,8 @@ using UnityEngine;
 
 namespace Unity.VersionControl.Git.UI
 {
+    using IO;
+
     [InitializeOnLoad]
     class Menus : ScriptableObject
     {
@@ -29,8 +31,8 @@ namespace Unity.VersionControl.Git.UI
         [MenuItem(Menu_Window_Git_Command_Line)]
         public static void Git_CommandLine()
         {
-            EntryPoint.ApplicationManager.ProcessManager.RunCommandLineWindow(NPath.CurrentDirectory);
-            EntryPoint.ApplicationManager.UsageTracker.IncrementApplicationMenuMenuItemCommandLine();
+            //EntryPoint.ApplicationManager.ProcessManager.RunCommandLineWindow(SPath.CurrentDirectory);
+            //EntryPoint.ApplicationManager.UsageTracker.IncrementApplicationMenuMenuItemCommandLine();
         }
 
 #if GFU_DEBUG_BUILD

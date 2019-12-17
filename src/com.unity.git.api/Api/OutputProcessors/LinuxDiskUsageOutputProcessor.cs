@@ -1,4 +1,5 @@
 using System;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {

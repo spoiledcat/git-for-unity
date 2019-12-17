@@ -1,13 +1,16 @@
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitRemoteListTask : ProcessTaskWithListOutput<GitRemote>
+    public class GitRemoteListTask : NativeProcessListTask<GitRemote>
     {
         private const string TaskName = "git remote";
 
-        public GitRemoteListTask(CancellationToken token, BaseOutputListProcessor<GitRemote> processor = null)
-            : base(token, processor ?? new RemoteListOutputProcessor())
+        public GitRemoteListTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new RemoteListOutputProcessor(), token: token)
         {
             Name = TaskName;
         }

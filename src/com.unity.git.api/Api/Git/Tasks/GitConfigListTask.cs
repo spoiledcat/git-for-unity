@@ -1,16 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitConfigListTask : ProcessTaskWithListOutput<KeyValuePair<string, string>>
+    public class GitConfigListTask : NativeProcessListTask<KeyValuePair<string, string>>
     {
         private const string TaskName = "git config list";
         private readonly string arguments;
 
-        public GitConfigListTask(GitConfigSource configSource, CancellationToken token, BaseOutputListProcessor<KeyValuePair<string, string>> processor = null)
-            : base(token, processor ?? new ConfigOutputProcessor())
+        public GitConfigListTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
+            IGitEnvironment environment,
+            GitConfigSource configSource,
+            CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new ConfigOutputProcessor(), token: token)
         {
             Name = TaskName;
             var source = "";

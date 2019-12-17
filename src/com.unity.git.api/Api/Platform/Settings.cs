@@ -7,6 +7,8 @@ using System.Text;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     public abstract class BaseSettings : ISettings
     {
         public abstract bool Exists(string key);
@@ -16,7 +18,7 @@ namespace Unity.VersionControl.Git
         public abstract void Rename(string oldKey, string newKey);
         public abstract void Set<T>(string key, T value);
         public abstract void Unset(string key);
-        public NPath SettingsPath { get; protected set; }
+        public SPath SettingsPath { get; protected set; }
     }
 
     public class JsonBackedSettings : BaseSettings
@@ -228,9 +230,9 @@ namespace Unity.VersionControl.Git
         private const string RelativeSettingsPath = "ProjectSettings";
         private const string settingsFileName = "Git.local.json";
 
-        public LocalSettings(IEnvironment environment)
+        public LocalSettings(IGitEnvironment environment)
         {
-            SettingsPath = environment.UnityProjectPath.Combine(RelativeSettingsPath, settingsFileName);
+            SettingsPath = environment.UnityProjectPath.ToSPath().Combine(RelativeSettingsPath, settingsFileName);
         }
     }
 
@@ -239,7 +241,7 @@ namespace Unity.VersionControl.Git
         private const string settingsFileName = "usersettings.json";
         private const string oldSettingsFileName = "settings.json";
 
-        public UserSettings(IEnvironment environment)
+        public UserSettings(IGitEnvironment environment)
         {
             SettingsPath = environment.UserCachePath.Combine(settingsFileName);
         }
@@ -262,7 +264,7 @@ namespace Unity.VersionControl.Git
         private const string settingsFileName = "systemsettings.json";
         private const string oldSettingsFileName = "settings.json";
 
-        public SystemSettings(IEnvironment environment)
+        public SystemSettings(IGitEnvironment environment)
         {
             SettingsPath = environment.SystemCachePath.Combine(settingsFileName);
         }

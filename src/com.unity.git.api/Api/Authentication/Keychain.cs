@@ -6,12 +6,13 @@ using Unity.VersionControl.Git;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     [Serializable]
     public class Connection
     {
         public string Host { get; set; }
         public string Username { get; set; }
-        [NonSerialized] internal GitHubUser User;
 
         // for json serialization
         public Connection()
@@ -73,7 +74,7 @@ namespace Unity.VersionControl.Git
 
         private readonly ILogging logger = LogHelper.GetLogger<Keychain>();
         private readonly ICredentialManager credentialManager;
-        private readonly NPath cachePath;
+        private readonly SPath cachePath;
         // cached credentials loaded from git to pass to GitHub/ApiClient
         private readonly Dictionary<UriString, KeychainAdapter> keychainAdapters = new Dictionary<UriString, KeychainAdapter>();
 

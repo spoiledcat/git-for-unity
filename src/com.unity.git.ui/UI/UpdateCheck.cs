@@ -2,7 +2,9 @@
 using UnityEngine;
 using UnityEditor;
 using System.Linq;
+using Unity.Editor.Tasks;
 using Unity.VersionControl.Git;
+using Unity.VersionControl.Git.IO;
 
 namespace Unity.VersionControl.Git
 {
@@ -60,7 +62,7 @@ namespace Unity.VersionControl.Git
 
         public static void CheckForUpdates(IApplicationManager manager)
         {
-            var download = new DownloadTask(manager.TaskManager.Token, manager.Environment.FileSystem, UpdateFeedUrl, manager.Environment.UserCachePath)
+            var download = new DownloadTask(manager.TaskManager, UpdateFeedUrl, manager.Environment.UserCachePath)
                 .Catch(ex =>
                 {
                     LogHelper.Warning(@"Error downloading update check:{0} ""{1}""", UpdateFeedUrl, ex.GetExceptionMessageShort());
@@ -72,7 +74,7 @@ namespace Unity.VersionControl.Git
                 {
                     try
                     {
-                        Package package = result.ReadAllText().FromJson<Package>(lowerCase: true, onlyPublic: false);
+                        Package package = result.ToSPath().ReadAllText().FromJson<Package>(lowerCase: true, onlyPublic: false);
                         TheVersion current = TheVersion.Parse(ApplicationInfo.Version);
                         TheVersion newVersion = package.Version;
 

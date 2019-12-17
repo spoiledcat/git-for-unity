@@ -64,8 +64,8 @@ namespace UnitTests
             };
 
             var expected = new[] {
-                new GitLock("12", "folder/somefile.png".ToNPath(), new GitUser("GitHub User", ""), now),
-                new GitLock("2f9cfde9c159d50e235cc1402c3e534b0bf2198afb20760697a5f9b07bf04fb3", "somezip.zip".ToNPath(), new GitUser("GitHub User", ""), now)
+                new GitLock("12", "folder/somefile.png".ToSPath(), new GitUser("GitHub User", ""), now),
+                new GitLock("2f9cfde9c159d50e235cc1402c3e534b0bf2198afb20760697a5f9b07bf04fb3", "somezip.zip".ToSPath(), new GitUser("GitHub User", ""), now)
             };
 
             AssertProcessOutput(output, expected);
@@ -85,7 +85,7 @@ namespace UnitTests
             };
 
             var expected = new[] {
-                new GitLock("7", "Assets/Main.unity".ToNPath(), new GitUser("GitHub User", ""), now),
+                new GitLock("7", "Assets/Main.unity".ToSPath(), new GitUser("GitHub User", ""), now),
             };
 
             AssertProcessOutput(output, expected);
@@ -99,7 +99,7 @@ namespace UnitTests
             Assert.IsTrue(lock1.Equals(lock2));
             Assert.IsTrue(lock1 == lock2);
             // these are the defaults
-            lock1 = new GitLock(null, NPath.Default, GitUser.Default, DateTimeOffset.MinValue);
+            lock1 = new GitLock(null, SPath.Default, GitUser.Default, DateTimeOffset.MinValue);
             lock2 = new GitLock();
             Assert.IsTrue(lock1.Equals(lock2));
             Assert.IsTrue(lock1 == lock2);

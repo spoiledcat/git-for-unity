@@ -2,11 +2,13 @@ using sfw.net;
 
 namespace Unity.VersionControl.Git
 {
+    using IO;
+
     static class FileEventExtensions
     {
         internal static string Describe(this Event fileEvent)
         {
-            var directory = fileEvent.Directory.ToNPath();
+            var directory = fileEvent.Directory.ToSPath();
 
             var fileA = directory.Combine(fileEvent.FileA);
 
