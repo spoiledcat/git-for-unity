@@ -6,15 +6,15 @@ namespace Unity.VersionControl.Git.Tasks
 {
     using IO;
 
-    public class GitUnlockTask : NativeProcessTask<string>
+    public class GitUnlockTask : GitProcessTask<string>
     {
         private const string TaskName = "git lfs unlock";
+        private readonly string arguments;
 
-        public GitUnlockTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitUnlockTask(IPlatform platform,
             SPath path, bool force,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(path, "path");
 
@@ -30,12 +30,11 @@ namespace Unity.VersionControl.Git.Tasks
             stringBuilder.Append(path.ToString(SlashMode.Forward));
             stringBuilder.Append("\"");
 
-            ProcessArguments = stringBuilder.ToString();
+            arguments = stringBuilder.ToString();
         }
 
-        public override string ProcessArguments { get; protected set; }
-
-        public override TaskAffinity Affinity => TaskAffinity.Exclusive;
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Unlocking file...";
 
     }

@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Editor.Tasks;
+using Unity.Editor.Tasks.Extensions;
 using Unity.Editor.Tasks.Helpers;
+using Unity.Editor.Tasks.Logging;
 
 namespace Unity.VersionControl.Git
 {
@@ -50,20 +52,22 @@ namespace Unity.VersionControl.Git
         {
             var arch = environment.Is32Bit ? "x86" : "x64";
             var os = environment.IsWindows ? "windows" : environment.IsMac ? "macOS" : "ubuntu";
-            var name = os;
+            var assetName = os;
             if (environment.IsWindows)
-                name += $"-{arch}";
-            name += ".tar.gz";
-            return (assets.FirstOrDefault(x => x.Name.EndsWith(name)),
-                assets.FirstOrDefault(x => x.Name.EndsWith(name + ".sha256")));
+                assetName += $"-{arch}";
+            assetName += ".tar.gz";
+            return (assets.FirstOrDefault(x => x.Name.EndsWith(assetName)),
+                assets.FirstOrDefault(x => x.Name.EndsWith(assetName + ".sha256")));
         }
 
-        public static DugiteReleaseManifest Load(ITaskManager taskManager, SPath path, IGitEnvironment environment)
+        public static DugiteReleaseManifest Load(ITaskManager taskManager, SPath manifestFile,
+            SPath userCachePath,
+            IGitEnvironment environment)
         {
-            var manifest = path.ReadAllText().FromJson<DugiteReleaseManifest>(true, false);
+            var manifest = manifestFile.ReadAllText().FromJson<DugiteReleaseManifest>(true, false);
             var (zipAsset, shaAsset) = manifest.GetAsset(environment);
-            var shaAssetPath = environment.UserCachePath.Combine("downloads", shaAsset.Name);
-                if (!shaAssetPath.FileExists())
+            var shaAssetPath = userCachePath.Combine("downloads", shaAsset.Name);
+            if (!shaAssetPath.FileExists())
             {
                 var downloader = new Downloader(taskManager);
                 downloader.QueueDownload(shaAsset.Url, shaAssetPath.Parent, shaAssetPath.FileName);
@@ -74,7 +78,8 @@ namespace Unity.VersionControl.Git
             return manifest;
         }
 
-        public static DugiteReleaseManifest Load(ITaskManager taskManager, SPath localCacheFile, UriString packageFeed, IGitEnvironment environment,
+        public static DugiteReleaseManifest Load(ITaskManager taskManager, SPath localCacheFile,
+            UriString packageFeed, IGitEnvironment environment,
             bool alwaysDownload = false)
         {
             DugiteReleaseManifest package = null;
@@ -89,7 +94,7 @@ namespace Unity.VersionControl.Git
                 var result = new DownloadTask(taskManager, packageFeed,
                     localCacheFile.Parent, filename)
                 .Catch(ex => {
-                    LogHelper.Warning(@"Error downloading package feed:{0} ""{1}"" Message:""{2}""", packageFeed,
+                    Logger.Warning(@"Error downloading package feed:{0} ""{1}"" Message:""{2}""", packageFeed,
                         ex.GetType().ToString(), ex.GetExceptionMessageShort());
                     return true;
                 }).RunSynchronously();
@@ -108,15 +113,16 @@ namespace Unity.VersionControl.Git
             {
                 try
                 {
-                    package = Load(taskManager, localCacheFile, environment);
+                    package = Load(taskManager, localCacheFile, cacheDir, environment);
                 }
                 catch (Exception ex)
                 {
-                    LogHelper.Error(ex);
+                    Logger.Error(ex);
                 }
             }
             return package;
-
         }
+
+        private static ILogging Logger { get; } = LogHelper.GetLogger<DugiteReleaseManifest>();
     }
 }

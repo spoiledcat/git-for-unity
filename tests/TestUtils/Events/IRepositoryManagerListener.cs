@@ -4,11 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using NSubstitute;
 using NUnit.Framework;
+using Unity.Editor.Tasks.Logging;
 using Unity.VersionControl.Git;
 
 namespace TestUtils.Events
 {
-    interface IRepositoryManagerListener
+    public interface IRepositoryManagerListener
     {
         void OnIsBusyChanged(bool busy);
         void LocalBranchesUpdated(Dictionary<string, ConfigBranch> branchList);
@@ -20,7 +21,7 @@ namespace TestUtils.Events
         void GitLogUpdated(List<GitLogEntry> gitLogEntries);
     }
 
-    class RepositoryManagerEvents
+    public class RepositoryManagerEvents
     {
         internal TaskCompletionSource<object> isBusy;
         public Task IsBusy => isBusy.Task;
@@ -67,7 +68,7 @@ namespace TestUtils.Events
         }
     }
 
-    static class RepositoryManagerListenerExtensions
+    public static class RepositoryManagerListenerExtensions
     {
         public static void AttachListener(this IRepositoryManagerListener listener,
             IRepositoryManager repositoryManager, RepositoryManagerEvents managerEvents = null, bool trace = true)

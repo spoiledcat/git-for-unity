@@ -10,7 +10,7 @@ namespace Unity.VersionControl.Git
         IGitEnvironment Environment { get; }
         IPlatform Platform { get; }
         IProcessEnvironment GitEnvironment { get; }
-        IProcessManager ProcessManager { get; }
+        IGitProcessManager ProcessManager { get; }
         ISettings SystemSettings { get; }
         ISettings LocalSettings { get; }
         ISettings UserSettings { get; }

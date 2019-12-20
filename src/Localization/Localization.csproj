@@ -12,7 +12,7 @@
     <AssemblyName>Unity.VersionControl.Git.Localization</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <OutputPath>..\com.unity.git.api\Localization\</OutputPath>
-     <RuntimeIdentifiers>win</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win</RuntimeIdentifiers>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

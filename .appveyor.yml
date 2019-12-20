@@ -3,46 +3,61 @@ environment:
   matrix:
     - node_version: '8'
 
+configuration: Release
+
 install:
 - ps: Install-Product node 8 x64
-- ps: |
-    scripts\Get-Deps.ps1
-    nuget restore
+- ps: scripts\Get-Deps.ps1
 
-configuration: Release
-build:
-  project: GitForUnity.sln
-  verbosity: minimal
+before_build:
+- appveyor-retry nuget restore
+- appveyor-retry dotnet restore -v Minimal
+
+build_script:
+- .\build -c %CONFIGURATION%
+
 test:
   assemblies:
     except:
+      - '**\*UnityTests*.dll'
       - '**\*.TestRunner.dll'
       - '**\TestUtils.dll'
   categories:
     except:
     - DoNotRunOnAppVeyor
-on_success:
-- ps: |
 
-    $version = $env:APPVEYOR_BUILD_VERSION
+after_test:
+- .\pack -c %CONFIGURATION%
 
-    Write-Output "Packaging version $($env:GitAssemblyInformationalVersion) ($version)"
+artifacts:
+- path: upm-ci~\packages\*
+  name: npm
+- path: build\nuget\**\*nupkg
+  name: nuget
 
-    scripts\Create-Packages.ps1 $version -SkipUpm
 
-    # save commit and binaries
-    $sourcedir="$($env:appveyor_build_folder)\build\Release"
-    $commitfile="$sourcedir\commit"
-    Add-Content $commitfile $appveyor_repo_commit
+# on_success:
+# - ps: |
 
-    $dllzip="$($env:appveyor_build_folder)\artifacts\binaries-$version.zip"
-    Write-Output "Zipping $sourcedir to $dllzip"
-    7z a $dllzip $sourcedir
+#     $version = $env:APPVEYOR_BUILD_VERSION
 
-on_finish:
-- ps: |
-    Set-Location $env:appveyor_build_folder
-    $manifest = "$($env:appveyor_build_folder)\artifacts\manifest.json"
-    scripts\Upload-ToAppveyor.ps1 $manifest
-    Get-ChildItem $env:appveyor_build_folder\build\*.log | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName logs }
-    Get-ChildItem $env:appveyor_build_folder\artifacts\binaries*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName binaries }
+#     Write-Output "Packaging version $($env:GitAssemblyInformationalVersion) ($version)"
+
+#     scripts\Create-Packages.ps1 $version -SkipUpm
+
+#     # save commit and binaries
+#     $sourcedir="$($env:appveyor_build_folder)\build\Release"
+#     $commitfile="$sourcedir\commit"
+#     Add-Content $commitfile $appveyor_repo_commit
+
+#     $dllzip="$($env:appveyor_build_folder)\artifacts\binaries-$version.zip"
+#     Write-Output "Zipping $sourcedir to $dllzip"
+#     7z a $dllzip $sourcedir
+
+# on_finish:
+# - ps: |
+#     Set-Location $env:appveyor_build_folder
+#     $manifest = "$($env:appveyor_build_folder)\artifacts\manifest.json"
+#     scripts\Upload-ToAppveyor.ps1 $manifest
+#     Get-ChildItem $env:appveyor_build_folder\build\*.log | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName logs }
+#     Get-ChildItem $env:appveyor_build_folder\artifacts\binaries*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName binaries }

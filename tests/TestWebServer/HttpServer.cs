@@ -6,8 +6,9 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
-using Newtonsoft.Json;
+using Unity.Editor.Tasks.Logging;
 using Unity.VersionControl.Git;
+using Unity.VersionControl.Git.IO;
 
 namespace TestWebServer
 {
@@ -104,34 +105,6 @@ namespace TestWebServer
         {
             Logger.Info("Handling request {0}", context.Request.Url.AbsolutePath);
 
-            if (context.Request.Url.AbsolutePath == "/api/usage/unity")
-            {
-                var streamReader = new StreamReader(context.Request.InputStream);
-                string body = null;
-                using (streamReader)
-                {
-                    body = streamReader.ReadToEnd();
-                }
-                
-                var parsedJson = JsonConvert.DeserializeObject(body);
-                var formattedJson = JsonConvert.SerializeObject(parsedJson, Formatting.Indented);
-
-                Logger.Info(formattedJson);
-
-                var json = new { result = "Cool unity usage" }.ToJson();
-                context.Response.StatusCode = (int)HttpStatusCode.OK;
-                context.Response.ContentLength64 = json.Length;
-
-                string mime;
-                context.Response.ContentType = mimeTypeMappings.TryGetValue(".json", out mime)
-                    ? mime
-                    : "application/octet-stream";
-                Utils.Copy(new MemoryStream(Encoding.UTF8.GetBytes(json)), context.Response.OutputStream, json.Length);
-                context.Response.OutputStream.Flush();
-                context.Response.Close();
-                return;
-            }
-
             var filename = context.Request.Url.AbsolutePath;
             filename = filename.TrimStart('/');
             filename = filename.Replace('/', Path.DirectorySeparatorChar);
@@ -155,7 +128,17 @@ namespace TestWebServer
                 context.Response.AddHeader("Date", DateTime.Now.ToString("r"));
                 context.Response.AddHeader("Last-Modified", File.GetLastWriteTime(filename).ToString("r"));
 
-                using (var input = new FileStream(filename, FileMode.Open))
+                Stream input = null;
+                if (filename.ToSPath().FileName == "embedded-git.json")
+                {
+                    input = new MemoryStream(Encoding.UTF8.GetBytes(File.ReadAllText(filename).Replace(":50000", $":{Port}")));
+                }
+                else
+                {
+                    input = new FileStream(filename, FileMode.Open);
+                }
+
+                using (input)
                 {
                     var length = input.Length;
                     var range = context.Request.Headers["Range"];

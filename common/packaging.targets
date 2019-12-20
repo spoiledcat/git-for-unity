@@ -1,28 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <PublishTo Condition="'$(PublishTo)' == '' ">$(SolutionDir)\build\packages</PublishTo>
-  </PropertyGroup>
 
-  <Target Name="EnumeratePackageFiles" Returns="$(PackageName);@(FilesToCopy)">
+  <!-- Prevent this from being imported multiple times -->
+  <Import Condition="'$(PropsIncluded)' == ''" Project="packaging.props" />
+  <Import Project="packageversionfiles.targets" />
 
-    <CreateItem Include="$(PackageSourceDir)\$(PackageName)\**\*.*;$(PackageSourceDir)\extras\$(PackageName)\**\*.*" Exclude="$(PackageSourceDir)\$(PackageName)\**\*.csproj*;$(PackageSourceDir)\$(PackageName)\**\*.ncrunch*;$(PackageSourceDir)\$(PackageName)\**\obj\**">
-      <Output TaskParameter="Include" ItemName="FilesToCopy" />
+  <ItemGroup>
+    <PackageReference Include="SpoiledCat.MSBuild.Tasks.FileUpdate" Version="1.0.13" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers" Private="false" />
+
+  </ItemGroup>
+
+  <Target Name="PreventMSBuildSDKCopyLocal" AfterTargets="ResolveReferences">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)" Condition="
+        $([System.String]::new('%(ReferenceCopyLocalPaths.NuGetPackageId)').StartsWith('Microsoft.Build')) or
+        $([System.String]::new('%(ReferenceCopyLocalPaths.NuGetPackageId)').StartsWith('Microsoft.Win32')) or
+        $([System.String]::new('%(ReferenceCopyLocalPaths.NuGetPackageId)').StartsWith('System.Collections.Immutable')) or
+        $([System.String]::new('%(ReferenceCopyLocalPaths.NuGetPackageId)').StartsWith('System.Text'))
+        " />
+    </ItemGroup>
+  </Target>
+
+  <!-- Assemble all sources into a folder called (PackageName) -->
+  <Target Name="EnumeratePackageFiles" Returns="@(SourcesToCopy)">
+    <CreateItem
+      Include="$(PackageSourceRootFull)**\*.*;$(RootDir)\extras\$(PackageName)\**\*.*"
+      Exclude="$(PackageSourceRootFull)**\*.csproj*;$(PackageSourceRootFull)**\*.ncrunch*;$(PackageSourceRootFull)**\obj\**;$(PackageSourceRootFull)version.json*;$(PackageSourceRootFull)Tests\**;$(RootDir)\extras\$(PackageName)\Tests\**;$(PackageSourceRootFull)Tests.meta">
+      <Output TaskParameter="Include" ItemName="SourcesToCopy" />
     </CreateItem>
-
   </Target>
 
   <Target Name="CopySourcesToPackmanPackage"
+    Condition=" '$(TargetFramework)' == 'net471' " 
     DependsOnTargets="EnumeratePackageFiles"
     AfterTargets="AfterBuild"
-    Inputs="@(FilesToCopy);@(VersionFiles)"
-    Outputs="@(FilesToCopy->'$(PublishTo)\$(PackageName)\%(RecursiveDir)%(Filename)%(Extension)');@(VersionFiles->'$(PublishTo)\$(PackageName)\%(Project)\%(Filename)%(Extension)')"
+    Inputs="@(SourcesToCopy)"
+    Outputs="@(SourcesToCopy->'$(PublishTo)$(PackageName)\%(RecursiveDir)%(Filename)%(Extension)')"
+    Returns="$Ran"
     >
 
-    <MakeDir Directories="$(PublishTo)\$(PackageName)" />
 
-    <Copy SourceFiles="@(FilesToCopy)" DestinationFiles="@(FilesToCopy->'$(PublishTo)\$(PackageName)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
-    <Copy SourceFiles="@(VersionFiles)" DestinationFiles="@(VersionFiles->'$(PublishTo)\$(PackageName)\%(Project)\%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <MakeDir Directories="$(PublishTo)$(PackageName)" />
+
+    <Copy
+      SourceFiles="@(SourcesToCopy)"
+      DestinationFiles="@(SourcesToCopy->'$(PublishTo)$(PackageName)\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true"
+      RetryDelayMilliseconds="10"
+      Retries="1"
+      />
 
   </Target>
+
+  <Target Name="UpdatePackageJson" DependsOnTargets="CopySourcesToPackmanPackage" AfterTargets="CopySourcesToPackmanPackage"
+     Condition=" '$(TargetFramework)' == 'net471' " >
+
+    <PropertyGroup>
+      <NeedsSuffix Condition="'$(PublicRelease)' != 'true' and '$(NpmVersionSuffix)' != '' and !$(NuGetPackageVersion.Contains('$(NpmVersionSuffix)'))">true</NeedsSuffix>
+      <NpmVersion Condition=" '$(NeedsSuffix)' != 'true' ">$(NuGetPackageVersion)</NpmVersion>
+      <NpmVersion Condition=" '$(NeedsSuffix)' == 'true'">$(BuildVersionSimple)$(NpmVersionSuffix)-g$(GitCommitIdShort)</NpmVersion>
+    </PropertyGroup>
+
+    <FileUpdate
+      Files="$(PublishTo)$(PackageName)\package.json"
+      Regex="&quot;version&quot;: &quot;.*&quot;"
+      ReplacementText="&quot;version&quot;: &quot;$(NpmVersion)&quot;"
+      Encoding="utf-8-without-bom">
+      <Output TaskParameter="AllItemsUpdated" PropertyName="FileWasStamped" />
+    </FileUpdate>
+
+    <FileUpdate
+      Condition="'$(FileWasStamped)' == 'true' "
+      Files="$(PublishTo)$(PackageName)\package.json"
+      Regex="(&quot;.*&quot;): &quot;0\.0\.0-placeholder&quot;"
+      ReplacementText="$1: &quot;$(NpmVersion)&quot;"
+      Encoding="utf-8-without-bom" />
+
+    <FileUpdate
+      Files="$(PublishTo)$(PackageName)\package.json"
+      Regex="&quot;directory&quot;: &quot;.*&quot;"
+      ReplacementText="&quot;directory&quot;: &quot;src/$(PackageName)&quot;"
+      Encoding="utf-8-without-bom" />
+
+    <FileUpdate
+      Files="$(PublishTo)$(PackageName)\package.json"
+      Regex="&quot;revision&quot;: &quot;.*&quot;"
+      ReplacementText="&quot;revision&quot;: &quot;$(GitCommitId)&quot;"
+      Encoding="utf-8-without-bom" />
+
+    <FileUpdate
+      Condition="Exists('$(PublishTo)$(PackageName)\CHANGELOG.md')"
+      Files="$(PublishTo)$(PackageName)\CHANGELOG.md"
+      Regex="## \[VERSION\] - DATE"
+      ReplacementText="## [$(NpmVersion)] - $([System.DateTime]::Now.ToString(&quot;yyyy-MM-dd&quot;))"
+      Encoding="utf-8-without-bom" />
+
+    <Message Condition="'$(FileWasStamped)' == 'true'"
+      Importance="High"
+      Text="$(AssemblyName) -> $(NuGetPackageVersion)"
+    />
+
+    <Message Condition="'$(FileWasStamped)' == 'true' and '$(NpmVersion)' != '$(NuGetPackageVersion)'"
+      Importance="High"
+      Text="$(PackageName) -> $(NpmVersion)"
+    />
+
+  </Target>
+
+  <!--
+    PACKAGE TESTS
+  -->
+
+  <Target Name="CleanTestArtifacts" AfterTargets="AfterClean">
+    <RemoveDir Directories="$(PublishTo)$(PackageTestName)" />
+  </Target>
+
+  <!-- Assemble all test files in a Tests folder into a package called (PackageName).tests -->
+  <Target Name="EnumeratePackageTestFiles" Returns="@(TestsToCopy)">
+    <CreateItem
+      Include="$(PackageSourceRootFull)\Tests\**\*.*;$(RootDir)\extras\$(PackageName)\Tests\**\*.*"
+      Exclude="$(PackageSourceRootFull)\Tests\**\*.csproj*;$(PackageSourceRootFull)\Tests\**\*.ncrunch*;$(PackageSourceRootFull)\Tests\**\obj\**;$(PackageSourceRootFull)\Tests\Helpers~\$(AssemblyName)*;$(PackageSourceRootFull)\Tests\Helpers~\nunit*;$(PackageSourceRootFull)\Tests\Helpers~\*Test*;$(PackageSourceRootFull)\Tests\Helpers~\Castle*;$(PackageSourceRootFull)\Tests\Helpers~\Microsoft*;$(PackageSourceRootFull)\Tests\Helpers~\System.*;$(PackageSourceRootFull)\Tests\Helpers~\NSubstitute*
+      ">
+      <Output TaskParameter="Include" ItemName="TestsToCopy" />
+    </CreateItem>
+  </Target>
+
+  <Target Name="CopyTestsToPackmanPackage"
+    Condition="Exists('$(PackageSourceRootFull)\Tests')"
+    DependsOnTargets="EnumeratePackageTestFiles"
+    AfterTargets="AfterBuild"
+    Inputs="@(TestsToCopy);@(VersionFiles)"
+    Outputs="@(TestsToCopy->'$(PublishTo)$(PackageTestName)\%(RecursiveDir)%(Filename)%(Extension)');@(VersionFiles->'$(PublishTo)$(PackageTestName)$(PackageSubFolder)Version%(Extension)')"
+    >
+
+    <MakeDir Directories="$(PublishTo)$(PackageTestName)" />
+
+    <Copy
+      SourceFiles="@(TestsToCopy)"
+      DestinationFiles="@(TestsToCopy->'$(PublishTo)$(PackageTestName)\%(RecursiveDir)%(Filename)%(Extension)')"
+      SkipUnchangedFiles="true"
+      RetryDelayMilliseconds="10"
+      Retries="1"
+      >
+      <Output TaskParameter="CopiedFiles" ItemName="FilesCopied" />
+    </Copy>
+
+    <Copy
+      SourceFiles="@(VersionFiles)"
+      DestinationFiles="@(VersionFiles->'$(PublishTo)$(PackageTestName)$(PackageSubFolder)Version%(Extension)')"
+      SkipUnchangedFiles="true"
+      RetryDelayMilliseconds="10"
+      Retries="1"
+      />
+
+  </Target>
+
+  <Target Name="StampPackageTestVersion"
+    DependsOnTargets="CopyTestsToPackmanPackage"
+    AfterTargets="CopyTestsToPackmanPackage"
+    Condition="Exists('$(PackageSourceRoot)\Tests') and '$(TargetFramework)' == 'net471' " >
+
+    <PropertyGroup>
+      <NeedsSuffix Condition="'$(PublicRelease)' != 'true' and '$(NpmVersionSuffix)' != '' and !$(NuGetPackageVersion.Contains('$(NpmVersionSuffix)'))">true</NeedsSuffix>
+      <NpmVersion Condition=" '$(NeedsSuffix)' != 'true' ">$(NuGetPackageVersion)</NpmVersion>
+      <NpmVersion Condition=" '$(NeedsSuffix)' == 'true'">$(BuildVersionSimple)$(NpmVersionSuffix)-g$(GitCommitIdShort)</NpmVersion>
+    </PropertyGroup>
+
+    <FileUpdate
+      Files="$(PublishTo)$(PackageTestName)\package.json"
+      Regex="&quot;version&quot;: &quot;.*&quot;"
+      ReplacementText="&quot;version&quot;: &quot;$(NpmVersion)&quot;">
+      <Output TaskParameter="AllItemsUpdated" PropertyName="FileWasStamped" />
+    </FileUpdate>
+
+    <FileUpdate
+      Condition="'$(FileWasStamped)' == 'true' "
+      Files="$(PublishTo)$(PackageTestName)\package.json"
+      Regex="(&quot;.*&quot;): &quot;0\.0\.0-placeholder&quot;"
+      ReplacementText="$1: &quot;$(NpmVersion)&quot;" />
+
+    <FileUpdate
+      Files="$(PublishTo)$(PackageTestName)\package.json"
+      Regex="&quot;directory&quot;: &quot;.*&quot;"
+      ReplacementText="&quot;directory&quot;: &quot;src/$(PackageName)/Tests&quot;" />
+
+    <FileUpdate
+      Files="$(PublishTo)$(PackageTestName)\package.json"
+      Regex="&quot;revision&quot;: &quot;.*&quot;"
+      ReplacementText="&quot;revision&quot;: &quot;$(GitCommitId)&quot;"
+      Encoding="utf-8-without-bom" />
+
+    <FileUpdate
+      Files="$(PublishTo)$(PackageName)\package.json"
+      Regex="&quot;testPackages&quot;"
+      ReplacementText="&quot;relatedPackages&quot;" />
+
+  </Target>
+
 </Project>

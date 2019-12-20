@@ -69,7 +69,7 @@ namespace Unity.VersionControl.Git
                 return new MemoryStream(possiblePath.ReadAllBytes());
             }
 
-            var basePath = resourceType == ResourceType.Icon ? "Unity.VersionControl.Git" : "Git.Api";
+            var basePath = resourceType == ResourceType.Icon ? "Editor" : "Api";
             possiblePath = environment.ExtensionInstallPath.Parent.Combine(basePath, type, os, resource);
             if (possiblePath.FileExists())
             {
@@ -110,7 +110,7 @@ namespace Unity.VersionControl.Git
                 return possiblePath;
             }
 
-            var basePath = resourceType == ResourceType.Icon ? "Unity.VersionControl.Git" : "Git.Api";
+            var basePath = resourceType == ResourceType.Icon ? "Editor" : "Api";
             possiblePath = environment.ExtensionInstallPath.Parent.Combine(basePath, type, os, resource);
             if (possiblePath.FileExists())
             {

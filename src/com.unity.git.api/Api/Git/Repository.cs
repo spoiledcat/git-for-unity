@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using Unity.Editor.Tasks;
 using Unity.Editor.Tasks.Helpers;
+using Unity.Editor.Tasks.Logging;
 
 namespace Unity.VersionControl.Git
 {
@@ -18,7 +19,7 @@ namespace Unity.VersionControl.Git
     [DebuggerDisplay("{DebuggerDisplay,nq}")]
     public class Repository : IEquatable<Repository>, IRepository
     {
-        private static ILogging Logger = LogHelper.GetLogger<Repository>();
+        private static ILogging Logger { get; } = LogHelper.GetLogger<Repository>();
 
         private IRepositoryManager repositoryManager;
         private ITaskManager taskManager;
@@ -111,7 +112,7 @@ namespace Unity.VersionControl.Git
             }
             catch (Exception ex)
             {
-                LogHelper.Error(ex);
+                Logger.Error(ex);
             }
 
         }

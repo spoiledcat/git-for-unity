@@ -27,6 +27,8 @@ namespace Unity.VersionControl.Git
                 return true;
             }
 
+            var shouldRaiseEntry = false;
+
             var proc = new LineParser(line);
             var name = proc.ReadUntilWhitespace();
             proc.SkipWhitespace();
@@ -49,13 +51,14 @@ namespace Unity.VersionControl.Git
             }
             else
             {
-                ReturnRemote();
+                shouldRaiseEntry = true;
+                result = ReturnRemote();
 
                 currentName = name;
                 currentUrl = url;
                 currentModes.Add(mode);
             }
-            return false;
+            return shouldRaiseEntry;
         }
 
         private GitRemote ReturnRemote()

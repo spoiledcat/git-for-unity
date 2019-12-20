@@ -4,16 +4,15 @@ using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitResetTask : NativeProcessTask<string>
+    public class GitResetTask : GitProcessTask<string>
     {
         private const string TaskName = "git reset";
         private readonly string arguments;
 
-        public GitResetTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitResetTask(IPlatform platform,
             string changeset, GitResetMode resetMode,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Name = TaskName;
             arguments = $"reset {GetModeString(resetMode)} {changeset}";
@@ -38,8 +37,8 @@ namespace Unity.VersionControl.Git.Tasks
             }
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Exclusive; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Writing configuration...";
     }
 }

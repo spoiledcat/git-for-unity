@@ -6,16 +6,15 @@ namespace Unity.VersionControl.Git.Tasks
 {
     using IO;
 
-    public class GitRemoveFromIndexTask : NativeProcessTask<string>
+    public class GitRemoveFromIndexTask : GitProcessTask<string>
     {
         private const string TaskName = "git reset HEAD";
         private readonly string arguments;
 
-        public GitRemoveFromIndexTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitRemoveFromIndexTask(IPlatform platform,
             IEnumerable<string> files,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNull(files, "files");
 
@@ -29,8 +28,8 @@ namespace Unity.VersionControl.Git.Tasks
             }
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Exclusive; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Unstaging files...";
     }
 }

@@ -1,32 +1,31 @@
-using System;
 using System.Text;
 using System.Threading;
 using Unity.Editor.Tasks;
+using static System.String;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitPullTask : NativeProcessTask<string>
+    public class GitPullTask : GitProcessTask<string>
     {
         private const string TaskName = "git pull";
         private readonly string arguments;
 
-        public GitPullTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitPullTask(IPlatform platform,
             string remote, string branch,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Name = TaskName;
             var stringBuilder = new StringBuilder();
             stringBuilder.Append("pull");
 
-            if (!String.IsNullOrEmpty(remote))
+            if (!IsNullOrEmpty(remote))
             {
                 stringBuilder.Append(" ");
                 stringBuilder.Append(remote);
             }
 
-            if (!String.IsNullOrEmpty(branch))
+            if (!IsNullOrEmpty(branch))
             {
                 stringBuilder.Append(" ");
                 stringBuilder.Append(branch);
@@ -35,8 +34,8 @@ namespace Unity.VersionControl.Git.Tasks
             arguments = stringBuilder.ToString();
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Exclusive; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Pulling...";
     }
 }

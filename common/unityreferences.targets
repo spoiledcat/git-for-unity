@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <ItemGroup>
+    <None Remove="**\*.meta;*.DotSettings;*.ncrunch*;**\*.asmdef;bin\**;obj\**;LICENSE.md;version.json;package.json" />
+  </ItemGroup>
+
   <PropertyGroup>
+    <HubSecondaryInstallPathFile>$(AppData)\UnityHub\secondaryInstallPath.json</HubSecondaryInstallPathFile>
+    <HubDefaultEditorFile>$(AppData)\UnityHub\defaultEditor.json</HubDefaultEditorFile>
+    <HubDefaultEditor Condition="'$(HubDefaultEditor)' == ''"></HubDefaultEditor>
     <WhatOS Condition="Exists('\Applications') and !Exists('c:\Windows')">mac</WhatOS>
     <WhatOS Condition="'$(WhatOS)' != 'mac'">win</WhatOS>
     <HubInstallDir Condition="'$(HubInstallDir)' == '' and '$(WhatOS)' == 'win'">C:\Program Files\Unity\Hub\Editor</HubInstallDir>
     <HubInstallDir Condition="'$(HubInstallDir)' == '' and '$(WhatOS)' == 'mac'">\Applications\Unity\Hub\Editor</HubInstallDir>
-    <UnityDir Condition="$(UnityDir) == '' and Exists('$(SolutionDir)\script\lib\Managed\UnityEditor.dll')">$(SolutionDir)script\lib\</UnityDir>
-    <UnityDir Condition="$(UnityDir) == '' and Exists('$(SolutionDir)\lib\Managed\UnityEditor.dll')">$(SolutionDir)lib\</UnityDir>
+    <HubInstallDir Condition="!Exists('$(HubInstallDir)')"></HubInstallDir>
+    <UnityDir Condition="$(UnityDir) == '' and Exists('$(RootDir)\script\lib\Managed\UnityEditor.dll')">$(RootDir)script\lib\</UnityDir>
+    <UnityDir Condition="$(UnityDir) == '' and Exists('$(RootDir)\lib\Managed\UnityEditor.dll')">$(RootDir)lib\</UnityDir>
     <UnityDir Condition="$(UnityDir) == '' and Exists('\Applications\Unity\Unity.app\Contents\Managed\UnityEditor.dll')">\Applications\Unity\Unity.app\Contents\</UnityDir>
     <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files\Unity\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files\Unity\Editor\Data\</UnityDir>
     <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files (x86)\Unity\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files (x86)\Unity\Editor\Data\</UnityDir>
@@ -21,10 +29,43 @@
     <CallTarget Targets="FindUnity"/>
   </Target>
 
-  <!-- Common includes and references -->
-  <Target Name="FindUnity">
+  <Target Name="FindHub"
+    Condition="'$(HubInstallDir)' == '' and '$(UnityDir)' == '' and Exists('$(HubSecondaryInstallPathFile)')"
+    Returns="$(HubInstallDir);$(HubDefaultEditor)">
 
-    <ItemGroup>
+    <ReadLinesFromFile File="$(HubSecondaryInstallPathFile)">
+      <Output TaskParameter="Lines" ItemName="item1" />
+    </ReadLinesFromFile>
+
+    <ReadLinesFromFile File="$(HubDefaultEditorFile)" Condition="Exists('$(HubDefaultEditorFile)')">
+      <Output TaskParameter="Lines" ItemName="item2" />
+    </ReadLinesFromFile>
+
+    <PropertyGroup>
+      <HubInstallDir>@(item1->Replace('"', ''))</HubInstallDir>
+      <HubInstallDir Condition=" !Exists('$(HubInstallDir)') "></HubInstallDir>
+
+      <HubDefaultEditor>@(item2->Replace('"', ''))</HubDefaultEditor>
+      <HubDefaultEditor Condition=" !Exists('$(HubInstallDir)\$(HubDefaultEditor)') "></HubDefaultEditor>
+    </PropertyGroup>
+
+  </Target>
+
+  <!-- Common includes and references -->
+  <Target Name="FindUnity" DependsOnTargets="FindHub" AfterTargets="FindHub">
+
+    <ItemGroup Condition="'$(UnityDir)' == '' and '$(HubDefaultEditor)' != '' ">
+      <FilesFoundInPath Condition="'$(WhatOS)' == 'win'" Include="$(HubInstallDir)\$(HubDefaultEditor)\Editor\Data\Managed\UnityEditor.dll" />
+      <FilesFoundInPath Condition="'$(WhatOS)' == 'mac'" Include="$(HubInstallDir)\$(HubDefaultEditor)\Unity.App\Contents\Managed\UnityEditor.dll" />
+      <BaseDirs Condition="'$(WhatOS)' == 'win'" Include="@(FilesFoundInPath->Replace('Managed\UnityEditor.dll', ''))" />
+      <BaseDirs Condition="'$(WhatOS)' == 'mac'" Include="@(FilesFoundInPath->Replace('Managed/UnityEditor.dll', ''))" />
+
+      <HubDefaultEditor Condition=" '$(BaseDirs)' == '' "></HubDefaultEditor>
+    </ItemGroup>
+
+    <Message Condition="'$(UnityDir)' == '' and '$(HubDefaultEditor)' != '' " Text="Using Hub default editor v$(HubDefaultEditor)" />
+
+    <ItemGroup Condition="'$(UnityDir)' == '' and '$(HubDefaultEditor)' == '' ">
       <FilesFoundInPath Condition="'$(WhatOS)' == 'win'" Include="$(HubInstallDir)\*\Editor\Data\Managed\UnityEditor.dll" />
       <FilesFoundInPath Condition="'$(WhatOS)' == 'mac'" Include="$(HubInstallDir)\*\Unity.App\Contents\Managed\UnityEditor.dll" />
       <BaseDirs Condition="'$(WhatOS)' == 'win'" Include="@(FilesFoundInPath->Replace('Managed\UnityEditor.dll', ''))" />
@@ -35,6 +76,8 @@
       <UnityDir Condition="$(UnityDir) == ''">%(BaseDirs.Identity)</UnityDir>
     </PropertyGroup>
 
+    <Message Condition="'$(HubDefaultEditor)' == '' " Text="Using editor at $(UnityDir)" />
+
     <ItemGroup Condition="'$(UnityDir)' != ''">
       <Reference Remove="UnityEditor;UnityEngine" />
       <Reference Condition="$(MSBuildProjectName.EndsWith('Tests'))" Remove="UnityEditor.TestRunner;UnityEngine.TestRunner" />
@@ -44,10 +87,12 @@
       <Reference Include="UnityEditor">
         <HintPath>$(UnityDir)Managed\UnityEditor.dll</HintPath>
         <Private>False</Private>
+        <PrivateAssets>all</PrivateAssets>
       </Reference>
       <Reference Include="UnityEngine">
         <HintPath>$(UnityDir)Managed\UnityEngine.dll</HintPath>
         <Private>False</Private>
+        <PrivateAssets>all</PrivateAssets>
       </Reference>
 
       <Reference Condition="$(MSBuildProjectName.EndsWith('Tests'))" Include="UnityEditor.TestRunner">
@@ -70,7 +115,7 @@
           3. UnityEditor.TestRunner.dll to the {0}lib\UnityExtensions/Unity/TestRunner/Editor folder
       </UnityDLLsMissingErrorText>
     </PropertyGroup>
-    <Error Condition="'$(UnityDir)' == ''" Text="$([System.String]::Format('$(UnityDLLsMissingErrorText)', '$(SolutionDir)'))" />
-
+    <Error Condition="'$(UnityDir)' == ''" Text="$([System.String]::Format('$(UnityDLLsMissingErrorText)', '$(RootDir)'))" />
   </Target>
+
 </Project>

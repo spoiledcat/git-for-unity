@@ -16,7 +16,7 @@ namespace Unity.VersionControl.Git
 
         public GitStatusEntry CreateGitStatusEntry(string path, GitFileStatus indexStatus, GitFileStatus workTreeStatus = GitFileStatus.None, string originalPath = null)
         {
-            var absolutePath = new SPath(path).MakeAbsolute();
+            var absolutePath = path.ToSPath().MakeAbsolute();
             var relativePath = absolutePath.RelativeTo(environment.RepositoryPath);
             var projectPath = absolutePath.RelativeTo(environment.UnityProjectPath.ToSPath());
 

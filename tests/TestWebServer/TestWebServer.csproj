@@ -11,22 +11,9 @@
   <Import Project="$(SolutionDir)\common\tests.props" />  
   <ItemGroup>
     <ProjectReference Include="..\..\src\com.unity.git.api\Api\Api.csproj" />
-    <ProjectReference Include="..\..\src\com.unity.git.api\Logging\Logging.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="files\**\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\src\com.unity.git.api\Api\PlatformResources\windows\git-lfs.zip">
-      <Link>files\unity\git\windows\git-lfs.zip</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\src\com.unity.git.api\Api\PlatformResources\windows\git.zip">
-      <Link>files\unity\git\windows\git.zip</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="..\..\src\com.unity.git.api\Api\PlatformResources\mac\git-lfs.zip">
-      <Link>files\unity\git\mac\git-lfs.zip</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

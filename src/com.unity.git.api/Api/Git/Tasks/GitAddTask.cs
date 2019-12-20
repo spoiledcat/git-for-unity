@@ -6,17 +6,15 @@ namespace Unity.VersionControl.Git.Tasks
 {
     using IO;
 
-    public class GitAddTask : NativeProcessTask<string>
+    public class GitAddTask : GitProcessTask<string>
     {
         private const string TaskName = "git add";
         private readonly string arguments;
 
-        public GitAddTask(ITaskManager taskManager,
-            IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitAddTask(IPlatform platform,
             IEnumerable<string> files,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNull(files, "files");
             Name = TaskName;
@@ -30,16 +28,15 @@ namespace Unity.VersionControl.Git.Tasks
             }
         }
 
-        public GitAddTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitAddTask(IPlatform platform,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             arguments = "add -A";
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Exclusive; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Staging files...";
     }
 }

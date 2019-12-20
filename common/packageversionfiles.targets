@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Prevent this from being imported multiple times -->
+  <Import Condition="'$(PropsIncluded)' == ''" Project="packaging.props" />
+
+  <ItemGroup>
+    <VersionFiles Include="$(IntermediateOutputPath)\$(AssemblyName).Version$(DefaultLanguageSourceExtension)" />
+  </ItemGroup>
+
+  <Target Name="CopyVersionFilesToPackage"
+    AfterTargets="AfterBuild"
+    Inputs="@(VersionFiles)"
+    Outputs="@(VersionFiles->'$(PublishTo)$(PackageName)$(PackageSubFolder)Version%(Extension)')"
+  >
+    <MakeDir Directories="$(PublishTo)$(PackageName)$(PackageSubFolder)" />
+    <Copy SkipUnchangedFiles="true" 
+      SourceFiles="@(VersionFiles)"
+      DestinationFiles="@(VersionFiles->'$(PublishTo)$(PackageName)$(PackageSubFolder)Version%(Extension)')"
+    />
+  </Target>
+
+</Project>

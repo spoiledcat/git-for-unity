@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PropsIncluded>true</PropsIncluded>
+    <PublishTo Condition="'$(PublishTo)' == '' ">$(RepoRoot)build\packages\</PublishTo>
+    <PackageSourceRoot Condition="'$(PackageSourceRoot)' == ''">$(MSBuildProjectDirectory)\..\..\</PackageSourceRoot>
+    <PackageSourceRootFull>$([System.IO.Path]::GetFullPath($(PackageSourceRoot)))</PackageSourceRootFull>
+
+    <TmpPackageName>$([System.IO.Path]::GetDirectoryName($(PackageSourceRootFull)))</TmpPackageName>
+    <PackageName Condition="'$(PackageName)' == '' ">$([System.IO.Path]::GetFileName($(TmpPackageName)))</PackageName>
+    <PackageTestName>$(PackageName).tests</PackageTestName>
+
+    <CurrentFullPath>$(MSBuildProjectDirectory)</CurrentFullPath>
+    <PackageSubFolder>\$(CurrentFullPath.Substring($(PackageSourceRootFull.Length)))\</PackageSubFolder>
+
+    <NpmVersionSuffix>-preview</NpmVersionSuffix>
+  </PropertyGroup>
+</Project>

@@ -6,16 +6,15 @@ namespace Unity.VersionControl.Git.Tasks
 {
     using IO;
 
-    public class GitCheckoutTask : NativeProcessTask<string>
+    public class GitCheckoutTask : GitProcessTask<string>
     {
         private const string TaskName = "git checkout";
         private readonly string arguments;
 
-        public GitCheckoutTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitCheckoutTask(IPlatform platform,
             IEnumerable<string> files,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNull(files, "files");
             Name = TaskName;
@@ -29,21 +28,18 @@ namespace Unity.VersionControl.Git.Tasks
             }
         }
 
-        public GitCheckoutTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitCheckoutTask(IPlatform platform,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             arguments = "checkout -- .";
         }
 
-        public GitCheckoutTask(
-            ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitCheckoutTask(IPlatform platform,
             string changeset,
             IEnumerable<string> files,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNull(files, "files");
             Name = TaskName;
@@ -60,8 +56,8 @@ namespace Unity.VersionControl.Git.Tasks
             Message = "Checking out files at rev " + changeset.Substring(0, 7);
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Exclusive; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Checking out files...";
     }
 }

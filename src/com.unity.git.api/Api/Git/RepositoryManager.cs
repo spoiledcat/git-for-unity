@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Unity.Editor.Tasks;
+using Unity.Editor.Tasks.Logging;
 
 namespace Unity.VersionControl.Git
 {
@@ -549,6 +550,7 @@ namespace Unity.VersionControl.Git
         private void WatcherOnRemoteBranchesChanged()
         {
             DataNeedsRefreshing?.Invoke(CacheType.Branches);
+            DataNeedsRefreshing?.Invoke(CacheType.GitAheadBehind);
         }
 
         private void WatcherOnLocalBranchesChanged()

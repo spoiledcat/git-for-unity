@@ -29,7 +29,7 @@ namespace UnitTests
 
             foreach (var line in lines)
             {
-                outputProcessor.LineReceived(line);
+                outputProcessor.Process(line);
             }
 
             Assert.IsTrue(result.HasValue);

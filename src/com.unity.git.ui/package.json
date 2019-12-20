@@ -1,12 +1,23 @@
 {
-	"name": "com.unity.git.ui",
-	"displayName": "Git for Unity UI",
-	"version": "2.0.0-dev",
-	"unity": "2018.4",
-	"description": "Git for Unity brings [Git](https://git-scm.com/) into [Unity](https://unity3d.com/), integrating source control into your work with friendly and accessible tools and workflows.",
-	"dependencies": {
-		"com.unity.git.api": "file:../com.unity.git.api"
-	},
-	"devDependencies": {
-	}
+  "name": "com.unity.git.ui",
+  "displayName": "Git for Unity UI",
+  "description": "Git for Unity brings [Git](https://git-scm.com/) into [Unity](https://unity3d.com/), integrating source control into your work with friendly and accessible tools and workflows.",
+  "version": "0.0.0-placeholder",
+  "license" : "MIT",
+    "author": {
+      "name": "Andreia Gaita",
+      "email": "shana@spoiledcat.net"
+    },
+    "repository" : {
+      "type" : "git",
+      "url": "git@github.com/Unity-Technologies/Git-for-Unity.git",
+      "directory": "",
+      "revision": ""
+    },
+    "dependencies": {
+      "com.unity.git.api": "0.0.0-placeholder"
+    },
+    "testPackages": {
+      "com.unity.git.ui.tests": "0.0.0-placeholder"
+    }
 }

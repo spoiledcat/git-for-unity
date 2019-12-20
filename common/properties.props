@@ -2,7 +2,6 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!-- Build flags -->
   <PropertyGroup>
-    <BuildType Condition="Exists('$(SolutionDir)script\src\ApplicationInfo_Local.cs')">Internal</BuildType>
     <BuildDefs>$(BuildDefs);ENABLE_MONO</BuildDefs>
   </PropertyGroup>
 
@@ -17,9 +16,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="$(SolutionDir)common\SolutionInfo.cs">
-      <Link>Properties\SolutionInfo.cs</Link>
-    </Compile>
     <None Include="$(SolutionDir)common\codeanalysis-release.ruleset">
       <Link>Properties\codeanalysis-release.ruleset</Link>
     </None>

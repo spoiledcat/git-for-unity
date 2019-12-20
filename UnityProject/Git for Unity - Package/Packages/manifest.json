@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "com.unity.git": "file:../../com.unity.git.tgz",
+    "com.unity.ext.nunit": "1.0.0",
+    "com.unity.ide.rider": "1.1.0",
+    "com.unity.ide.vscode": "1.1.2",
+    "com.unity.package-manager-ui": "2.2.0",
+    "com.unity.package-validation-suite": "0.7.10-preview",
+    "com.unity.test-framework": "1.0.13",
+    "com.unity.modules.imageconversion": "1.0.0",
+    "com.unity.modules.imgui": "1.0.0",
+    "com.unity.modules.jsonserialize": "1.0.0",
+    "com.unity.modules.ui": "1.0.0"
+  }
+}

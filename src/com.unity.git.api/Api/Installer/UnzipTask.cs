@@ -11,22 +11,20 @@ namespace Unity.VersionControl.Git
         private readonly string archiveFilePath;
         private readonly SPath extractedPath;
         private readonly IZipHelper zipHelper;
-        private readonly IFileSystem fileSystem;
-        private ProgressReporter progressReporter = new ProgressReporter();
-        private Dictionary<string, TaskData> tasks = new Dictionary<string, TaskData>();
+        private readonly ProgressReporter progressReporter = new ProgressReporter();
+        private readonly Dictionary<string, TaskData> tasks = new Dictionary<string, TaskData>();
 
         public UnzipTask(ITaskManager taskManager, SPath archiveFilePath, SPath extractedPath)
-            : this(taskManager, archiveFilePath, extractedPath, null, SPath.FileSystem)
+            : this(taskManager, archiveFilePath, extractedPath, null)
         {}
 
         public UnzipTask(ITaskManager taskManager, SPath archiveFilePath, SPath extractedPath,
-            IZipHelper zipHelper, IFileSystem fileSystem)
+            IZipHelper zipHelper)
             : base(taskManager)
         {
             this.archiveFilePath = archiveFilePath;
             this.extractedPath = extractedPath;
             this.zipHelper = zipHelper ?? ZipHelper.Instance;
-            this.fileSystem = fileSystem;
             Name = $"Unzip {archiveFilePath.FileName}";
             Message = $"Extracting {System.IO.Path.GetFileName(archiveFilePath)}";
             progressReporter.OnProgress += p => {
@@ -68,7 +66,7 @@ namespace Unity.VersionControl.Git
                 exception = null;
                 try
                 {
-                    success = zipHelper.Extract(archiveFilePath, extractedPath, Token,
+                    success = zipHelper.Extract(archiveFilePath, extractedPath,
                         (file, size) => {
                             var task = new TaskData(file, size);
                             tasks.Add(file, task);
@@ -85,7 +83,7 @@ namespace Unity.VersionControl.Git
                                 }
                             }
                             return !Token.IsCancellationRequested;
-                        });
+                        }, token: Token);
 
                     if (!success)
                     {

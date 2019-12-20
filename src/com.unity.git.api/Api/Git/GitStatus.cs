@@ -1,56 +1,78 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Unity.VersionControl.Git
 {
     [Serializable]
     public struct GitStatus
     {
-        public string LocalBranch;
-        public string RemoteBranch;
-        public int Ahead;
-        public int Behind;
-        public List<GitStatusEntry> Entries;
+        // these are public so Unity can serialize them
+        // we don't have access here to the Unity attribute
+        // that allows private fields to be serialized
+
+        public string localBranch;
+        public string remoteBranch;
+        public int ahead;
+        public int behind;
+        public List<GitStatusEntry> entries;
+
+        private int? hashcode;
+
+        public GitStatus(string localBranch, string remoteBranch, int ahead, int behind, List<GitStatusEntry> entries)
+        {
+            this.localBranch = localBranch;
+            this.remoteBranch = remoteBranch;
+            this.ahead = ahead;
+            this.behind = behind;
+            this.entries = entries;
+            hashcode = null;
+        }
 
         public override int GetHashCode()
         {
-            int hash = 17;
-            hash = hash * 23 + (LocalBranch?.GetHashCode() ?? 0);
-            hash = hash * 23 + (RemoteBranch?.GetHashCode() ?? 0);
-            hash = hash * 23 + Ahead.GetHashCode();
-            hash = hash * 23 + Behind.GetHashCode();
-            hash = hash * 23 + (Entries?.GetHashCode() ?? 0);
-            return hash;
+            if (hashcode.HasValue)
+                return hashcode.Value;
+
+            unchecked
+            {
+                hashcode = (int)2166136261;
+                hashcode = hashcode * 1677619 + (LocalBranch?.GetHashCode() ?? 0);
+                hashcode = hashcode * 1677619 + (RemoteBranch?.GetHashCode() ?? 0);
+                hashcode = hashcode * 1677619 + Ahead.GetHashCode();
+                hashcode = hashcode * 1677619 + Behind.GetHashCode();
+                foreach (var entry in Entries)
+                    hashcode = hashcode * 1677619 + entry.GetHashCode();
+                return hashcode.Value;
+            }
         }
 
         public override bool Equals(object other)
         {
-            if (other is GitStatus)
-                return Equals((GitStatus)other);
+            if (other is GitStatus status)
+                return Equals(status);
             return false;
         }
 
         public bool Equals(GitStatus other)
         {
-            return
-                String.Equals(LocalBranch, other.LocalBranch) && 
-                String.Equals(RemoteBranch, other.RemoteBranch) &&
+            var equals =
+                string.Equals(LocalBranch, other.LocalBranch) &&
+                string.Equals(RemoteBranch, other.RemoteBranch) &&
                 Ahead == other.Ahead &&
-                Behind == other.Behind &&
-                object.Equals(Entries, other.Entries)
-                ;
-        }
+                Behind == other.Behind;
+
+            if (!equals) return false;
+            if (Entries == null) return Entries == other.Entries;
+
+            // compare the entries in an unordered fashion
+            var left = Entries.Except(other.Entries);
+            var right = other.Entries.Except(Entries);
+            return !left.Any() && !right.Any();
+;        }
 
         public static bool operator ==(GitStatus lhs, GitStatus rhs)
         {
-            // If both are null, or both are same instance, return true.
-            if (ReferenceEquals(lhs, rhs))
-                return true;
-
-            // If one is null, but not both, return false.
-            if (((object)lhs == null) || ((object)rhs == null))
-                return false;
-
             // Return true if the fields match:
             return lhs.Equals(rhs);
         }
@@ -68,5 +90,12 @@ namespace Unity.VersionControl.Git
             return string.Format("{{GitStatus: \"{0}\"->{1} +{2}/-{3} {4} entries}}", LocalBranch, remoteBranchString, Ahead,
                 Behind, entriesString);
         }
+
+
+        public string LocalBranch => localBranch;
+        public string RemoteBranch => remoteBranch;
+        public int Ahead => ahead;
+        public int Behind => behind;
+        public List<GitStatusEntry> Entries => entries;
     }
 }

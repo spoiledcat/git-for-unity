@@ -5,6 +5,7 @@ using Unity.VersionControl.Git;
 using System;
 using System.Globalization;
 using FluentAssertions;
+using Unity.VersionControl.Git.IO;
 
 namespace UnitTests
 {
@@ -19,7 +20,7 @@ namespace UnitTests
 
             foreach (var line in lines)
             {
-                outputProcessor.LineReceived(line);
+                outputProcessor.Process(line);
             }
             CollectionAssert.AreEqual(expected, results);
         }

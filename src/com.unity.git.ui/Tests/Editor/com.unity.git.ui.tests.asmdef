@@ -1,0 +1,19 @@
+{
+    "name": "com.unity.git.ui.tests",
+    "references": [
+        "com.unity.git",
+        "com.unity.git.ui"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": []
+}

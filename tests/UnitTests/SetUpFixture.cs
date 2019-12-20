@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using Unity.Editor.Tasks.Logging;
 using Unity.VersionControl.Git;
 
 namespace UnitTests

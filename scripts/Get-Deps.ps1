@@ -14,7 +14,7 @@ if ($Trace) {
 try {
     $destdir = Join-Path $rootDirectory 'lib'
     $destfile = Join-Path $destdir 'deps.zip'
-    Invoke-WebRequest -usebasicparsing "https://ghfvs-installer.github.com/dependencies/deps.zip" -OutFile $destfile
+#    Invoke-WebRequest -usebasicparsing "https://ghfvs-installer.github.com/dependencies/deps.zip" -OutFile $destfile
     Push-Location $destdir
     Invoke-Command -Fatal { &'7z' -y -bb3 x 'deps.zip' }
 

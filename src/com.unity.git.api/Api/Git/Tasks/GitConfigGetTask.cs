@@ -1,20 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitConfigGetAllTask : NativeProcessListTask<string>
+    public class GitConfigGetAllTask : GitProcessListTask<string>
     {
         private const string TaskName = "git config get";
         private readonly string arguments;
 
-        public GitConfigGetAllTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitConfigGetAllTask(IPlatform platform,
             string key, GitConfigSource configSource,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringListOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringListOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(key, nameof(key));
             Name = TaskName;
@@ -24,23 +22,22 @@ namespace Unity.VersionControl.Git.Tasks
                 configSource == GitConfigSource.Local ? "--get --local" :
                 configSource == GitConfigSource.User ? "--get --global" :
                 "--get --system";
-            arguments = String.Format("config {0} {1}", source, key);
+            arguments = $"config {source} {key}";
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Concurrent; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity => TaskAffinity.Concurrent;
     }
 
-    class GitConfigGetTask : NativeProcessTask<string>
+    class GitConfigGetTask : GitProcessTask<string>
     {
         private const string TaskName = "git config get";
         private readonly string arguments;
 
-        public GitConfigGetTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitConfigGetTask(IPlatform platform,
             string key, GitConfigSource configSource,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new FirstNonNullOutputProcessor<string>(), token: token)
+            : base(platform, null, outputProcessor: new FirstNonNullOutputProcessor<string>(), token: token)
         {
             Name = TaskName;
             var source = "";
@@ -49,11 +46,11 @@ namespace Unity.VersionControl.Git.Tasks
                 configSource == GitConfigSource.Local ? "--get --local" :
                 configSource == GitConfigSource.User ? "--get --global" :
                 "--get --system";
-            arguments = String.Format("config {0} {1}", source, key);
+            arguments = $"config {source} {key}";
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Concurrent; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Concurrent;
         public override string Message { get; set; } = "Reading configuration...";
     }
 }

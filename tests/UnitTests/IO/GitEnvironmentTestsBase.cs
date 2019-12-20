@@ -3,6 +3,7 @@ using System.IO;
 using NSubstitute;
 using Unity.VersionControl.Git;
 using TestUtils;
+using Unity.VersionControl.Git.IO;
 
 namespace UnitTests
 {
@@ -14,9 +15,6 @@ namespace UnitTests
             var filesystem = Substitute.For<IFileSystem>();
 
             filesystem.DirectorySeparatorChar.Returns('\\');
-
-            filesystem.Combine(Args.String, Args.String)
-                .Returns(info => Path.Combine((string) info[0], (string) info[1]));
 
             filesystem.DirectoryExists(Args.String)
                 .Returns(info =>

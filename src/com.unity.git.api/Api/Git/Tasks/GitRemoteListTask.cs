@@ -3,19 +3,19 @@ using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitRemoteListTask : NativeProcessListTask<GitRemote>
+    public class GitRemoteListTask : GitProcessListTask<GitRemote>
     {
         private const string TaskName = "git remote";
 
-        public GitRemoteListTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitRemoteListTask(IPlatform platform,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new RemoteListOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new RemoteListOutputProcessor(), token: token)
         {
             Name = TaskName;
         }
 
-        public override string ProcessArguments { get { return "remote -v"; } }
+        public override string ProcessArguments => "remote -v";
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Listing remotes...";
     }
 }

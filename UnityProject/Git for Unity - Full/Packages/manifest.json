@@ -1,9 +1,6 @@
 {
-          "registry": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates",
-
   "dependencies": {
-    "com.unity.git.api": "file:../../../src/com.unity.git.api",
-    "com.unity.git.ui": "file:../../../src/com.unity.git.ui",
+    "com.unity.git": "file:../../../build/packages/com.unity.git",
     "com.unity.ext.nunit": "1.0.0",
     "com.unity.ide.rider": "1.1.0",
     "com.unity.ide.vscode": "1.1.2",
@@ -13,9 +10,6 @@
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.imgui": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",
-    "com.unity.modules.ui": "1.0.0",
-    "com.unity.editor.tasks": "1.2.12",
-    "com.unity.rpc": "1.0.11-preview",
-    "com.unity.process-server": "0.1.23-preview"
+    "com.unity.modules.ui": "1.0.0"
   }
 }

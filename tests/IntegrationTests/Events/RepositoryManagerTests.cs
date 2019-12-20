@@ -1,654 +1,429 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
+using BaseTests;
 using FluentAssertions;
 using NSubstitute;
-using NUnit.Framework;
-using TestUtils;
+using NUnit.Framework;using TestUtils;
 using TestUtils.Events;
+using Unity.Editor.Tasks;
 using Unity.VersionControl.Git;
 
 namespace IntegrationTests
 {
     [TestFixture, Category("DoNotRunOnAppVeyor")]
-    class RepositoryManagerTests : BaseGitEnvironmentTest
+    class RepositoryManagerTests : BaseTest
     {
-        private RepositoryManagerEvents repositoryManagerEvents;
-        private TimeSpan Timeout = TimeSpan.FromMilliseconds(1200);
-
-        public override void OnSetup()
-        {
-            base.OnSetup();
-            repositoryManagerEvents = new RepositoryManagerEvents();
-        }
-
-        [Test]
-        public async Task ShouldPerformBasicInitialize()
-        {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
-            {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
-
-                InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
-
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
-
-                await TaskManager.Wait();
-                StartTrackTime(watch, logger, "RepositoryManager.WaitForEvents()");
-                RepositoryManager.WaitForEvents();
-                StopTrackTimeAndLog(watch, logger);
-
-                repositoryManagerListener.DidNotReceive().OnIsBusyChanged(Args.Bool);
-                repositoryManagerListener.DidNotReceive().CurrentBranchUpdated(Args.NullableConfigBranch, Args.NullableConfigRemote);
-                repositoryManagerListener.DidNotReceive().GitAheadBehindStatusUpdated(Args.GitAheadBehindStatus);
-                repositoryManagerListener.DidNotReceive().GitStatusUpdated(Args.GitStatus);
-                repositoryManagerListener.DidNotReceive().GitLocksUpdated(Args.GitLocks);
-                repositoryManagerListener.DidNotReceive().GitLogUpdated(Args.GitLogs);
-                repositoryManagerListener.DidNotReceive().LocalBranchesUpdated(Args.LocalBranchDictionary);
-                repositoryManagerListener.DidNotReceive().RemoteBranchesUpdated(Args.RemoteDictionary, Args.RemoteBranchDictionary);
-            }
-            finally
-            {
-                EndTest(logger);
-            }
-        }
-
         [Test]
         public async Task ShouldDetectFileChanges()
         {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
+            using (var test = StartTest(TestData.TestRepoMasterCleanSynchronized))
             {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
+                var events = new RepositoryManagerEvents();
+                var listener = Substitute.For<IRepositoryManagerListener>();
+                listener.AttachListener(test.RepositoryManager, events);
 
-                InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
+                await events.WaitForNotBusy();
+                listener.ClearReceivedCalls();
+                events.Reset();
 
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
-
-                var foobarTxt = TestRepoMasterCleanSynchronized.Combine("foobar.txt");
+                var foobarTxt = test.Environment.RepositoryPath.Combine("foobar.txt");
                 foobarTxt.WriteAllText("foobar");
 
-                await TaskManager.Wait();
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
 
-                StartTrackTime(watch, logger, "RepositoryManager.WaitForEvents()");
-                RepositoryManager.WaitForEvents();
-                StopTrackTimeAndLog(watch, logger);
-
-                StartTrackTime(watch, logger, "repositoryManagerEvents.WaitForNotBusy()");
-                await repositoryManagerEvents.WaitForNotBusy();
-                StopTrackTimeAndLog(watch, logger);
+                var received = await ProcessEvents(events);
 
                 // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-
-                // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
-            }
-            finally
-            {
-                EndTest(logger);
+                AssertReceivedEvent(nameof(events.GitStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.RemoteBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.CurrentBranchUpdated), received);
             }
         }
 
         [Test]
         public async Task ShouldAddAndCommitFiles()
         {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
+            using (var test = StartTest(TestData.TestRepoMasterCleanSynchronized))
             {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
+                var events = new RepositoryManagerEvents();
+                var listener = Substitute.For<IRepositoryManagerListener>();
+                listener.AttachListener(test.RepositoryManager, events);
+                listener.ClearReceivedCalls();
 
-                InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
-
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
-
-                var foobarTxt = TestRepoMasterCleanSynchronized.Combine("foobar.txt");
+                var foobarTxt = test.Environment.RepositoryPath.Combine("foobar.txt");
                 foobarTxt.WriteAllText("foobar");
 
-                StartTrackTime(watch, logger, "RepositoryManager.WaitForEvents()");
-                RepositoryManager.WaitForEvents();
-                StopTrackTimeAndLog(watch, logger);
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
 
-                StartTrackTime(watch, logger, "repositoryManagerEvents.WaitForNotBusy()");
-                await repositoryManagerEvents.WaitForNotBusy();
-                StopTrackTimeAndLog(watch, logger);
-
-                // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-
-                // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
-
-                repositoryManagerListener.ClearReceivedCalls();
-                repositoryManagerEvents.Reset();
+                listener.ClearReceivedCalls();
+                events.Reset();
 
                 var filesToCommit = new List<string> { "foobar.txt" };
                 var commitMessage = "IntegrationTest Commit";
                 var commitBody = string.Empty;
 
-                StartTrackTime(watch, logger, "CommitFiles");
-                await RepositoryManager.CommitFiles(filesToCommit, commitMessage, commitBody).StartAsAsync();
-                StopTrackTimeAndLog(watch, logger);
-                await TaskManager.Wait();
+                await test.RepositoryManager.CommitFiles(filesToCommit, commitMessage, commitBody).StartAsAsync();
 
-                RepositoryManager.WaitForEvents();
-                await repositoryManagerEvents.WaitForNotBusy();
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
 
-                // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
+                var received = await ProcessEvents(events);
 
-                // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-            }
-            finally
-            {
-                EndTest(logger);
-            }
-        }
-
-        private async Task AssertReceivedEvent(string eventName, Task task)
-        {
-            try
-            {
-                (await Task.WhenAny(task, Task.Delay(Timeout))).Should().BeAssignableTo<Task<object>>("otherwise the event was not raised");
-            }
-            catch
-            {
-                throw new Exception($"Event {eventName} should have been raised");
-            }
-        }
-
-        private async Task AssertDidNotReceiveEvent(string eventName, Task task)
-        {
-            try
-            {
-                (await Task.WhenAny(task, Task.Delay(Timeout))).Should().BeAssignableTo<Task<bool>>("otherwise the event was raised");
-            }
-            catch
-            {
-                throw new Exception($"Event {eventName} should not have been raised");
+                AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.RemoteBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.GitLogUpdated), received);
+                AssertReceivedEvent(nameof(events.GitStatusUpdated), received);
             }
         }
 
         [Test]
         public async Task ShouldAddAndCommitAllFiles()
         {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
+            using (var test = StartTest(TestData.TestRepoMasterCleanSynchronized))
             {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
+                var events = new RepositoryManagerEvents();
+                var listener = Substitute.For<IRepositoryManagerListener>();
+                listener.AttachListener(test.RepositoryManager, events);
+                listener.ClearReceivedCalls();
 
-                InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
-
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
-
-                logger.Trace("Add files");
-
-                var foobarTxt = TestRepoMasterCleanSynchronized.Combine("foobar.txt");
+                var foobarTxt = test.Environment.RepositoryPath.Combine("foobar.txt");
                 foobarTxt.WriteAllText("foobar");
 
-                await TaskManager.Wait();
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
 
-                StartTrackTime(watch, logger, "RepositoryManager.WaitForEvents()");
-                RepositoryManager.WaitForEvents();
-                StopTrackTimeAndLog(watch, logger);
+                listener.ClearReceivedCalls();
+                events.Reset();
 
-                StartTrackTime(watch, logger, "repositoryManagerEvents.WaitForNotBusy()");
-                await repositoryManagerEvents.WaitForNotBusy();
-                StopTrackTimeAndLog(watch, logger);
+                await test.RepositoryManager.CommitAllFiles("IntegrationTest Commit", string.Empty).StartAsAsync();
 
-                // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-
-                // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
-
-                repositoryManagerListener.ClearReceivedCalls();
-                repositoryManagerEvents.Reset();
-
-                StartTrackTime(watch, logger, "CommitAllFiles");
-                await RepositoryManager.CommitAllFiles("IntegrationTest Commit", string.Empty).StartAsAsync();
-
-                StopTrackTimeAndLog(watch, logger);
-                await TaskManager.Wait();
-
-                StartTrackTime(watch, logger, "RepositoryManager.WaitForEvents()");
-                RepositoryManager.WaitForEvents();
-                StopTrackTimeAndLog(watch, logger);
-
-                StartTrackTime(watch, logger, "repositoryManagerEvents.WaitForNotBusy()");
-                await repositoryManagerEvents.WaitForNotBusy();
-                StopTrackTimeAndLog(watch, logger);
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
+                var received = await ProcessEvents(events);
 
                 // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
-
-                // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-            }
-            finally
-            {
-                EndTest(logger);
+                AssertReceivedEvent(nameof(events.GitStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.RemoteBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.GitLogUpdated), received);
             }
         }
 
         [Test]
         public async Task ShouldDetectBranchChange()
         {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
+            using (var test = StartTest(TestData.TestRepoMasterCleanSynchronized))
             {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
+                var events = new RepositoryManagerEvents();
+                var listener = Substitute.For<IRepositoryManagerListener>();
+                listener.AttachListener(test.RepositoryManager, events);
+                listener.ClearReceivedCalls();
 
-                InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
+                await test.RepositoryManager.SwitchBranch("feature/document").StartAsAsync();
 
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
-
-                await RepositoryManager.SwitchBranch("feature/document").StartAsAsync();
-                await TaskManager.Wait();
-
-                RepositoryManager.WaitForEvents();
-                await repositoryManagerEvents.WaitForNotBusy();
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
+                var received = await ProcessEvents(events);
 
                 // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
+                AssertReceivedEvent(nameof(events.GitStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.GitLogUpdated), received);
+                AssertReceivedEvent(nameof(events.CurrentBranchUpdated), received);
 
                 // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-            }
-            finally
-            {
-                EndTest(logger);
+                AssertDidNotReceiveEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertDidNotReceiveEvent(nameof(events.RemoteBranchesUpdated), received);
+                AssertDidNotReceiveEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                //AssertDidNotReceiveEvent(nameof(events.GitLocksUpdated), received);
             }
         }
 
         [Test]
         public async Task ShouldDetectBranchDelete()
         {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
+            using (var test = StartTest(TestData.TestRepoMasterCleanSynchronized))
             {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
+                var events = new RepositoryManagerEvents();
+                var listener = Substitute.For<IRepositoryManagerListener>();
+                listener.AttachListener(test.RepositoryManager, events);
+                listener.ClearReceivedCalls();
 
-                InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
+                await test.RepositoryManager.DeleteBranch("feature/document", true).StartAsAsync();
+                //await TaskManager.Wait();
 
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
-
-                await RepositoryManager.DeleteBranch("feature/document", true).StartAsAsync();
-                await TaskManager.Wait();
-
-                RepositoryManager.WaitForEvents();
-                await repositoryManagerEvents.WaitForNotBusy();
-
-                await Task.Delay(Timeout);
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
+                var received = await ProcessEvents(events);
 
                 // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
+                AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.RemoteBranchesUpdated), received);
+                AssertDidNotReceiveEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.GitLogUpdated), received);
+                AssertReceivedEvent(nameof(events.CurrentBranchUpdated), received);
 
                 // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-            }
-            finally
-            {
-                EndTest(logger);
+                AssertDidNotReceiveEvent(nameof(events.GitStatusUpdated), received);
+                //AssertDidNotReceiveEvent(nameof(events.GitLocksUpdated), received);
             }
         }
 
         [Test]
         public async Task ShouldDetectBranchCreate()
         {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
+            using (var test = StartTest(TestData.TestRepoMasterCleanSynchronized))
             {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
-
-                InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
-
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
+                var events = new RepositoryManagerEvents();
+                var listener = Substitute.For<IRepositoryManagerListener>();
+                listener.AttachListener(test.RepositoryManager, events);
+                listener.ClearReceivedCalls();
 
                 {
                     // prepopulate repository info cache
-                    var b = Repository.CurrentBranch;
-                    await TaskManager.Wait();
-                    RepositoryManager.WaitForEvents();
-                    await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
-                    repositoryManagerListener.ClearReceivedCalls();
-                    repositoryManagerEvents.Reset();
+                    var b = test.Repository.CurrentBranch;
+                    test.RepositoryManager.WaitForEvents();
+                    var received = await ProcessEvents(events);
+                    AssertReceivedEvent(nameof(events.CurrentBranchUpdated), received);
+                    listener.ClearReceivedCalls();
+                    events.Reset();
                 }
 
-                var createdBranch1 = "feature/document2";
-                await RepositoryManager.CreateBranch(createdBranch1, "feature/document").StartAsAsync();
-                await TaskManager.Wait();
+                {
+                    var createdBranch1 = "feature/document2";
+                    await test.RepositoryManager.CreateBranch(createdBranch1, "feature/document").StartAsAsync();
 
-                RepositoryManager.WaitForEvents();
-                await repositoryManagerEvents.WaitForNotBusy();
+                    test.RepositoryManager.WaitForEvents();
+                    await events.WaitForNotBusy();
+                    var received = await ProcessEvents(events);
 
-                // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
+                    // we expect these events
+                    AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                    AssertReceivedEvent(nameof(events.RemoteBranchesUpdated), received);
+                    AssertReceivedEvent(nameof(events.GitAheadBehindStatusUpdated), received);
 
-                // we don't expect these events
-                // TODO: log should not be getting called, but it is because when branches get changed we're blindly calling log
-                //await AssertDidNotReceiveEvent(repositoryManagerEvents.GitLogUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
+                    // we don't expect these events
+                    // TODO: log should not be getting called, but it is because when branches get changed we're blindly calling log
+                    //AssertDidNotReceiveEvent(events.GitLogUpdated, received);
+                    AssertDidNotReceiveEvent(nameof(events.GitStatusUpdated), received);
+                    AssertDidNotReceiveEvent(nameof(events.CurrentBranchUpdated), received);
+                    //AssertDidNotReceiveEvent(nameof(events.GitLocksUpdated), received);
 
-                repositoryManagerListener.ClearReceivedCalls();
-                repositoryManagerEvents.Reset();
+                    listener.ClearReceivedCalls();
+                    events.Reset();
 
-                await RepositoryManager.CreateBranch("feature2/document2", "feature/document").StartAsAsync();
-                await TaskManager.Wait();
+                    await test.RepositoryManager.CreateBranch("feature2/document2", "feature/document").StartAsAsync();
 
-                StartTrackTime(watch, logger, "CreateBranch");
-                RepositoryManager.WaitForEvents();
-                StopTrackTimeAndLog(watch, logger);
+                    test.RepositoryManager.WaitForEvents();
 
-                await repositoryManagerEvents.WaitForNotBusy();
+                    await events.WaitForNotBusy();
+                    received = await ProcessEvents(events);
 
-                // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
+                    // we expect these events
+                    AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                    AssertReceivedEvent(nameof(events.RemoteBranchesUpdated), received);
+                    AssertReceivedEvent(nameof(events.GitAheadBehindStatusUpdated), received);
 
-                // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                // TODO: log should not be getting called, but it is because when branches get changed we're blindly calling log
-                //await AssertDidNotReceiveEvent(repositoryManagerEvents.GitLogUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-            }
-            finally
-            {
-                EndTest(logger);
+                    // we don't expect these events
+                    AssertDidNotReceiveEvent(nameof(events.GitStatusUpdated), received);
+                    // TODO: log should not be getting called, but it is because when branches get changed we're blindly calling log
+                    //AssertDidNotReceiveEvent(events.GitLogUpdated, received);
+                    AssertDidNotReceiveEvent(nameof(events.CurrentBranchUpdated), received);
+                    //AssertDidNotReceiveEvent(nameof(events.GitLocksUpdated), received);
+                }
             }
         }
 
         [Test]
         public async Task ShouldDetectChangesToRemotes()
         {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
+            using (var test = StartTest(TestData.TestRepoMasterCleanSynchronized))
             {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
+                var events = new RepositoryManagerEvents();
+                var listener = Substitute.For<IRepositoryManagerListener>();
+                listener.AttachListener(test.RepositoryManager, events);
+                listener.ClearReceivedCalls();
 
-                InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
+                await test.RepositoryManager.RemoteRemove("origin").StartAsAsync();
 
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
-
-                await RepositoryManager.RemoteRemove("origin").StartAsAsync();
-                await TaskManager.Wait();
-
-                RepositoryManager.WaitForEvents();
-                await repositoryManagerEvents.WaitForNotBusy();
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
+                var received = await ProcessEvents(events);
 
                 // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
+                AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.RemoteBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.GitLogUpdated), received);
+                AssertReceivedEvent(nameof(events.CurrentBranchUpdated), received);
 
                 // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
+                AssertDidNotReceiveEvent(nameof(events.GitStatusUpdated), received);
+                //AssertDidNotReceiveEvent(nameof(events.GitLocksUpdated), received);
 
-                repositoryManagerListener.ClearReceivedCalls();
-                repositoryManagerEvents.Reset();
+                listener.ClearReceivedCalls();
+                events.Reset();
 
-                await RepositoryManager.RemoteAdd("origin", "https://github.com/EvilShana/IOTestsRepo.git").StartAsAsync();
-                await TaskManager.Wait();
+                await test.RepositoryManager.RemoteAdd("origin", test.TestRepo.RepoPath.Parent.Combine("bare")).StartAsAsync();
 
-                RepositoryManager.WaitForEvents();
-                await repositoryManagerEvents.WaitForNotBusy();
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
+                received = await ProcessEvents(events);
 
                 // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
+                AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.RemoteBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.GitLogUpdated), received);
+                AssertReceivedEvent(nameof(events.CurrentBranchUpdated), received);
 
                 // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-            }
-            finally
-            {
-                EndTest(logger);
+                AssertDidNotReceiveEvent(nameof(events.GitStatusUpdated), received);
+                //AssertDidNotReceiveEvent(nameof(events.GitLocksUpdated), received);
             }
         }
 
         [Test]
         public async Task ShouldDetectChangesToRemotesWhenSwitchingBranches()
         {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
+            using (var test = StartTest(TestData.TestRepoMasterTwoRemotes))
             {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
+                var events = new RepositoryManagerEvents();
+                var listener = Substitute.For<IRepositoryManagerListener>();
+                listener.AttachListener(test.RepositoryManager, events);
+                listener.ClearReceivedCalls();
 
-                InitializePlatformAndEnvironment(TestRepoMasterTwoRemotes,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
+                await test.RepositoryManager.CreateBranch("branch2", "another/master").StartAsAsync();
 
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
-
-                await RepositoryManager.CreateBranch("branch2", "another/master").StartAsAsync();
-                await TaskManager.Wait();
-
-                RepositoryManager.WaitForEvents();
-                await repositoryManagerEvents.WaitForNotBusy();
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
+                var received = await ProcessEvents(events);
 
                 // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
+                AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.RemoteBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.GitLogUpdated), received);
+                AssertReceivedEvent(nameof(events.CurrentBranchUpdated), received);
 
                 // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
+                AssertDidNotReceiveEvent(nameof(events.GitStatusUpdated), received);
+                AssertDidNotReceiveEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                //AssertDidNotReceiveEvent(nameof(events.GitLocksUpdated), received);
 
-                repositoryManagerListener.ClearReceivedCalls();
-                repositoryManagerEvents.Reset();
+                listener.ClearReceivedCalls();
+                events.Reset();
 
-                await RepositoryManager.SwitchBranch("branch2").StartAsAsync();
-                await TaskManager.Wait();
+                await test.RepositoryManager.SwitchBranch("branch2").StartAsAsync();
 
-                RepositoryManager.WaitForEvents();
-                await repositoryManagerEvents.WaitForNotBusy();
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
+                received = await ProcessEvents(events);
 
                 // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
+                AssertReceivedEvent(nameof(events.GitStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.GitLogUpdated), received);
+                AssertReceivedEvent(nameof(events.CurrentBranchUpdated), received);
 
                 // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-            }
-            finally
-            {
-                EndTest(logger);
+                AssertDidNotReceiveEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertDidNotReceiveEvent(nameof(events.RemoteBranchesUpdated), received);
+                AssertDidNotReceiveEvent(nameof(events.GitLocksUpdated), received);
             }
         }
 
         [Test]
         public async Task ShouldDetectGitPull()
         {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
+            using (var test = StartTest(TestData.TestRepoMasterCleanSynchronized))
             {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
+                var events = new RepositoryManagerEvents();
+                var listener = Substitute.For<IRepositoryManagerListener>();
+                listener.AttachListener(test.RepositoryManager, events);
+                listener.ClearReceivedCalls();
 
-                InitializePlatformAndEnvironment(TestRepoMasterCleanSynchronized,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
+                await test.RepositoryManager.Pull("origin", "master").StartAsAsync();
+                //await TaskManager.Wait();
 
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
-
-                await RepositoryManager.Pull("origin", "master").StartAsAsync();
-                await TaskManager.Wait();
-
-                RepositoryManager.WaitForEvents();
-                await repositoryManagerEvents.WaitForNotBusy();
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
+                var received = await ProcessEvents(events);
 
                 // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitLogUpdated), repositoryManagerEvents.GitLogUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
+                AssertReceivedEvent(nameof(events.GitStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.GitLogUpdated), received);
+                AssertReceivedEvent(nameof(events.CurrentBranchUpdated), received);
 
                 // we don't expect these events
                 // TODO: this should not happen but it's happening right now because when local branches get updated in the cache, remotes get updated too
-                //await AssertDidNotReceiveEvent(repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-            }
-            finally
-            {
-                EndTest(logger);
+                //AssertDidNotReceiveEvent(nameof(events.RemoteBranchesUpdated), received);
+                //AssertDidNotReceiveEvent(nameof(events.GitLocksUpdated), received);
             }
         }
 
         [Test]
         public async Task ShouldDetectGitFetch()
         {
-            Stopwatch watch = null;
-            ILogging logger = null;
-            StartTest(out watch, out logger);
-
-            try
+            using (var test = StartTest(TestData.TestRepoMasterCleanUnsynchronized))
             {
-                var repositoryManagerListener = Substitute.For<IRepositoryManagerListener>();
+                var events = new RepositoryManagerEvents();
+                var listener = Substitute.For<IRepositoryManagerListener>();
+                listener.AttachListener(test.RepositoryManager, events);
+                listener.ClearReceivedCalls();
 
-                InitializePlatformAndEnvironment(TestRepoMasterCleanUnsynchronized,
-                    onRepositoryManagerCreated: manager => {
-                        repositoryManagerListener.AttachListener(manager, repositoryManagerEvents);
-                    });
+                await test.RepositoryManager.Fetch("origin").StartAsAsync();
 
-                repositoryManagerListener.AssertDidNotReceiveAnyCalls();
-
-                await RepositoryManager.Fetch("origin").StartAsAsync();
-                await TaskManager.Wait();
-
-                RepositoryManager.WaitForEvents();
-                await repositoryManagerEvents.WaitForNotBusy();
+                test.RepositoryManager.WaitForEvents();
+                await events.WaitForNotBusy();
+                var received = await ProcessEvents(events);
 
                 // we expect these events
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.LocalBranchesUpdated), repositoryManagerEvents.LocalBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.RemoteBranchesUpdated), repositoryManagerEvents.RemoteBranchesUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.GitAheadBehindStatusUpdated), repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertReceivedEvent(nameof(repositoryManagerEvents.CurrentBranchUpdated), repositoryManagerEvents.CurrentBranchUpdated);
+                AssertReceivedEvent(nameof(events.LocalBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.RemoteBranchesUpdated), received);
+                AssertReceivedEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                AssertReceivedEvent(nameof(events.CurrentBranchUpdated), received);
 
                 // we don't expect these events
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitStatusUpdated), repositoryManagerEvents.GitStatusUpdated);
+                AssertDidNotReceiveEvent(nameof(events.GitStatusUpdated), received);
                 // TODO: log should not be getting called, but it is because when branches get changed we're blindly calling log
-                //await AssertDidNotReceiveEvent(repositoryManagerEvents.GitLogUpdated);
-                //await AssertDidNotReceiveEvent(repositoryManagerEvents.GitAheadBehindStatusUpdated);
-                await AssertDidNotReceiveEvent(nameof(repositoryManagerEvents.GitLocksUpdated), repositoryManagerEvents.GitLocksUpdated);
-            }
-            finally
-            {
-                EndTest(logger);
+                //AssertDidNotReceiveEvent(nameof(events.GitLogUpdated), received);
+                //AssertDidNotReceiveEvent(nameof(events.GitAheadBehindStatusUpdated), received);
+                //AssertDidNotReceiveEvent(nameof(events.GitLocksUpdated), received);
             }
         }
+
+        private void AssertReceivedEvent(string eventName, Dictionary<string, bool> events)
+        {
+            Assert.IsTrue(events[eventName], $"{eventName} should have been raised");
+        }
+
+        private void AssertDidNotReceiveEvent(string eventName, Dictionary<string, bool> events)
+        {
+            Assert.IsFalse(events[eventName], $"{eventName} should not have been raised");
+        }
+
+        private async Task<Dictionary<string, bool>> ProcessEvents(RepositoryManagerEvents events)
+        {
+            int timeout = 1000;
+            var received = new Dictionary<string, bool>
+            {
+                { "CurrentBranchUpdated", (await Task.WhenAny(events.CurrentBranchUpdated, Task.Delay(timeout))) is Task<object> },
+                { "GitAheadBehindStatusUpdated", (await Task.WhenAny(events.GitAheadBehindStatusUpdated, Task.Delay(timeout))) is Task<object>},
+                { "GitLocksUpdated", (await Task.WhenAny(events.GitLocksUpdated, Task.Delay(timeout))) is Task<object>},
+                { "GitLogUpdated", (await Task.WhenAny(events.GitLogUpdated, Task.Delay(timeout))) is Task<object>},
+                { "GitStatusUpdated", (await Task.WhenAny(events.GitStatusUpdated, Task.Delay(timeout))) is Task<object>},
+                { "LocalBranchesUpdated", (await Task.WhenAny(events.LocalBranchesUpdated, Task.Delay(timeout))) is Task<object>},
+                { "RemoteBranchesUpdated", (await Task.WhenAny(events.RemoteBranchesUpdated, Task.Delay(timeout))) is Task<object>},
+            };
+            return received;
+        }
+
     }
 }

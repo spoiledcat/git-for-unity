@@ -2,6 +2,8 @@
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
+using Unity.Editor.Tasks.Helpers;
+using Unity.Editor.Tasks.Logging;
 
 namespace Unity.VersionControl.Git
 {
@@ -13,9 +15,10 @@ namespace Unity.VersionControl.Git
 
 	public interface IZipHelper
 	{
-		bool Extract(string archive, string outFolder, CancellationToken cancellationToken,
-			Action<string, long> onStart, Func<long, long, string, bool> onProgress,
-			Func<string, bool> onFilter = null);
+		bool Extract(string archive, string outFolder,
+            Action<string, long> onStart, Func<long, long, string, bool> onProgress,
+			Func<string, bool> onFilter = null,
+            CancellationToken token = default);
 	}
 
 	public class ZipHelper : IZipHelper
@@ -33,8 +36,9 @@ namespace Unity.VersionControl.Git
 			set => instance = value;
 		}
 
-		public bool Extract(string archive, string outFolder, CancellationToken cancellationToken,
-			Action<string, long> onStart, Func<long, long, string, bool> onProgress, Func<string, bool> onFilter = null)
+		public bool Extract(string archive, string outFolder, 
+			Action<string, long> onStart, Func<long, long, string, bool> onProgress, Func<string, bool> onFilter = null,
+            CancellationToken token = default)
 		{
 
 			var destDir = outFolder.ToSPath();
@@ -55,8 +59,8 @@ namespace Unity.VersionControl.Git
 			}
 
 			if (archive.EndsWith(".zip"))
-                return ExtractZip(archive, destDir, cancellationToken, onStart, onProgress, onFilter);
-			return ExtractTar(archive, destDir, cancellationToken, onStart, onProgress, onFilter);
+                return ExtractZip(archive, destDir, default, onStart, onProgress, onFilter);
+			return ExtractTar(archive, destDir, default, onStart, onProgress, onFilter);
 		}
 
 		private bool ExtractZip(string archive, SPath outFolder, CancellationToken cancellationToken,
@@ -187,10 +191,12 @@ namespace Unity.VersionControl.Git
 			}
 			catch (Exception ex)
 			{
-				LogHelper.Error(ex, "Error setting file attributes in " + fullZipToPath);
+				Logger.Error(ex, "Error setting file attributes in " + fullZipToPath);
 			}
 
 			return fullZipToPath;
 		}
-	}
+
+        private static ILogging Logger { get; } = LogHelper.GetLogger<ZipHelper>();
+    }
 }

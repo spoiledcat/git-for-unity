@@ -3,23 +3,23 @@ using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitLockTask : NativeProcessTask<string>
+    public class GitLockTask : GitProcessTask<string>
     {
         private const string TaskName = "git lfs lock";
+        private readonly string args;
 
-        public GitLockTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitLockTask(IPlatform platform,
                 string path,
                 CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Name = TaskName;
             Guard.ArgumentNotNullOrWhiteSpace(path, "path");
-            ProcessArguments = $"lfs lock \"{path}\"";
+            args = $"lfs lock \"{path}\"";
         }
 
-        public override string ProcessArguments { get; protected set; }
-        public override TaskAffinity Affinity => TaskAffinity.Exclusive;
+        public override string ProcessArguments => args;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Locking file...";
     }
 }

@@ -10,12 +10,14 @@ namespace Unity.VersionControl.Git
 
     public static class EnvironmentExtensions
     {
-        public static SPath GetRepositoryPath(this IGitEnvironment environment, SPath path)
+        public static SPath RelativeToRepository(this SPath path, IGitEnvironment environment)
         {
-            Guard.ArgumentNotNull(path, nameof(path));
+            path.ThrowIfNotInitialized();
+            Guard.ArgumentNotNull(environment, nameof(environment));
 
-            SPath projectPath = environment.UnityProjectPath.ToSPath();
-            SPath repositoryPath = environment.RepositoryPath;
+            var projectPath = environment.UnityProjectPath.ToSPath();
+            var repositoryPath = environment.RepositoryPath;
+
             if (projectPath == repositoryPath)
             {
                 return path;
@@ -29,12 +31,13 @@ namespace Unity.VersionControl.Git
             return projectPath.RelativeTo(repositoryPath).Combine(path);
         }
 
-        public static SPath GetAssetPath(this IGitEnvironment environment, SPath path)
+        public static SPath RelativeToProject(this SPath path, IGitEnvironment environment)
         {
-            Guard.ArgumentNotNull(path, nameof(path));
+            path.ThrowIfNotInitialized();
+            Guard.ArgumentNotNull(environment, nameof(environment));
 
-            SPath projectPath = environment.UnityProjectPath.ToSPath();
-            SPath repositoryPath = environment.RepositoryPath;
+            var projectPath = environment.UnityProjectPath.ToSPath();
+            var repositoryPath = environment.RepositoryPath;
             if (projectPath == repositoryPath)
             {
                 return path;

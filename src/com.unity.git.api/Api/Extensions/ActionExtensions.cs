@@ -1,4 +1,5 @@
 using System;
+using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git
 {
@@ -21,5 +22,12 @@ namespace Unity.VersionControl.Git
             if (action != null)
                 action(obj, obj2);
         }
+    }
+
+    public static class ProcessManagerExtensions
+    {
+        public static IProcessTask Configure(this IProcessTask task, IProcessManager processManager, string workingDirectory) => processManager.Configure(task, workingDirectory);
+        public static IProcessTask<T> Configure<T>(this IProcessTask<T> task, IProcessManager processManager, string workingDirectory) => processManager.Configure(task, workingDirectory);
+        public static IProcessTask<TData, T> Configure<TData, T>(this IProcessTask<TData, T> task, IProcessManager processManager, string workingDirectory) => processManager.Configure(task, workingDirectory);
     }
 }

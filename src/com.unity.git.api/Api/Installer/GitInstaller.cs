@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Resources;
 using System.Threading;
 using Unity.Editor.Tasks.Helpers;
-using Downloader = Unity.Editor.Tasks.Downloader;
-using IEnvironment = Unity.Editor.Tasks.IEnvironment;
-using IProcessManager = Unity.Editor.Tasks.IProcessManager;
-using ProgressReporter = Unity.Editor.Tasks.ProgressReporter;
-using TaskData = Unity.Editor.Tasks.TaskData;
+using Unity.Editor.Tasks.Logging;
 
 namespace Unity.VersionControl.Git
 {
@@ -15,35 +10,28 @@ namespace Unity.VersionControl.Git
     using IO;
     using Unity.Editor.Tasks;
 
-    public class GitInstaller : Editor.Tasks.TaskBase<GitInstaller.GitInstallationState>
+    public class GitInstaller : TaskBase<GitInstaller.GitInstallationState>
     {
         private readonly CancellationToken cancellationToken;
-        private readonly IGitEnvironment environment;
-        private readonly IProcessManager processManager;
-        private readonly IProcessEnvironment processEnvironment;
         private readonly GitInstallDetails installDetails;
         private readonly IZipHelper sharpZipLibHelper;
         private readonly Dictionary<string, TaskData> tasks = new Dictionary<string, TaskData>();
         private readonly ProgressReporter progressReporter = new ProgressReporter();
 
+        private readonly IPlatform platform;
         private GitInstallationState currentState;
 
-        public GitInstaller(ITaskManager taskManager,
-            IGitEnvironment environment,
-            IProcessManager processManager,
-            IProcessEnvironment processEnvironment,
+        public GitInstaller(IPlatform platform,
             GitInstallationState state = null,
             GitInstallDetails installDetails = null,
             CancellationToken token = default)
-            : base(taskManager, token)
+            : base(platform.TaskManager, token)
         {
-            this.environment = environment;
-            this.processManager = processManager;
-            this.processEnvironment = processEnvironment;
+            this.platform = platform;
             this.currentState = state;
             this.sharpZipLibHelper = ZipHelper.Instance;
             this.cancellationToken = token;
-            this.installDetails = installDetails ?? new GitInstallDetails(environment.UserCachePath, environment);
+            this.installDetails = installDetails ?? new GitInstallDetails(platform.Environment.UserCachePath, platform.Environment);
             progressReporter.OnProgress += progress.UpdateProgress;
         }
 
@@ -132,7 +120,7 @@ namespace Unity.VersionControl.Git
 
         public GitInstallationState VerifyGitSettings(GitInstallationState state = null)
         {
-            state = state ?? environment.GitInstallationState;
+            state = state ?? platform.Environment.GitInstallationState;
             if (!state.GitExecutablePath.IsInitialized && !state.GitLfsExecutablePath.IsInitialized)
                 return state;
 
@@ -165,11 +153,14 @@ namespace Unity.VersionControl.Git
         {
             if (!state.GitIsValid)
             {
-                var gitPath = new FindExecTask(TaskManager, environment, "git", cancellationToken)
-                    .Configure(processManager)
+                var gitPath = new FindExecTask(TaskManager,
+                                  platform.ProcessManager.DefaultProcessEnvironment, platform.Environment,
+                                  "git", cancellationToken)
+                    .Configure(platform.ProcessManager)
                     .Progress(progressReporter.UpdateProgress)
                     .Catch(e => true)
                     .RunSynchronously();
+
                 state.GitExecutablePath = gitPath;
                 state = ValidateGitVersion(state);
                 if (state.GitIsValid)
@@ -182,11 +173,14 @@ namespace Unity.VersionControl.Git
         {
             if (!state.GitLfsIsValid)
             {
-                var gitLfsPath = new FindExecTask(TaskManager, environment, "git-lfs", cancellationToken)
-                    .Configure(processManager)
+                var gitLfsPath = new FindExecTask(TaskManager,
+                                  platform.ProcessManager.DefaultProcessEnvironment, platform.Environment,
+                                  "git-lfs", cancellationToken)
+                    .Configure(platform.ProcessManager)
                     .Progress(progressReporter.UpdateProgress)
                     .Catch(e => true)
                     .RunSynchronously();
+
                 state.GitLfsExecutablePath = gitLfsPath;
                 state = ValidateGitLfsVersion(state);
                 if (state.GitLfsIsValid)
@@ -212,9 +206,8 @@ namespace Unity.VersionControl.Git
                 state.GitIsValid = false;
                 return state;
             }
-            var version = new NativeProcessTask<TheVersion>(TaskManager, processManager,
-                              state.GitExecutablePath, "--version",
-                              new VersionOutputProcessor())
+            var version = new GitVersionTask(TaskManager, platform.DefaultProcessEnvironment, state.GitExecutablePath)
+                          .Configure(platform.ProcessManager)
                           .Progress(progressReporter.UpdateProgress)
                           .Catch(e => true)
                           .RunSynchronously();
@@ -231,9 +224,8 @@ namespace Unity.VersionControl.Git
                 state.GitLfsIsValid = false;
                 return state;
             }
-            var version = new NativeProcessTask<TheVersion>(TaskManager, processManager,
-                              state.GitLfsExecutablePath, "version",
-                              new LfsVersionOutputProcessor())
+            var version = new GitLfsVersionTask(TaskManager, platform.DefaultProcessEnvironment, state.GitLfsExecutablePath)
+                    .Configure(platform.ProcessManager)
                     .Progress(progressReporter.UpdateProgress)
                     .Catch(e => true)
                     .RunSynchronously();
@@ -250,7 +242,8 @@ namespace Unity.VersionControl.Git
             if (state.GitInstallationPath != installDetails.GitInstallationPath)
                 return state;
 
-            state.GitPackage = DugiteReleaseManifest.Load(TaskManager, installDetails.GitManifest, GitInstallDetails.GitPackageFeed, environment);
+            state.GitPackage = DugiteReleaseManifest.Load(TaskManager, installDetails.GitManifest,
+                installDetails.GitManifestFeed, platform.Environment);
             if (state.GitPackage == null)
                 return state;
 
@@ -300,7 +293,7 @@ namespace Unity.VersionControl.Git
                 .Progress(progressReporter.UpdateProgress)
                 .Catch(e =>
                 {
-                    LogHelper.Trace(e, "Failed to download");
+                    Logger.Trace(e, "Failed to download");
                     return true;
                 });
 
@@ -319,12 +312,11 @@ namespace Unity.VersionControl.Git
             {
                 var gitExtractPath = tempZipExtractPath.Combine("git").CreateDirectory();
                 var unzipTask = new UnzipTask(TaskManager, state.GitZipPath,
-                        gitExtractPath, sharpZipLibHelper,
-                        environment.FileSystem)
+                        gitExtractPath, sharpZipLibHelper)
                     .Progress(progressReporter.UpdateProgress)
                     .Catch(e =>
                     {
-                        LogHelper.Trace(e, "Failed to unzip " + state.GitZipPath);
+                        Logger.Trace(e, "Failed to unzip " + state.GitZipPath);
                         return true;
                     });
 
@@ -336,8 +328,7 @@ namespace Unity.VersionControl.Git
 
                     CopyHelper.Copy(gitExtractPath, target);
 
-                    state.GitIsValid = true;
-
+                    state.GitIsValid = state.GitLfsIsValid = true;
                     state.IsCustomGitPath = state.GitExecutablePath != installDetails.GitExecutablePath;
                 }
             }
@@ -427,8 +418,8 @@ namespace Unity.VersionControl.Git
 
         public class GitInstallDetails
         {
-            public static string GitPackageName { get; } = "embedded-git.json";
-            private const string packageFeed = "https://api.github.com/repos/github-for-unity/dugite-native/releases/latest";
+            public const string ManifestName = "embedded-git.json";
+            public const string ManifestFeed = "https://api.github.com/repos/github-for-unity/dugite-native/releases/latest";
 
             public const string GitDirectory = "git";
 
@@ -445,7 +436,7 @@ namespace Unity.VersionControl.Git
                     GitLfsExecutablePath = GitLfsInstallationPath.Combine(environment.Is32Bit ? "mingw32" : "mingw64");
                 GitLfsExecutablePath = GitLfsExecutablePath.Combine("libexec", "git-core");
                 GitLfsExecutablePath = GitLfsExecutablePath.Combine("git-lfs" + environment.ExecutableExtension);
-                GitManifest = baseDataPath.Combine(GitPackageName);
+                GitManifest = baseDataPath.Combine(GitManifestName);
             }
 
             public GitInstallationState GetDefaults()
@@ -463,8 +454,10 @@ namespace Unity.VersionControl.Git
             public SPath GitLfsInstallationPath { get; }
             public SPath GitExecutablePath { get; }
             public SPath GitLfsExecutablePath { get; }
-            public static UriString GitPackageFeed { get; set; } = packageFeed;
+            public UriString GitManifestFeed { get; set;  } = ManifestFeed;
+            public string GitManifestName { get; set; } = ManifestName;
             public SPath GitManifest { get; set; }
+
         }
     }
 }

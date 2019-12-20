@@ -1,12 +1,13 @@
 ﻿using System.IO;
-using System.Threading;
 using Unity.VersionControl.Git;
 using NSubstitute;
 using System.Collections.Generic;
+using Unity.Editor.Tasks;
+using Unity.Editor.Tasks.Helpers;
 
 namespace TestUtils
 {
-    static class Args
+    public static class Args
     {
         public static string String { get { return Arg.Any<string>(); } }
         public static bool Bool { get { return Arg.Any<bool>(); } }

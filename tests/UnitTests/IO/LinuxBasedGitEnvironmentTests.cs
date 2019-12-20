@@ -4,6 +4,7 @@ using NSubstitute;
 using NUnit.Framework;
 using Unity.VersionControl.Git;
 using TestUtils;
+using Unity.VersionControl.Git.IO;
 
 namespace UnitTests
 {

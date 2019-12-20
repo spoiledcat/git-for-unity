@@ -5,16 +5,15 @@ using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitConfigListTask : NativeProcessListTask<KeyValuePair<string, string>>
+    public class GitConfigListTask : GitProcessListTask<KeyValuePair<string, string>>
     {
         private const string TaskName = "git config list";
         private readonly string arguments;
 
-        public GitConfigListTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitConfigListTask(IPlatform platform,
             GitConfigSource configSource,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new ConfigOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new ConfigOutputProcessor(), token: token)
         {
             Name = TaskName;
             var source = "";
@@ -27,11 +26,11 @@ namespace Unity.VersionControl.Git.Tasks
                         ? "system"
                         : "global");
             }
-            arguments = String.Format("config {0} -l", source);
+            arguments = $"config {source} -l";
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Exclusive; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Concurrent;
         public override string Message { get; set; } = "Reading configuration...";
     }
 }

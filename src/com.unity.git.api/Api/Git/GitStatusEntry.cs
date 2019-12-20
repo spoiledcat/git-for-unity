@@ -1,4 +1,5 @@
 using System;
+using Unity.VersionControl.Git.IO;
 
 namespace Unity.VersionControl.Git
 {
@@ -6,7 +7,7 @@ namespace Unity.VersionControl.Git
     public struct GitStatusEntry
     {
         public static GitStatusEntry Default = new GitStatusEntry();
-        
+
         public string path;
         public string fullPath;
         public string projectPath;
@@ -31,30 +32,33 @@ namespace Unity.VersionControl.Git
 
         public override int GetHashCode()
         {
-            int hash = 17;
-            hash = hash * 23 + (path?.GetHashCode() ?? 0);
-            hash = hash * 23 + (fullPath?.GetHashCode() ?? 0);
-            hash = hash * 23 + (projectPath?.GetHashCode() ?? 0);
-            hash = hash * 23 + (originalPath?.GetHashCode() ?? 0);
-            hash = hash * 23 + indexStatus.GetHashCode();
-            hash = hash * 23 + workTreeStatus.GetHashCode();
-            return hash;
+            unchecked
+            {
+                int hash = (int)2166136261;
+                hash = hash * 1677619 + GetPath(path)?.GetHashCode() ?? 0;
+                hash = hash * 1677619 + GetPath(fullPath)?.GetHashCode() ?? 0;
+                hash = hash * 1677619 + GetPath(projectPath)?.GetHashCode() ?? 0;
+                hash = hash * 1677619 + GetPath(originalPath)?.GetHashCode() ?? 0;
+                hash = hash * 1677619 + indexStatus.GetHashCode();
+                hash = hash * 1677619 + workTreeStatus.GetHashCode();
+                return hash;
+            }
         }
 
         public override bool Equals(object other)
         {
-            if (other is GitStatusEntry)
-                return Equals((GitStatusEntry)other);
+            if (other is GitStatusEntry entry)
+                return Equals(entry);
             return false;
         }
 
         public bool Equals(GitStatusEntry other)
         {
             return
-                String.Equals(path, other.path) && 
-                String.Equals(fullPath, other.fullPath) &&
-                String.Equals(projectPath, other.projectPath) &&
-                String.Equals(originalPath, other.originalPath) &&
+                ComparePath(path, other.path) != null &&
+                ComparePath(fullPath, other.fullPath) != null &&
+                ComparePath(projectPath, other.projectPath) != null &&
+                ComparePath(originalPath, other.originalPath) != null &&
                 indexStatus == other.indexStatus &&
                 workTreeStatus == other.workTreeStatus
                 ;
@@ -62,14 +66,6 @@ namespace Unity.VersionControl.Git
 
         public static bool operator ==(GitStatusEntry lhs, GitStatusEntry rhs)
         {
-            // If both are null, or both are same instance, return true.
-            if (ReferenceEquals(lhs, rhs))
-                return true;
-
-            // If one is null, but not both, return false.
-            if (((object)lhs == null) || ((object)rhs == null))
-                return false;
-
             // Return true if the fields match:
             return lhs.Equals(rhs);
         }
@@ -122,13 +118,28 @@ namespace Unity.VersionControl.Git
             return status;
         }
 
-        public string Path => path;
+        private static SPath? GetPath(string left)
+        {
+            var (leftp, lefts) = SPath.TryParse(left);
+            if (lefts) return leftp;
+            return null;
+        }
 
-        public string FullPath => fullPath;
+        private static SPath? ComparePath(string left, string right)
+        {
+            var (leftp, lefts) = SPath.TryParse(left);
+            var (rightp, rights) = SPath.TryParse(right);
+            if (lefts == rights && leftp == rightp) return leftp;
+            return null;
+        }
 
-        public string ProjectPath => projectPath;
+        public string Path => GetPath(path);
 
-        public string OriginalPath => originalPath;
+        public string FullPath => GetPath(fullPath);
+
+        public string ProjectPath => GetPath(projectPath);
+
+        public string OriginalPath => GetPath(originalPath);
 
         public GitFileStatus Status => workTreeStatus != GitFileStatus.None ? workTreeStatus : indexStatus;
         public GitFileStatus IndexStatus => indexStatus;

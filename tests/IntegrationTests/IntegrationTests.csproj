@@ -1,13 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <TargetFramework>net471</TargetFramework>
-    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\</SolutionDir>
-    <ProjectGuid>{1AC3F82E-AEAE-4C84-825C-207BB264FCFA}</ProjectGuid>
+    <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RootDir>
+    <PackageName>com.unity.git.api</PackageName>
+    <PublishTo>$(RootDir)build\packages\</PublishTo>
+    <PackageSource>src\</PackageSource>
+    <PackageSubFolder>\Helpers~\</PackageSubFolder>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <RootNamespace>IntegrationTests</RootNamespace>
     <AssemblyName>IntegrationTests</AssemblyName>
+    <IsTestProject>true</IsTestProject>
+    <DefineConstants>NUNIT</DefineConstants>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\common\properties.props" />
-  <Import Project="$(SolutionDir)\common\tests.props" />  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+  </PropertyGroup>
+
+  <Import Project="$(RootDir)\common\properties.props" />
+  <Import Project="$(RootDir)\common\tests.props" />  
+
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.7.0" />
     <PackageReference Include="NCrunch.Framework" Version="3.17.0" />
@@ -16,13 +29,28 @@
     <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\com.unity.git.api\Logging\Logging.csproj" />
     <ProjectReference Include="..\TestUtils\TestUtils.csproj" />
     <ProjectReference Include="..\..\src\com.unity.git.api\Api\Api.csproj" />
     <ProjectReference Include="..\TestWebServer\TestWebServer.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\src\$(PackageName)\Tests\Editor\**\*.cs" Link="UnityTests\%(Filename)%(Extension)" Exclude="..\..\src\$(PackageName)\Tests\**\UnityBaseTest.cs" />
+    <None Include="..\..\src\$(PackageName)\Tests\**\UnityBaseTest.cs" Link="UnityTests\UnityBaseTest.cs" />
+    <Compile Include="**\*.cs" Link="NUnitTests\%(Filename)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="TestResults\**" />
+    <EmbeddedResource Remove="TestResults\**" />
+    <None Remove="TestResults\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="BaseTest_old.cs" />
+    <Compile Remove="Metrics\MetricsTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="BaseTest_old.cs" />
     <None Include="IOTestsRepo.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -48,5 +76,8 @@
     <None Update="UnzipTestResources\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Metrics\" />
   </ItemGroup>
 </Project>

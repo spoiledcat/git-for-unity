@@ -29,7 +29,7 @@ namespace UnitTests
 
             var outputProcessor = new VersionOutputProcessor();
             outputProcessor.OnEntry += output => { version = output; };
-            outputProcessor.LineReceived(line);
+            outputProcessor.Process(line);
 
             version.Should().Be(expected);
         }

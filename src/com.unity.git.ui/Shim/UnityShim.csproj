@@ -1,26 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <TargetFramework>net471</TargetFramework>
-    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\..\</SolutionDir>
-    <ProjectGuid>{F94F8AE1-C171-4A83-89E8-6557CA91A188}</ProjectGuid>
+    <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\..\'))</RootDir>
+    <PackageSourceRoot>$(MSBuildProjectDirectory)\..\</PackageSourceRoot>
+    <FullBuild Condition="'$(SolutionName)' == 'GitForUnity'">true</FullBuild>
+    <IsPackable Condition="'$(FullBuild)' != 'true'">false</IsPackable>
+    <PackageId>com.unity.git.shim</PackageId>
     <AssemblyName>UnityShim</AssemblyName>
-    <RootNamespace>Unity.VersionControl.Git</RootNamespace>
+    <DefaultNamespace>$(AssemblyName)</DefaultNamespace>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
-  <Import Project="$(SolutionDir)\common\libraries.props" />
   <Import Project="$(SolutionDir)\common\unityreferences.targets" />
-
-  <ItemGroup>
-    <Reference Include="UnityEditor">
-      <HintPath>$(UnityDir)Managed\UnityEditor.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="UnityEngine">
-      <HintPath>$(UnityDir)Managed\UnityEngine.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="**\*.cs" Exclude="SolutionInfo.cs" />
-  </ItemGroup>
 </Project>

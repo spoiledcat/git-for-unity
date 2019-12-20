@@ -58,11 +58,11 @@ namespace Unity.VersionControl.Git
                                 var deltaComponents = delta.Split(' ');
                                 if (deltaComponents[0] == "ahead")
                                 {
-                                    gitStatus.Ahead = Int32.Parse(deltaComponents[1]);
+                                    gitStatus.ahead = Int32.Parse(deltaComponents[1]);
                                 }
                                 else if (deltaComponents[0] == "behind")
                                 {
-                                    gitStatus.Behind = Int32.Parse(deltaComponents[1]);
+                                    gitStatus.behind = Int32.Parse(deltaComponents[1]);
                                 }
                                 else if (deltaComponents[0] == "gone")
                                 {
@@ -79,10 +79,10 @@ namespace Unity.VersionControl.Git
                         }
 
                         var branches = branchesString.Split(new[] { "..." }, StringSplitOptions.RemoveEmptyEntries);
-                        gitStatus.LocalBranch = branches[0];
+                        gitStatus.localBranch = branches[0];
                         if (branches.Length == 2)
                         {
-                            gitStatus.RemoteBranch = branches[1];
+                            gitStatus.remoteBranch = branches[1];
                         }
                     }
                     else
@@ -173,7 +173,7 @@ namespace Unity.VersionControl.Git
             if (gitStatus.Entries == null)
                 return;
 
-            gitStatus.Entries = gitStatus.Entries
+            gitStatus.entries = gitStatus.Entries
                                          .OrderBy(entry => entry.Path, StatusOutputPathComparer.Instance)
                                          .ToList();
 
@@ -188,7 +188,7 @@ namespace Unity.VersionControl.Git
             {
                 gitStatus = new GitStatus
                 {
-                    Entries = new List<GitStatusEntry>()
+                    entries = new List<GitStatusEntry>()
                 };
             }
         }

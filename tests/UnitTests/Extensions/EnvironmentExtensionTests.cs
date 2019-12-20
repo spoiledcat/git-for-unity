@@ -6,6 +6,7 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using NUnit.Framework;
 using TestUtils;
+using Unity.VersionControl.Git.IO;
 
 namespace UnitTests
 {
@@ -34,12 +35,12 @@ namespace UnitTests
             [Values(@"test.txt", "test.txt", "test.txt")]string path,
             [Values(@"test.txt", "UnityProject/test.txt", "test.txt")]string expected)
         {
-            var environment = Substitute.For<IEnvironment>();
+            var environment = Substitute.For<IGitEnvironment>();
             environment.RepositoryPath.Returns(repositoryPath.ToSPath());
-            environment.UnityProjectPath.Returns(projectPath.ToSPath());
+            environment.UnityProjectPath.Returns(projectPath);
 
             SPath nExpected = expected.ToSPath();
-            var repositoryFilePath = environment.GetRepositoryPath(path.ToSPath());
+            var repositoryFilePath = path.ToSPath().RelativeToRepository(environment);
             repositoryFilePath.Should().Be(nExpected);
         }
 
@@ -49,11 +50,11 @@ namespace UnitTests
             [Values(@"c:\UnityProject\UnityProject")]string projectPath,
             [Values(@"test.txt")]string path)
         {
-            var environment = Substitute.For<IEnvironment>();
+            var environment = Substitute.For<IGitEnvironment>();
             environment.RepositoryPath.Returns(repositoryPath.ToSPath());
-            environment.UnityProjectPath.Returns(projectPath.ToSPath());
+            environment.UnityProjectPath.Returns(projectPath);
 
-            Action act = () => environment.GetRepositoryPath(path.ToSPath());
+            Action act = () => path.ToSPath().RelativeToRepository(environment);
             act.Should().Throw<InvalidOperationException>();
         }
 
@@ -64,12 +65,12 @@ namespace UnitTests
             [Values(@"UnityProject\test.txt", "Unity/UnityProject/Assets/test.txt", "test.txt")] string path,
             [Values("test.txt", "Assets/test.txt", "test.txt")] string expected)
         {
-            var environment = Substitute.For<IEnvironment>();
+            var environment = Substitute.For<IGitEnvironment>();
             environment.RepositoryPath.Returns(repositoryPath.ToSPath());
-            environment.UnityProjectPath.Returns(projectPath.ToSPath());
+            environment.UnityProjectPath.Returns(projectPath);
 
             SPath nExpected = expected.ToSPath();
-            var repositoryFilePath = environment.GetAssetPath(path.ToSPath());
+            var repositoryFilePath = path.ToSPath().RelativeToProject(environment);
             repositoryFilePath.Should().Be(nExpected);
         }
 
@@ -79,11 +80,11 @@ namespace UnitTests
             [Values(@"c:\Projects\UnityProject")] string projectPath,
             [Values("test.txt")] string path)
         {
-            var environment = Substitute.For<IEnvironment>();
+            var environment = Substitute.For<IGitEnvironment>();
             environment.RepositoryPath.Returns(repositoryPath.ToSPath());
-            environment.UnityProjectPath.Returns(projectPath.ToSPath());
+            environment.UnityProjectPath.Returns(projectPath);
 
-            Action act = () => environment.GetAssetPath(path.ToSPath());
+            Action act = () => path.ToSPath().RelativeToProject(environment);
             act.Should().Throw<InvalidOperationException>();
         }
     }

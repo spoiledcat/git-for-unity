@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using Unity.VersionControl.Git.IO;
 
 namespace Unity.VersionControl.Git
 {
@@ -92,5 +94,6 @@ namespace Unity.VersionControl.Git
         }
 
         public static bool InUnitTestRunner { get; set; }
+        public static Dictionary<string, IFileSystem> TestFileSystems = new Dictionary<string, IFileSystem>();
     }
 }

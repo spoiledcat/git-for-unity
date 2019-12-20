@@ -1,20 +1,19 @@
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using Unity.Editor.Tasks;
+using static System.String;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitFetchTask : NativeProcessTask<string>
+    public class GitFetchTask : GitProcessTask<string>
     {
         private const string TaskName = "git fetch";
         private readonly string arguments;
 
-        public GitFetchTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitFetchTask(IPlatform platform,
             string remote, bool prune = true, bool tags = true,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Name = TaskName;
             var args = new List<string> { "fetch" };
@@ -29,7 +28,7 @@ namespace Unity.VersionControl.Git.Tasks
                 args.Add("--tags");
             }
 
-            if (!String.IsNullOrEmpty(remote))
+            if (!IsNullOrEmpty(remote))
             {
                 args.Add(remote);
             }
@@ -37,8 +36,8 @@ namespace Unity.VersionControl.Git.Tasks
             arguments = args.Join(" ");
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Exclusive; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Fetching...";
     }
 }

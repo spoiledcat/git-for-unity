@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Unity.Editor.Tasks.Logging;
 
 namespace Unity.VersionControl.Git
 {
@@ -26,18 +28,18 @@ namespace Unity.VersionControl.Git
             Logger = LogHelper.GetLogger(GetType());
         }
 
-        private void Reset()
+        private void ResolvePaths()
         {
             basePath = libExecPath = SPath.Default;
-            envPath = null;
+            envPath = Array.Empty<string>();
             gitInstallPath = GitEnvironment.GitInstallPath;
 
             if (!gitInstallPath.IsInitialized)
                 return;
 
-            basePath = ResolveBasePath();
-            envPath = CreateEnvPath().ToArray();
-            if (ResolveGitExecPath(out SPath p))
+            basePath = ResolveBasePath(Environment, gitInstallPath);
+            envPath = CreateEnvPath(GitEnvironment, basePath).ToArray();
+            if (ResolveGitExecPath(out var p))
                 libExecPath = p;
         }
 
@@ -46,7 +48,7 @@ namespace Unity.VersionControl.Git
             defaultEnvironment.Configure(psi);
 
             //if (gitInstallPath == SPath.Default || gitInstallPath != Environment.GitInstallPath)
-                Reset();
+                ResolvePaths();
 
             var pathEntries = new List<string>(envPath);
             string separator = GitEnvironment.IsWindows ? ";" : ":";
@@ -194,32 +196,33 @@ namespace Unity.VersionControl.Git
 
         private bool ResolveGitExecPath(out SPath path)
         {
-            path = ResolveBasePath().Combine("libexec", "git-core");
+            path = ResolveBasePath(Environment, gitInstallPath).Combine("libexec", "git-core");
             return path.DirectoryExists();
         }
 
-        private SPath ResolveBasePath()
+        private static SPath ResolveBasePath(IEnvironment environment, SPath installPath)
         {
-            var path = GitEnvironment.GitInstallPath;
-            if (GitEnvironment.IsWindows)
-            {
-                if (GitEnvironment.Is32Bit)
-                    path = GitEnvironment.GitInstallPath.Combine("mingw32");
-                else
-                    path = GitEnvironment.GitInstallPath.Combine("mingw64");
-            }
+            var path = installPath;
+
+            if (!environment.IsWindows)
+                return path;
+
+            if (environment.Is32Bit)
+                path = installPath.Combine("mingw32");
+            else
+                path = installPath.Combine("mingw64");
+
             return path;
         }
 
-        private IEnumerable<string> CreateEnvPath()
+        private static IEnumerable<string> CreateEnvPath(IGitEnvironment environment, SPath basePath)
         {
-            yield return GitEnvironment.GitExecutablePath.Parent.ToString();
-            var basep = ResolveBasePath();
-            yield return basep.Combine("bin").ToString();
-            if (GitEnvironment.IsWindows)
-                yield return GitEnvironment.GitInstallPath.Combine("usr/bin").ToString();
-            if (GitEnvironment.GitInstallPath.IsInitialized && GitEnvironment.GitLfsExecutablePath.Parent != GitEnvironment.GitExecutablePath.Parent)
-                yield return GitEnvironment.GitLfsExecutablePath.Parent.ToString();
+            yield return environment.GitExecutablePath.Parent.ToString();
+            yield return basePath.Combine("bin").ToString();
+            if (environment.IsWindows)
+                yield return environment.GitInstallPath.Combine("usr/bin").ToString();
+            if (environment.GitInstallPath.IsInitialized && environment.GitLfsExecutablePath.Parent != environment.GitExecutablePath.Parent)
+                yield return environment.GitLfsExecutablePath.Parent.ToString();
         }
 
         public IEnvironment Environment => defaultEnvironment.Environment;

@@ -5,6 +5,7 @@ using Unity.VersionControl.Git;
 using NCrunch.Framework;
 using NUnit.Framework;
 using TestUtils;
+using Unity.VersionControl.Git.IO;
 
 namespace UnitTests
 {

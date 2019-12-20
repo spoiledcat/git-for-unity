@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Unity.Editor.Tasks.Logging;
 using Unity.VersionControl.Git;
 
 namespace Unity.VersionControl.Git

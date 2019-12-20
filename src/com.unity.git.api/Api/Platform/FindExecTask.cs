@@ -7,18 +7,18 @@ namespace Unity.VersionControl.Git
 
     public class FindExecTask : NativeProcessTask<SPath>
     {
-        private readonly string arguments;
+        public FindExecTask(ITaskManager taskManager, IProcessEnvironment processEnvironment, IEnvironment environment,
+            string executable, CancellationToken token = default)
+            : base(taskManager, processEnvironment, environment.IsWindows ? "where" : "which", executable,
+                new FirstLineIsPathOutputProcessor(), token)
+        {}
 
         public FindExecTask(ITaskManager taskManager, IEnvironment environment,
             string executable, CancellationToken token = default)
-            : base(taskManager, environment, null, null, new FirstLineIsPathOutputProcessor(), token)
-        {
-            Name = environment.IsWindows ? "where" : "which";
-            arguments = executable;
-        }
+            : base(taskManager, environment, environment.IsWindows ? "where" : "which", executable,
+                new FirstLineIsPathOutputProcessor(), token)
+        {}
 
-        public override string ProcessName { get { return Name; } }
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Concurrent; } }
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.None;
     }
 }

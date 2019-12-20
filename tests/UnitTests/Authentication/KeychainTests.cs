@@ -9,6 +9,8 @@ using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
 using TestUtils;
+using Unity.Editor.Tasks.Helpers;
+using Unity.VersionControl.Git.IO;
 
 namespace UnitTests
 {
@@ -57,7 +59,8 @@ namespace UnitTests
             const string connectionsCachePath = @"c:\UserCachePath\";
             const string connectionsCacheFile = @"c:\UserCachePath\connections.json";
 
-            var fileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions {
+            var fileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions
+            {
                 FilesThatExist = new List<string> { connectionsCacheFile },
                 FileContents = new Dictionary<string, IList<string>> {
                     {connectionsCacheFile, new List<string> { @"invalid json" }}
@@ -98,7 +101,8 @@ namespace UnitTests
 
             var hostUri = new UriString("https://github.com/");
 
-            var fileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions {
+            var fileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions
+            {
                 FilesThatExist = new List<string> { connectionsCacheFile },
                 FileContents = new Dictionary<string, IList<string>> {
                     {connectionsCacheFile, new List<string> { @"[{""Host"":""https://github.com/"",""Username"":""SomeUser""}]" }}
@@ -140,7 +144,8 @@ namespace UnitTests
 
             var hostUri = new UriString("https://github.com/");
 
-            var fileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions {
+            var fileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions
+            {
                 FilesThatExist = new List<string> { connectionsCacheFile },
                 FileContents = new Dictionary<string, IList<string>> {
                     {connectionsCacheFile, new List<string> { @"[{""Host"":""https://github.com/"",""Username"":""SomeUser""}]" }}
@@ -196,7 +201,8 @@ namespace UnitTests
 
             var hostUri = new UriString("https://github.com/");
 
-            var fileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions {
+            var fileSystem = SubstituteFactory.CreateFileSystem(new CreateFileSystemOptions
+            {
                 FilesThatExist = new List<string> { connectionsCacheFile },
                 FileContents = new Dictionary<string, IList<string>> {
                     {connectionsCacheFile, new List<string> { @"[{""Host"":""https://github.com/"",""Username"":""SomeUser""}]" }}

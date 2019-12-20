@@ -3,6 +3,7 @@ using NCrunch.Framework;
 using NSubstitute;
 using NUnit.Framework;
 using TestUtils;
+using Unity.VersionControl.Git.IO;
 
 namespace UnitTests
 {
@@ -18,9 +19,9 @@ namespace UnitTests
                 CurrentDirectory = @"c:\Projects\UnityProject"
             });
 
-            var environment = Substitute.For<IEnvironment>();
+            var environment = Substitute.For<IGitEnvironment>();
             environment.RepositoryPath.Returns(@"c:\Projects\UnityProject".ToSPath());
-            environment.UnityProjectPath.Returns(@"c:\Projects\UnityProject".ToSPath());
+            environment.UnityProjectPath.Returns(@"c:\Projects\UnityProject");
 
             var gitObjectFactory = new GitObjectFactory(environment);
             var gitStatusEntry = gitObjectFactory.CreateGitStatusEntry("hello.txt", GitFileStatus.None, GitFileStatus.Deleted);
@@ -37,9 +38,9 @@ namespace UnitTests
                 CurrentDirectory = @"c:\Projects\UnityProject"
             });
 
-            var environment = Substitute.For<IEnvironment>();
+            var environment = Substitute.For<IGitEnvironment>();
             environment.RepositoryPath.Returns(@"c:\Projects\UnityProject".ToSPath());
-            environment.UnityProjectPath.Returns(@"c:\Projects\UnityProject".ToSPath());
+            environment.UnityProjectPath.Returns(@"c:\Projects\UnityProject");
 
             var gitObjectFactory = new GitObjectFactory(environment);
             var gitStatusEntry = gitObjectFactory.CreateGitStatusEntry("c:UsersOculusGoVideo.mp4", GitFileStatus.None, GitFileStatus.Deleted);

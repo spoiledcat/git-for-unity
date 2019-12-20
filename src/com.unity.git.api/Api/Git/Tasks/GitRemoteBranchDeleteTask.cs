@@ -4,26 +4,25 @@ using Unity.Editor.Tasks;
 
 namespace Unity.VersionControl.Git.Tasks
 {
-    public class GitRemoteBranchDeleteTask : NativeProcessTask<string>
+    public class GitRemoteBranchDeleteTask : GitProcessTask<string>
     {
         private const string TaskName = "git push --delete";
         private readonly string arguments;
 
-        public GitRemoteBranchDeleteTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitRemoteBranchDeleteTask(IPlatform platform,
             string remote, string branch,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(remote, "remote");
             Guard.ArgumentNotNullOrWhiteSpace(branch, "branch");
 
             Name = TaskName;
-            arguments = String.Format("push {0} --delete {1}", remote, branch);
+            arguments = $"push {remote} --delete {branch}";
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Exclusive; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Deleting remote branch...";
     }
 }

@@ -10,5 +10,8 @@
   <Import Project="$(SolutionDir)\common\tests.props" />  
   <ItemGroup>
     <ProjectReference Include="..\..\src\com.unity.git.api\Api\Api.csproj" />
+    <PackageReference Include="FluentAssertions" Version="5.7.0" PrivateAssets="All" />
+    <PackageReference Include="NSubstitute" Version="4.2.0" PrivateAssets="All" />
+    <PackageReference Include="NUnit" Version="3.12.0" PrivateAssets="All" />
   </ItemGroup>
 </Project>

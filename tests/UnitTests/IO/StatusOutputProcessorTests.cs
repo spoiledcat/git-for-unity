@@ -24,10 +24,8 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                Entries = new List<GitStatusEntry>
+            AssertProcessOutput(output, new GitStatus("master", null, 0, 0,
+                new List<GitStatusEntry>
                 {
                     new GitStatusEntry("GitHubVS.sln", TestRootPath + @"\GitHubVS.sln", null, GitFileStatus.None, GitFileStatus.Modified),
                     new GitStatusEntry("README2.md", TestRootPath + @"\README2.md", null, GitFileStatus.Renamed, GitFileStatus.None, "README.md"),
@@ -35,7 +33,7 @@ namespace UnitTests
                     new GitStatusEntry("something added.txt", TestRootPath + @"\something added.txt", null, GitFileStatus.Added, GitFileStatus.None),
                     new GitStatusEntry("something.txt", TestRootPath + @"\something.txt", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                 }.OrderBy(entry => entry.Path, GitStatusOutputProcessor.StatusOutputPathComparer.Instance).ToList()
-            });
+            ));
         }
 
         [Test]
@@ -54,10 +52,8 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                Entries = new List<GitStatusEntry>
+            AssertProcessOutput(output, new GitStatus("master", null, 0, 0,
+                new List<GitStatusEntry>
                 {
                     new GitStatusEntry("something1.txt", TestRootPath + @"\something1.txt", null, GitFileStatus.Deleted, GitFileStatus.Deleted),
                     new GitStatusEntry("something2.txt", TestRootPath + @"\something2.txt", null, GitFileStatus.Added, GitFileStatus.Unmerged),
@@ -67,7 +63,7 @@ namespace UnitTests
                     new GitStatusEntry("something6.txt", TestRootPath + @"\something6.txt", null, GitFileStatus.Added, GitFileStatus.Added),
                     new GitStatusEntry("something7.txt", TestRootPath + @"\something7.txt", null, GitFileStatus.Unmerged, GitFileStatus.Unmerged),
                 }.OrderBy(entry => entry.Path, GitStatusOutputProcessor.StatusOutputPathComparer.Instance).ToList()
-            });
+            ));
         }
 
         [Test]
@@ -84,13 +80,8 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                RemoteBranch = "origin/master",
-                Ahead = 1,
-                Behind = 1,
-                Entries = new List<GitStatusEntry>
+            AssertProcessOutput(output, new GitStatus("master", "origin/master", 1, 1,
+                new List<GitStatusEntry>
                 {
                     new GitStatusEntry("GitHubVS.sln", TestRootPath + @"\GitHubVS.sln", null, GitFileStatus.None, GitFileStatus.Modified),
                     new GitStatusEntry("README2.md", TestRootPath + @"\README2.md", null, GitFileStatus.Renamed, GitFileStatus.None, "README.md"),
@@ -98,7 +89,7 @@ namespace UnitTests
                     new GitStatusEntry("something added.txt", TestRootPath + @"\something added.txt", null, GitFileStatus.Added, GitFileStatus.None),
                     new GitStatusEntry("something.txt", TestRootPath + @"\something.txt", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                 }.OrderBy(entry => entry.Path, GitStatusOutputProcessor.StatusOutputPathComparer.Instance).ToList()
-            });
+            ));
         }
 
         [Test]
@@ -115,12 +106,8 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                RemoteBranch = "origin/master",
-                Ahead = 1,
-                Entries = new List<GitStatusEntry>
+            AssertProcessOutput(output, new GitStatus("master", "origin/master", 1, 0,
+                new List<GitStatusEntry>
                 {
                     new GitStatusEntry("GitHubVS.sln", TestRootPath + @"\GitHubVS.sln", null, GitFileStatus.None, GitFileStatus.Modified),
                     new GitStatusEntry("README2.md", TestRootPath + @"\README2.md", null, GitFileStatus.Renamed, GitFileStatus.None, "README.md"),
@@ -128,7 +115,7 @@ namespace UnitTests
                     new GitStatusEntry("something added.txt", TestRootPath + @"\something added.txt", null, GitFileStatus.Added, GitFileStatus.None),
                     new GitStatusEntry("something.txt", TestRootPath + @"\something.txt", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                 }.OrderBy(entry => entry.Path, GitStatusOutputProcessor.StatusOutputPathComparer.Instance).ToList()
-            });
+            ));
         }
 
         [Test]
@@ -145,12 +132,8 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                RemoteBranch = "origin/master",
-                Behind = 1,
-                Entries = new List<GitStatusEntry>
+            AssertProcessOutput(output, new GitStatus("master", "origin/master", 0, 1,
+                new List<GitStatusEntry>
                 {
                     new GitStatusEntry("GitHubVS.sln", TestRootPath + @"\GitHubVS.sln", null, GitFileStatus.None, GitFileStatus.Modified),
                     new GitStatusEntry("README2.md", TestRootPath + @"\README2.md", null, GitFileStatus.Renamed, GitFileStatus.None, "README.md"),
@@ -158,7 +141,7 @@ namespace UnitTests
                     new GitStatusEntry("something added.txt", TestRootPath + @"\something added.txt", null, GitFileStatus.Added, GitFileStatus.None),
                     new GitStatusEntry("something.txt", TestRootPath + @"\something.txt", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                 }.OrderBy(entry => entry.Path, GitStatusOutputProcessor.StatusOutputPathComparer.Instance).ToList()
-            });
+            ));
         }
 
         [Test]
@@ -175,11 +158,8 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                RemoteBranch = "origin/master",
-                Entries = new List<GitStatusEntry>
+            AssertProcessOutput(output, new GitStatus("master", "origin/master", 0, 0,
+                new List<GitStatusEntry>
                 {
                     new GitStatusEntry("GitHubVS.sln", TestRootPath + @"\GitHubVS.sln", null, GitFileStatus.None, GitFileStatus.Modified),
                     new GitStatusEntry("README2.md", TestRootPath + @"\README2.md", null, GitFileStatus.Renamed, GitFileStatus.None, "README.md"),
@@ -187,7 +167,7 @@ namespace UnitTests
                     new GitStatusEntry("something added.txt", TestRootPath + @"\something added.txt", null, GitFileStatus.Added, GitFileStatus.None),
                     new GitStatusEntry("something.txt", TestRootPath + @"\something.txt", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                 }.OrderBy(entry => entry.Path, GitStatusOutputProcessor.StatusOutputPathComparer.Instance).ToList()
-            });
+            ));
         }
 
         [Test]
@@ -199,11 +179,7 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "something",
-                Entries = new List<GitStatusEntry>()
-            });
+            AssertProcessOutput(output, new GitStatus("something", default, default, default, new List<GitStatusEntry>()));
         }
 
         [Test]
@@ -215,14 +191,7 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                RemoteBranch = "origin/master",
-                Ahead = 1,
-                Behind = 1,
-                Entries = new List<GitStatusEntry>()
-            });
+            AssertProcessOutput(output, new GitStatus("master", "origin/master", 1, 1, new List<GitStatusEntry>()));
         }
 
         [Test]
@@ -234,13 +203,7 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                RemoteBranch = "origin/master",
-                Ahead = 1,
-                Entries = new List<GitStatusEntry>()
-            });
+            AssertProcessOutput(output, new GitStatus("master", "origin/master", 1, 0, new List<GitStatusEntry>()));
         }
 
         [Test]
@@ -252,13 +215,7 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                RemoteBranch = "origin/master",
-                Behind = 1,
-                Entries = new List<GitStatusEntry>()
-            });
+            AssertProcessOutput(output, new GitStatus("master", "origin/master", 0, 1, new List<GitStatusEntry>()));
         }
 
         [Test]
@@ -270,12 +227,7 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                RemoteBranch = "origin/master",
-                Entries = new List<GitStatusEntry>()
-            });
+            AssertProcessOutput(output, new GitStatus("master", "origin/master", 0, 0, new List<GitStatusEntry>()));
         }
 
         [Test]
@@ -298,10 +250,8 @@ namespace UnitTests
                 null
             };
 
-            AssertProcessOutput(output, new GitStatus
-            {
-                LocalBranch = "master",
-                Entries = new List<GitStatusEntry>
+            AssertProcessOutput(output, new GitStatus("master", null, 0, 0,
+                new List<GitStatusEntry>
                 {
                     new GitStatusEntry(@"Assets/Assets.Test.dll", TestRootPath + @"\Assets/Assets.Test.dll", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                     new GitStatusEntry(@"Assets/Assets.Test.dll.meta", TestRootPath + @"\Assets/Assets.Test.dll.meta", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
@@ -315,7 +265,7 @@ namespace UnitTests
                     new GitStatusEntry(@"Plugins/Unity.VersionControl.Git.dll.mdb", TestRootPath + @"\Plugins/Unity.VersionControl.Git.dll.mdb", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                     new GitStatusEntry(@"Plugins/Unity.VersionControl.Git.dll.mdb.meta", TestRootPath + @"\Plugins/Unity.VersionControl.Git.dll.mdb.meta", null, GitFileStatus.Untracked, GitFileStatus.Untracked),
                 }
-            });
+                ));
         }
 
         private void AssertProcessOutput(IEnumerable<string> lines, GitStatus expected)
@@ -328,7 +278,7 @@ namespace UnitTests
 
             foreach (var line in lines)
             {
-                outputProcessor.LineReceived(line);
+                outputProcessor.Process(line);
             }
 
             Assert.IsTrue(result.HasValue);

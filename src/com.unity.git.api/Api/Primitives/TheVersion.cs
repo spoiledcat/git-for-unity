@@ -1,6 +1,7 @@
 using Unity.VersionControl.Git;
 using System;
 using System.Text.RegularExpressions;
+using Unity.Editor.Tasks.Logging;
 
 namespace Unity.VersionControl.Git
 {
@@ -33,6 +34,9 @@ namespace Unity.VersionControl.Git
         [NotSerialized] private int parts;
         [NotSerialized] private bool initialized;
         [NotSerialized] private string version;
+
+        private static ILogging Logger { get; } = LogHelper.GetLogger<TheVersion>();
+
         public string Version { get { if (version == null) version = String.Empty; return version; } set { version = value; } }
 
         private static readonly Regex regex = new Regex(versionRegex);
@@ -69,7 +73,7 @@ namespace Unity.VersionControl.Git
             var match = regex.Match(theVersion);
             if (!match.Success)
             {
-                LogHelper.Error(new ArgumentException("Invalid version: " + theVersion, "theVersion"));
+                Logger.Error(new ArgumentException("Invalid version: " + theVersion, "theVersion"));
                 return this;
             }
 

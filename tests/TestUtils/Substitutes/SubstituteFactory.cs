@@ -3,28 +3,32 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using NSubstitute;
+using Unity.Editor.Tasks;
+using Unity.Editor.Tasks.Logging;
 using Unity.VersionControl.Git;
+using Unity.VersionControl.Git.IO;
 
 namespace TestUtils
 {
     public class TestSubstituteFactory
     {
-        public IEnvironment CreateEnvironment(CreateEnvironmentOptions createEnvironmentOptions = null)
+        public IGitEnvironment CreateEnvironment(CreateEnvironmentOptions createEnvironmentOptions = null)
         {
             createEnvironmentOptions = createEnvironmentOptions ?? new CreateEnvironmentOptions();
 
             var userPath = createEnvironmentOptions.UserProfilePath;
-            var localAppData = userPath.Parent.Combine("LocalAppData").ToString();
-            var appData = userPath.Parent.Combine("AppData").ToString();
+            var localAppData = userPath.Parent.Combine("LocalAppData");
+            var appData = userPath.Parent.Combine("AppData");
 
-            var environment = Substitute.For<IEnvironment>();
+            var environment = Substitute.For<IGitEnvironment>();
             environment.RepositoryPath.Returns(createEnvironmentOptions.RepositoryPath.ToSPath());
             environment.ExtensionInstallPath.Returns(createEnvironmentOptions.Extensionfolder);
             environment.UnityProjectPath.Returns(createEnvironmentOptions.UnityProjectPath);
-            environment.GetSpecialFolder(System.Environment.SpecialFolder.LocalApplicationData).Returns(localAppData);
-            environment.GetSpecialFolder(System.Environment.SpecialFolder.ApplicationData).Returns(appData);
-            environment.LocalAppData.Returns(localAppData.ToSPath());
-            environment.CommonAppData.Returns(appData.ToSPath());
+            environment.GetFolder(Folders.LocalApplicationData).Returns(localAppData);
+            environment.GetFolder(Folders.Logs).Returns(localAppData);
+            environment.GetFolder(Folders.CommonApplicationData).Returns(appData);
+            environment.LocalAppData.Returns(localAppData);
+            environment.CommonAppData.Returns(appData);
             return environment;
         }
 
@@ -37,24 +41,7 @@ namespace TestUtils
             var logger = LogHelper.GetLogger("TestFileSystem");
 
             fileSystem.DirectorySeparatorChar.Returns(realFileSystem.DirectorySeparatorChar);
-            fileSystem.GetCurrentDirectory().Returns(createFileSystemOptions.CurrentDirectory);
-
-            fileSystem.Combine(Args.String, Args.String).Returns(info => {
-                var path1 = (string)info[0];
-                var path2 = (string)info[1];
-                var combine = realFileSystem.Combine(path1, path2);
-                logger.Trace(@"Combine(""{0}"", ""{1}"") -> ""{2}""", path1, path2, combine);
-                return combine;
-            });
-
-            fileSystem.Combine(Args.String, Args.String, Args.String).Returns(info => {
-                var path1 = (string)info[0];
-                var path2 = (string)info[1];
-                var path3 = (string)info[2];
-                var combine = realFileSystem.Combine(path1, path2, path3);
-                logger.Trace(@"Combine(""{0}"", ""{1}"", ""{2}"") -> ""{3}""", path1, path2, path3, combine);
-                return combine;
-            });
+            fileSystem.CurrentDirectory.Returns(createFileSystemOptions.CurrentDirectory);
 
             fileSystem.FileExists(Args.String).Returns(info => {
                 var path = (string)info[0];
@@ -157,7 +144,7 @@ namespace TestUtils
                 return result;
             });
 
-            fileSystem.GetTempPath().Returns(info => {
+            fileSystem.TempPath.Returns(info => {
                 logger.Trace(@"GetTempPath() -> {0}", createFileSystemOptions.TemporaryPath);
 
                 return createFileSystemOptions.TemporaryPath;
@@ -328,97 +315,6 @@ namespace TestUtils
         public IPlatform CreatePlatform()
         {
             return Substitute.For<IPlatform>();
-        }
-
-        public IGitClient CreateRepositoryProcessRunner(
-            CreateRepositoryProcessRunnerOptions options = null)
-        {
-            var logger = LogHelper.GetLogger("TestRepositoryProcessRunner");
-
-            options = options ?? new CreateRepositoryProcessRunnerOptions();
-
-            var gitClient = Substitute.For<IGitClient>();
-
-            gitClient.Pull(Args.String, Args.String)
-                .Returns(info => {
-                    var remote = (string)info[0];
-                    var branch = (string)info[1];
-
-                    string result = null;
-
-                    logger.Trace(@"PrepareGitPull(""{0}"", ""{1}"") -> {2}",
-                        remote, branch,
-                        result != null ? result : "[null]");
-
-                    return new FuncTask<string>(CancellationToken.None, _ => result);
-                });
-
-            gitClient.Push(Args.String, Args.String)
-                .Returns(info => {
-                    var remote = (string)info[0];
-                    var branch = (string)info[1];
-
-                    string result = null;
-
-                    logger.Trace(@"PrepareGitPush(""{0}"", ""{1}"") -> {2}",
-                        remote, branch,
-                        result != null ? result : "[null]");
-
-                    return new FuncTask<string>(CancellationToken.None, _ => result);
-                });
-
-            gitClient.GetConfig(Args.String, Args.GitConfigSource)
-                .Returns(info => {
-                    var key = (string)info[0];
-                    var gitConfigSource = (GitConfigSource)info[1];
-
-                    string result;
-                    var containsKey =
-                        options.GitConfigGetResults.TryGetValue(
-                            new CreateRepositoryProcessRunnerOptions.GitConfigGetKey {
-                                Key = key,
-                                GitConfigSource = gitConfigSource
-                            }, out result);
-
-                    FuncTask<string> ret = null;
-                    if (containsKey)
-                    {
-                        ret = new FuncTask<string>(CancellationToken.None, _ => result);
-                    }
-                    else
-                    {
-                        ret = new FuncTask<string>(CancellationToken.None, _ => null);
-                    }
-
-                    logger.Trace(@"RunGitConfigGet(""{0}"", GitConfigSource.{1}) -> {2}",
-                        key,
-                        gitConfigSource.ToString(), containsKey ? $@"Success" : "Failure");
-
-                    return ret;
-                });
-
-            gitClient.Status().Returns(info => {
-                var result = options.GitStatusResults;
-                var ret = new FuncTask<GitStatus>(CancellationToken.None, _ => result);
-
-                logger.Trace(@"RunGitStatus() -> {0}",
-                    $"Success: \"{result}\"");
-
-                return ret;
-            });
-
-            gitClient.ListLocks(Args.Bool)
-                .Returns(info => {
-                    List<GitLock> result = options.GitListLocksResults;
-
-                    var ret = new FuncListTask<GitLock>(CancellationToken.None, _ => result);
-
-                    logger.Trace(@"RunGitListLocks() -> {0}", result != null ? $"Success" : "Failure");
-
-                    return ret;
-                });
-
-            return gitClient;
         }
 
         public IRepositoryWatcher CreateRepositoryWatcher()

@@ -2,13 +2,58 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using Mono.Options;
+using Unity.Editor.Tasks;
+using Unity.Editor.Tasks.Helpers;
+using Unity.Editor.Tasks.Logging;
 using Unity.VersionControl.Git;
+using Unity.VersionControl.Git.IO;
 
 namespace Tests.CommandLine
 {
+    class ConsoleLogAdapter : LogAdapterBase
+    {
+        public override void Info(string context, string message)
+        {
+            WriteLine(context, message);
+        }
+
+        public override void Debug(string context, string message)
+        {
+            WriteLine(context, message);
+        }
+
+        public override void Trace(string context, string message)
+        {
+            WriteLine(context, message);
+        }
+
+        public override void Warning(string context, string message)
+        {
+            WriteLine(context, message);
+        }
+
+        public override void Error(string context, string message)
+        {
+            WriteLine(context, message);
+        }
+
+        private string GetMessage(string context, string message)
+        {
+            var time = DateTime.Now.ToString("HH:mm:ss.fff tt");
+            var threadId = Thread.CurrentThread.ManagedThreadId;
+            return string.Format("{0} [{1,2}] {2} {3}", time, threadId, context, message);
+        }
+
+        private void WriteLine(string context, string message)
+        {
+            Console.WriteLine(GetMessage(context, message));
+        }
+    }
+
     static class Program
     {
         private static string ReadAllTextIfFileExists(this string path)
@@ -212,6 +257,23 @@ namespace Tests.CommandLine
                 Console.Error.WriteLine(error);
 
             return retCode;
+        }
+    }
+
+    public static class SPathExtensions
+    {
+        public static string CalculateMD5(this SPath file)
+        {
+            byte[] computeHash;
+            using (var md5 = MD5.Create())
+            {
+                using (var stream = file.OpenRead())
+                {
+                    computeHash = md5.ComputeHash(stream);
+                }
+            }
+
+            return BitConverter.ToString(computeHash).Replace("-", string.Empty).ToLower();
         }
     }
 }

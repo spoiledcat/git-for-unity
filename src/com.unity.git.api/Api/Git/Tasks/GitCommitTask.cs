@@ -6,7 +6,7 @@ namespace Unity.VersionControl.Git.Tasks
 {
     using IO;
 
-    public class GitCommitTask : NativeProcessTask<string>
+    public class GitCommitTask : GitProcessTask<string>
     {
         private const string TaskName = "git commit";
 
@@ -16,11 +16,10 @@ namespace Unity.VersionControl.Git.Tasks
 
         private SPath tempFile;
 
-        public GitCommitTask(ITaskManager taskManager, IProcessEnvironment processEnvironment,
-            IGitEnvironment environment,
+        public GitCommitTask(IPlatform platform,
             string message, string body,
             CancellationToken token = default)
-            : base(taskManager, processEnvironment, environment.GitExecutablePath, null, outputProcessor: new StringOutputProcessor(), token: token)
+            : base(platform, null, outputProcessor: new StringOutputProcessor(), token: token)
         {
             Guard.ArgumentNotNullOrWhiteSpace(message, "message");
 
@@ -44,8 +43,8 @@ namespace Unity.VersionControl.Git.Tasks
             base.RaiseOnEnd();
         }
 
-        public override string ProcessArguments { get { return arguments; } }
-        public override TaskAffinity Affinity { get { return TaskAffinity.Exclusive; } }
+        public override string ProcessArguments => arguments;
+        public override TaskAffinity Affinity { get; set; } = TaskAffinity.Exclusive;
         public override string Message { get; set; } = "Committing...";
     }
 }

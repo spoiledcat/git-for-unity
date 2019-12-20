@@ -36,20 +36,12 @@ namespace Unity.VersionControl.Git
         public bool Equals(GitBranch other)
         {
             return
-                String.Equals(name, other.name) &&
-                String.Equals(tracking, other.tracking);
+                string.Equals(name, other.name) &&
+                string.Equals(tracking, other.tracking);
         }
 
         public static bool operator ==(GitBranch lhs, GitBranch rhs)
         {
-            // If both are null, or both are same instance, return true.
-            if (ReferenceEquals(lhs, rhs))
-                return true;
-
-            // If one is null, but not both, return false.
-            if (((object)lhs == null) || ((object)rhs == null))
-                return false;
-
             // Return true if the fields match:
             return lhs.Equals(rhs);
         }
