@@ -7,5 +7,11 @@
     "^refs/heads/release.*/v\\d+\\.\\d+",
     "^refs/tags/v\\d+\\.\\d+"
   ],
+  "cloudBuild": {
+    "setVersionVariables": true,
+    "buildNumber": {
+      "enabled": true
+    }
+  },
   "inherit": false
 }
