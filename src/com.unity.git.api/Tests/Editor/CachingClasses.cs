@@ -26,7 +26,7 @@ namespace IntegrationTests
         {
             if (instance != null)
             {
-                LogHelper.Instance.Error("Singleton already exists!");
+                LogHelper.GetLogger<T>().Error("Singleton already exists!");
             }
             else
             {
