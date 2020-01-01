@@ -12,13 +12,40 @@ if ($Trace) {
 . $PSScriptRoot\helpers.ps1 | out-null
 
 $srcDir = Join-Path $rootDirectory 'build\packages'
+
+$targetDir = Join-Path $rootDirectory 'build\npm'
+
+Remove-Item "$targetDir\*" -Force -ErrorAction SilentlyContinue
+New-Item -itemtype Directory -Path $targetDir -Force -ErrorAction SilentlyContinue
+
+try {
+	Push-Location (Join-Path $srcDir "com.unity.git")
+	$package = Invoke-Command -Fatal { & npm pack -q }
+	$package = "$package".Trim()
+	$tgt = Join-Path $targetDir $package
+	Move-Item $package $tgt -Force
+} finally {
+    Pop-Location
+}
+
+try {
+	Push-Location (Join-Path $srcDir "com.unity.git.tests")
+	$package = Invoke-Command -Fatal { & npm pack -q }
+	$package = "$package".Trim()
+	$tgt = Join-Path $targetDir $package
+	Move-Item $package $tgt -Force
+} finally {
+    Pop-Location
+}
+
 $targetDir = Join-Path $rootDirectory 'upm-ci~\packages'
 
 Remove-Item "$targetDir\*" -Force -ErrorAction SilentlyContinue
 New-Item -itemtype Directory -Path $targetDir -Force -ErrorAction SilentlyContinue
 
 Get-ChildItem -Directory $srcDir | % {
-    if (Test-Path "$srcDir\$($_)\package.json") {
+
+    if ("$($_.Name)" -ne "com.unity.git" -and "$($_.Name)" -ne "com.unity.git.tests" -and (Test-Path "$srcDir\$($_)\package.json")) {
         try {
             Push-Location (Join-Path $srcDir $_.Name)
             $package = Invoke-Command -Fatal { & npm pack -q }

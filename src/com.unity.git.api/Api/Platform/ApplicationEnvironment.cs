@@ -23,10 +23,24 @@ namespace Unity.VersionControl.Git
             GitDefaultInstallation = new GitInstaller.GitInstallDetails(UserCachePath, this);
         }
 
+        public ApplicationEnvironment(IEnvironment environment) : this(environment.ApplicationName)
+        {}
+
         public ApplicationEnvironment(ICacheContainer cacheContainer, string applicationName = null)
             : this(applicationName)
         {
             this.CacheContainer = cacheContainer;
+        }
+
+        public IGitEnvironment Initialize(SPath extensionInstallPath, IEnvironment environment)
+        {
+            base.Initialize(environment.UnityProjectPath, environment.UnityVersion, environment.UnityApplication, environment.UnityApplicationContents);
+            ExtensionInstallPath = extensionInstallPath;
+            User = new User(CacheContainer);
+            UserSettings = new UserSettings(this);
+            LocalSettings = new LocalSettings(this);
+            SystemSettings = new SystemSettings(this);
+            return this;
         }
 
         public IGitEnvironment Initialize(SPath extensionInstallPath, string projectPath, string unityVersion = null, string EditorApplication_applicationPath = null, string EditorApplication_applicationContentsPath = null)

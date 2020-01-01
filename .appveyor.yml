@@ -32,6 +32,8 @@ after_test:
 artifacts:
 - path: upm-ci~\packages\*
   name: npm
+- path: build\npm\*
+  name: npm
 - path: build\nuget\**\*nupkg
   name: nuget
 

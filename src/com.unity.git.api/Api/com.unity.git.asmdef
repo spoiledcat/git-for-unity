@@ -3,14 +3,19 @@
     "references": [
         "Unity.Editor.Tasks"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
-    "precompiledReferences": [],
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Unity.Editor.Tasks.dll",
+        "sfw.net.dll",
+        "Unity.VersionControl.Git.Localization.dll",
+        "Mono.Posix.dll"
+    ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [],
+    "versionDefines": []
 }

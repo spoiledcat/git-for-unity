@@ -8,6 +8,7 @@ build:
     flavor: {{ build_agent_flavor }}
   variables:
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    GITHUB_UNITY_DISABLE: 1
 
   commands:
     - powershell scripts\Get-Deps.ps1

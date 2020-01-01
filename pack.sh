@@ -70,7 +70,7 @@ if [[ x"$BUILD" == x"1" ]]; then
 
 fi
 
-dotnet pack --no-build --no-restore -c $CONFIGURATION $PUBLIC || true
+dotnet pack --no-build --no-restore -c $CONFIGURATION $PUBLIC
 
 if [[ x"$UPM" == x"1" ]]; then
   powershell scripts/Pack-Upm.ps1
@@ -80,6 +80,25 @@ if [[ x"$OS" == x"Windows" ]]; then
   powershell scripts/Pack-Npm.ps1
 else
   srcdir="$DIR/build/packages"
+
+
+  # handle the aggregate package separately
+  targetdir="$DIR/build/npm"
+
+  mkdir -p $targetdir
+  rm -f $targetdir/*
+
+  pushd "$srcdir/com.unity.git" >/dev/null 2>&1
+  tgz="$(npm pack -q)"
+  mv -f $tgz $targetdir/$tgz  
+  pushd "$srcdir/com.unity.git.tests" >/dev/null 2>&1
+  tgz="$(npm pack -q)"
+  mv -f $tgz $targetdir/$tgz  
+  
+  popd
+
+
+  # do the other packages
   targetdir="$DIR/upm-ci~/packages"
   mkdir -p $targetdir
   rm -f $targetdir/*
@@ -89,12 +108,18 @@ else
 EOL
 
   pushd $srcdir >/dev/null 2>&1
+
   count=0
   found=0
   for j in `ls -d *`; do
+    # skip the aggregate package
+    if [[ x"$j" == x"com.unity.git" ]]; then continue; fi
+    if [[ x"$j" == x"com.unity.git.tests" ]]; then continue; fi
+
     pushd $j >/dev/null 2>&1
     if [[ -e package.json ]]; then
       tgz="$(npm pack -q)"
+
       mv -f $tgz $targetdir/$tgz
       cp package.json $targetdir/$tgz.json
       found=1

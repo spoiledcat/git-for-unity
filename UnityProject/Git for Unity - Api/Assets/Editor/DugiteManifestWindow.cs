@@ -1,11 +1,13 @@
 using System;
-using System.Net;
 using System.Threading;
-using System.Threading.Tasks;
 using SpoiledCat;
+using Unity.Editor.Tasks;
+using Unity.Editor.Tasks.Extensions;
+using Unity.Editor.Tasks.Logging;
 using UnityEditor;
 using UnityEngine;
 using Unity.VersionControl.Git;
+using Unity.VersionControl.Git.IO;
 
 class DugiteManifestWindow : BaseWindow
 {
@@ -14,21 +16,20 @@ class DugiteManifestWindow : BaseWindow
 	{
 		LogHelper.LogAdapter = new UnityLogAdapter();
 
-		var unityAssetsPath = Application.dataPath;
-		var unityApplication = EditorApplication.applicationPath;
-		var unityApplicationContents = EditorApplication.applicationContentsPath;
 		var extensionInstallPath = Application.dataPath.ToSPath().Parent;
-		var unityVersion = Application.unityVersion;
-		var env = new DefaultEnvironment();
-		env.Initialize(unityVersion, extensionInstallPath, unityApplication.ToSPath(),
-			unityApplicationContents.ToSPath(), unityAssetsPath.ToSPath());
-		env.InitializeRepository();
-		TaskManager.Instance.Initialize(new UnityUIThreadSynchronizationContext());
+
+        var unityEnv = TheEnvironment.instance.Environment;
+        var env = new ApplicationEnvironment(unityEnv);
+        env.Initialize(extensionInstallPath, unityEnv);
+        var platform = new Platform(env);
+
+        env.InitializeRepository();
 
 		var installer = new GitInstaller.GitInstallDetails(env.RepositoryPath, env);
-		var manifest = DugiteReleaseManifest.Load(installer.GitManifest, GitInstaller.GitInstallDetails.GitPackageFeed, env);
+		var manifest = DugiteReleaseManifest.Load(platform.TaskManager, installer.GitManifest, installer.GitManifestFeed, platform.Environment);
 
-		var downloader = new Downloader();
+        var cts = new CancellationTokenSource();
+		var downloader = new Downloader(platform.TaskManager, cts.Token);
 		var downloadPath = env.RepositoryPath.Combine("downloads");
 		foreach (var asset in manifest.Assets)
 		{
@@ -37,11 +38,11 @@ class DugiteManifestWindow : BaseWindow
 		}
 
 		downloader.Progress(p => {
-			TaskManager.Instance.RunInUI(() => {
+			platform.TaskManager.RunInUI(() => {
 				if (EditorUtility.DisplayCancelableProgressBar(p.Message, p.InnerProgress?.InnerProgress?.Message ?? p.InnerProgress?.Message ?? p.Message,
 					p.Percentage))
 				{
-					downloader.Cancel();
+					cts.Cancel();
 				}
 			});
 		}).FinallyInUI((success, ex) => {
@@ -49,7 +50,7 @@ class DugiteManifestWindow : BaseWindow
 			if (success)
 				EditorUtility.DisplayDialog("Download done", downloadPath, "Ok");
 			else
-				EditorUtility.DisplayDialog("Error!", ex.GetExceptionMessageOnly(), "Ok");
+				EditorUtility.DisplayDialog("Error!", ex.GetExceptionMessageShort(), "Ok");
 
 		}).Start();
 	}

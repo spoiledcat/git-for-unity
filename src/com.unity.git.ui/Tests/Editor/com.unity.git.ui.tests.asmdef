@@ -13,7 +13,9 @@
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": [],
+    "precompiledReferences": [
+        "Unity.Editor.Tasks.dll"
+    ],
     "autoReferenced": false,
     "defineConstraints": []
 }

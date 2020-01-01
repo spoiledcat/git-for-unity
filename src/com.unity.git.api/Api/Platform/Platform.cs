@@ -28,6 +28,16 @@ namespace Unity.VersionControl.Git
             Instance = this;
         }
 
+        public Platform(IGitEnvironment environment)
+        {
+            Environment = environment;
+            TaskManager = new TaskManager();
+            TaskManager.Initialize();
+            ProcessManager = new GitProcessManager(Environment);
+            GitClient = new GitClient(this);
+            Instance = this;
+        }
+
         public IPlatform Initialize()
         {
             return this;

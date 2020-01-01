@@ -64,4 +64,5 @@
     </PropertyGroup>
   </Target>
   <Target Name="BuildWrapper" Condition=" '$(DoBuild)' != 'false' " DependsOnTargets="$(BuildWrapperDependsOn)" Returns="$(TargetPath)" />
+  <Target Name="pack" />
 </Project>
