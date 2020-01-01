@@ -11,10 +11,9 @@ build:
 
   commands:
     - powershell scripts\Get-Deps.ps1
-    - |
-      build.cmd
-      test.cmd
-      pack.cmd
+    - build.cmd
+    - test.cmd
+    - pack.cmd
 
   artifacts:
     packman:
