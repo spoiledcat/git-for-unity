@@ -310,3 +310,5 @@ nbgv.exe
 PackageSources/
 upm-ci~/
 test-results/
+.download
+.bin

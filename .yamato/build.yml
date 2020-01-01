@@ -1,39 +1,32 @@
-{% metadata_file .yamato_config/configuration.yml %}
+{% metadata_file .yamato_config/config.yml %}
 ---
 build:
-  name: Build on Windows
+  name: Build
   agent:
-    type: Unity::VM
-    image: core-kaunas/win10-vs2017-dotnetcore:latest
-    flavor: m1.large
-  interpreter: powershell
+    type: {{ build_agent_type }}
+    image: {{ build_agent_image }}
+    flavor: {{ build_agent_flavor }}
+  variables:
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
   commands:
+    - powershell scripts\Get-Deps.ps1
     - |
-      scripts\Get-Deps.ps1
-      scripts\Build.ps1
-      scripts\Test.ps1 -Yamato
-
-      dotnet tool install --tool-path . nbgv
-      Push-Location src\com.unity.git.api
-      $version = ..\..\nbgv get-version -f json | ConvertFrom-Json
-      Pop-Location
-
-      Write-Output "Packaging version $($version.AssemblyInformationalVersion)"
-      scripts\Create-Packages.ps1 $($version.AssemblyInformationalVersion) "PackageSources" -SkipUnity -SkipPackman
-
-    - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
-{% for package in packages %}
-    - scripts\CreateCombinedManifest.ps1 {{ package.name }} {{ package.path }}
-    - Copy-Item upm-ci~\packages\{{ package.name }}*.tgz artifacts\
-{% endfor %}
+      build.cmd
+      test.cmd
+      pack.cmd
 
   artifacts:
-    packages:
+    packman:
       paths:
-        - "artifacts/**/*"
-    sources:
+        - "upm-ci~/**/*"
+    binaries:
       paths:
-        - "PackageSources/**/*"
+        - "build/bin/**/*"
     tests:
       paths:
-        - "test-results/**/*"
+        - "build/tests/bin/**/*"
+        - "tests/**/TestResults/*"
+    sources:
+      paths:
+        - "build/packages/**/*"

@@ -19,7 +19,7 @@ build_script:
 test:
   assemblies:
     except:
-      - '**\*UnityTests*.dll'
+      - '**\*Unity*.dll'
       - '**\*.TestRunner.dll'
       - '**\TestUtils.dll'
   categories:

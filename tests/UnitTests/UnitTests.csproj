@@ -1,27 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
+
     <TargetFramework>net471</TargetFramework>
-    <SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\</SolutionDir>
-    <ProjectGuid>{69F13D9D-AD56-4EEC-AE10-D528EE23E1A9}</ProjectGuid>
+    <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RootDir>
+    <PackageName>com.unity.git.api</PackageName>
     <RootNamespace>UnitTests</RootNamespace>
-    <AssemblyName>UnitTests</AssemblyName>
+    <AssemblyName>Unit.Tests</AssemblyName>
+    <PublishTo>$(RootDir)build\packages\</PublishTo>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <IsTestProject>true</IsTestProject>
-    <DefineConstants>NUNIT</DefineConstants>
+    <Configurations>Debug;Release;ReleaseUnity;DebugUnity</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);NUNIT;TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugUnity|AnyCPU'">
+    <DefineConstants>$(DefineConstants);TRACE;DEBUG;UNITY_EDITOR</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants);NUNIT</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseUnity|AnyCPU'">
+    <DefineConstants>$(DefineConstants);UNITY_EDITOR</DefineConstants>
   </PropertyGroup>
 
+
   <Import Project="$(SolutionDir)\common\properties.props" />
-  <Import Project="$(SolutionDir)\common\tests.props" />
-  <ItemGroup>
-    <Compile Remove="Authentication\KeychainTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Authentication\KeychainTests.cs" />
-  </ItemGroup>  
+  <Import Project="$(SolutionDir)\common\tests.props" />  
+
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.7.0" />
     <PackageReference Include="NCrunch.Framework" Version="3.17.0" />
@@ -33,4 +39,5 @@
     <ProjectReference Include="..\TestUtils\TestUtils.csproj" />
     <ProjectReference Include="..\..\src\com.unity.git.api\Api\Api.csproj" />
   </ItemGroup>
+
 </Project>

@@ -3,23 +3,30 @@
     <TargetFramework>net471</TargetFramework>
     <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RootDir>
     <PackageName>com.unity.git.api</PackageName>
+    <RootNamespace>IntegrationTests</RootNamespace>
+    <AssemblyName>Integration.Tests</AssemblyName>
     <PublishTo>$(RootDir)build\packages\</PublishTo>
     <PackageSource>src\</PackageSource>
     <PackageSubFolder>\Helpers~\</PackageSubFolder>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
-    <RootNamespace>IntegrationTests</RootNamespace>
-    <AssemblyName>IntegrationTests</AssemblyName>
-    <IsTestProject>true</IsTestProject>
-    <DefineConstants>NUNIT</DefineConstants>
+    <Configurations>Debug;Release;ReleaseUnity;DebugUnity</Configurations>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);TRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);NUNIT;TRACE;DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugUnity|AnyCPU'">
+    <DefineConstants>$(DefineConstants);TRACE;DEBUG;UNITY_EDITOR</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DefineConstants>$(DefineConstants);NUNIT</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseUnity|AnyCPU'">
+    <DefineConstants>$(DefineConstants);UNITY_EDITOR</DefineConstants>
   </PropertyGroup>
 
-  <Import Project="$(RootDir)\common\properties.props" />
-  <Import Project="$(RootDir)\common\tests.props" />  
+  <Import Project="$(SolutionDir)\common\tests.props" />  
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.7.0" />
@@ -35,28 +42,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\..\src\$(PackageName)\Tests\Editor\**\*.cs" Link="UnityTests\%(Filename)%(Extension)" Exclude="..\..\src\$(PackageName)\Tests\**\UnityBaseTest.cs" />
-    <None Include="..\..\src\$(PackageName)\Tests\**\UnityBaseTest.cs" Link="UnityTests\UnityBaseTest.cs" />
-    <Compile Include="**\*.cs" Link="NUnitTests\%(Filename)%(Extension)" />
+    <Compile Include="..\..\src\$(PackageName)\Tests\Editor\*.cs" Link="Helpers\%(Filename)%(Extension)" Exclude="..\..\src\$(PackageName)\Tests\**\UnityBaseTest.cs" />
+    <Compile Include="**\*.cs" Link="%(Filename)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="TestResults\**" />
     <EmbeddedResource Remove="TestResults\**" />
     <None Remove="TestResults\**" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="BaseTest_old.cs" />
-    <Compile Remove="Metrics\MetricsTests.cs" />
-  </ItemGroup>
 
   <ItemGroup>
-    <None Include="BaseTest_old.cs" />
     <None Include="IOTestsRepo.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\common\nativelibraries.props" />
   <ItemGroup>
@@ -76,8 +74,5 @@
     <None Update="UnzipTestResources\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Metrics\" />
   </ItemGroup>
 </Project>

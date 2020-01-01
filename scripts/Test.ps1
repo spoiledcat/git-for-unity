@@ -15,7 +15,7 @@ if ($Trace) { Set-PSDebug -Trace 1 }
 . $PSScriptRoot\helpers.ps1 | out-null
 
 $packageDir="$rootDirectory\packages"
-$testDir="$rootDirectory\build\tests\net471"
+$testDir="$rootDirectory\build\tests\bin"
 $nunit="$packageDir\NUnit.ConsoleRunner.3.10.0\tools\nunit3-console.exe"
 $nure="$packageDir\Nure.1.2.0\tools\nure.exe"
 $xml="$testDir\TestResult.xml"
@@ -27,7 +27,7 @@ if ($OutDir -ne '') {
 
 $TimeoutDuration = 5*60
 
-$args = Get-ChildItem "$testDir\*Tests.dll" | % { "$testDir\$($_.Name)" }
+$args = Get-ChildItem -Recurse "$testDir\*.Tests.dll" | % { $_.FullName }
 $args += "--where:cat!=DoNotRunOnAppVeyor"
 
 Write-Verbose "$nunit $args"
