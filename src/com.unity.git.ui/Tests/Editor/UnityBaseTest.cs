@@ -2,13 +2,13 @@
 using System.Runtime.CompilerServices;
 using Unity.Editor.Tasks;
 using Unity.Editor.Tasks.Logging;
+using Unity.VersionControl.Git.IO;
 using UnityEngine.TestTools;
 using Debug = UnityEngine.Debug;
 
 namespace BaseTests
 {
 	using System;
-	using Unity.Editor.Tasks.Internal.IO;
 
 	// Unity does not support async/await tests, but it does
 	// have a special type of test with a [CustomUnityTest] attribute
