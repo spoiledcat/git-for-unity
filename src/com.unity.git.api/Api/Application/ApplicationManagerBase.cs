@@ -27,7 +27,8 @@ namespace Unity.VersionControl.Git
 
         public ApplicationManagerBase(SynchronizationContext synchronizationContext, IGitEnvironment environment)
         {
-            Platform = new Platform(synchronizationContext, environment);
+            Platform = new Platform(environment);
+            Platform.Initialize(synchronizationContext);
         }
 
         public void Initialize()
@@ -35,7 +36,6 @@ namespace Unity.VersionControl.Git
             LogHelper.TracingEnabled = UserSettings.Get(Constants.TraceLoggingKey, false);
             ApplicationConfiguration.WebTimeout = UserSettings.Get(Constants.WebTimeoutKey, ApplicationConfiguration.WebTimeout);
             ApplicationConfiguration.GitTimeout = UserSettings.Get(Constants.GitTimeoutKey, ApplicationConfiguration.GitTimeout);
-            Platform.Initialize();
             progress.OnProgress += progressReporter.UpdateProgress;
         }
 

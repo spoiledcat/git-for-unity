@@ -1,4 +1,4 @@
-# Contributing to GitHub for Unity
+# Contributing to Git for Unity
 
 ## Style Guide
 - PascalCase for all types regardless of visibility

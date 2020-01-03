@@ -7,6 +7,7 @@ namespace Unity.VersionControl.Git
 {
     public interface IPlatform
     {
+        IPlatform Initialize(SynchronizationContext synchronizationContext);
         IPlatform Initialize();
         IGitEnvironment Environment { get; }
         IGitProcessManager ProcessManager { get; }
@@ -18,28 +19,24 @@ namespace Unity.VersionControl.Git
 
     public class Platform : IPlatform, IDisposable
     {
-        public Platform(SynchronizationContext synchronizationContext, IGitEnvironment environment)
-        {
-            Environment = environment;
-            TaskManager = new TaskManager();
-            TaskManager.Initialize(synchronizationContext);
-            ProcessManager = new GitProcessManager(Environment);
-            GitClient = new GitClient(this);
-            Instance = this;
-        }
-
         public Platform(IGitEnvironment environment)
         {
             Environment = environment;
             TaskManager = new TaskManager();
-            TaskManager.Initialize();
             ProcessManager = new GitProcessManager(Environment);
             GitClient = new GitClient(this);
             Instance = this;
         }
 
+        public IPlatform Initialize(SynchronizationContext synchronizationContext)
+        {
+            TaskManager.Initialize(synchronizationContext);
+            return this;
+        }
+
         public IPlatform Initialize()
         {
+            TaskManager.Initialize();
             return this;
         }
 

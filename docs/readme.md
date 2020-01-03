@@ -1,6 +1,6 @@
-# GitHub for Unity Documentation
+# Git for Unity Documentation
 
-This is the [GitHub for Unity](https://github.com/github-for-unity/Unity) development
+This is the [Git for Unity](https://github.com/Unity-Technologies/Git-for-Unity) development
 documentation.
 
 ## Contributing
@@ -20,7 +20,7 @@ resources to get familiar with how things work:
 
 ## Process
 
-Details about how the team is organizing and shipping GitHub for Unity:
+Details about how the team is organizing and shipping Git for Unity:
 
  - **[Issue Triage](process/issue-triage.md)** - how we address issues reported
     by users
@@ -32,6 +32,6 @@ Details about how the team is organizing and shipping GitHub for Unity:
 
 [Quick Guide](using/quick-guide.md)
 
-These documents contain more details on how to use the GitHub for Unity plugin:
-- **[Installing and Updating the GitHub for Unity package](using/how-to-install-and-update.md)**
-- **[Getting Started with the GitHub for Unity package](using/getting-started.md)**
+These documents contain more details on how to use the Git for Unity plugin:
+- **[Installing and Updating the Git for Unity package](using/how-to-install-and-update.md)**
+- **[Getting Started with the Git for Unity package](using/getting-started.md)**

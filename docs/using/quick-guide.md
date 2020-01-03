@@ -2,18 +2,18 @@
 
 ## More resources
 
-These documents contain more details on how to use the GitHub for Unity plugin:
-- **[Installing and Updating the GitHub for Unity package](https://github.com/github-for-unity/Unity/blob/master/docs/using/how-to-install-and-update.md)**
-- **[Getting Started with the GitHub for Unity package](https://github.com/github-for-unity/Unity/blob/master/docs/using/getting-started.md)**
-- **[Authenticating to GitHub](https://github.com/github-for-unity/Unity/blob/master/docs/using/authenticating-to-github.md)**
-- **[Managing Branches](https://github.com/github-for-unity/Unity/blob/master/docs/using/managing-branches.md)**
-- **[Locking Files](https://github.com/github-for-unity/Unity/blob/master/docs/using/locking-files.md)**
-- **[Working with Changes](https://github.com/github-for-unity/Unity/blob/master/docs/using/working-with-changes.md)**
-- **[Using the Api](https://github.com/github-for-unity/Unity/blob/master/docs/using/using-the-api.md)**
+These documents contain more details on how to use the Git for Unity plugin:
+- **[Installing and Updating the Git for Unity package](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/how-to-install-and-update.md)**
+- **[Getting Started with the Git for Unity package](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/getting-started.md)**
+- **[Authenticating to GitHub](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/authenticating-to-github.md)**
+- **[Managing Branches](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/managing-branches.md)**
+- **[Locking Files](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/locking-files.md)**
+- **[Working with Changes](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/working-with-changes.md)**
+- **[Using the Api](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/using-the-api.md)**
 
 ## Table of Contents
 
-[Installing GitHub for Unity](#installing-github-for-unity)
+[Installing Git for Unity](#installing-github-for-unity)
 
 -   [Requirements](#requirements)
     -   [Git on macOS](#git-on-macos)
@@ -23,7 +23,7 @@ These documents contain more details on how to use the GitHub for Unity plugin:
     -   [Windows](#windows)
     -   [macOS](#macos)
 
-[Quick Guide to GitHub for Unity](#quick-guide-to-github-for-unity)
+[Quick Guide to Git for Unity](#quick-guide-to-github-for-unity)
 
 -   [Opening the GitHub window](#opening-the-github-window)
 -   [Initialize Repository](#initialize-repository)
@@ -34,7 +34,7 @@ These documents contain more details on how to use the GitHub for Unity plugin:
 -   [Branches tab](#branches-tab)
 -   [Settings tab](#settings-tab)
 
-## Installing GitHub for Unity
+## Installing Git for Unity
 
 ### Requirements
 
@@ -58,7 +58,7 @@ Make sure a Git user and email address are set in the `~/.gitconfig` file before
 
 #### Git on Windows
 
-The GitHub for Unity extension ships with a bundle of Git and Git LFS, to ensure that you have the correct version. These will be installed into `%LOCALAPPDATA%\GitHubUnity` when the extension runs for the first time.
+The Git for Unity extension ships with a bundle of Git and Git LFS, to ensure that you have the correct version. These will be installed into `%LOCALAPPDATA%\GitHubUnity` when the extension runs for the first time.
 
 Make sure a Git user and email address are set in the `%HOME%\.gitconfig` file before you initialize a repository for the first time. You can set these values by opening your `%HOME%\.gitconfig` file and adding the following section, if it doesn't exist yet:
 
@@ -73,7 +73,7 @@ Once the extension is installed, you can open a command line with the same Git a
 ### Installation
 
 This extensions needs to be installed (and updated) for each Unity project that you want to version control.
-First step is to download the latest package from [the releases page](https://github.com/github-for-unity/Unity/releases); it will be saved as a file with the extension `.unitypackage`.
+First step is to download the latest package from [the releases page](https://github.com/Unity-Technologies/Git-for-Unity/releases); it will be saved as a file with the extension `.unitypackage`.
 To install it, open Unity, then open the project you want to version control, and then double click on the downloaded package.
 Alternatively, import the package by clicking `Assets`, `Import Package`, `Custom Package`, then select the downloaded package.
 
@@ -87,17 +87,17 @@ The extension log file can be found at `~/Library/Logs/GitHubUnity/github-unity.
 
 The extension log file can be found at `%LOCALAPPDATA%\GitHubUnity\github-unity.log`
 
-## I have a problem with GitHub for Unity
+## I have a problem with Git for Unity
 
-First, please search the [open issues](https://github.com/github-for-unity/Unity/issues?q=is%3Aopen)
-and [closed issues](https://github.com/github-for-unity/Unity/issues?q=is%3Aclosed)
+First, please search the [open issues](https://github.com/Unity-Technologies/Git-for-Unity/issues?q=is%3Aopen)
+and [closed issues](https://github.com/Unity-Technologies/Git-for-Unity/issues?q=is%3Aclosed)
 to see if your issue hasn't already been reported (it may also be fixed).
 
-If you can't find an issue that matches what you're seeing, open a [new issue](https://github.com/github-for-unity/Unity/issues/new)
+If you can't find an issue that matches what you're seeing, open a [new issue](https://github.com/Unity-Technologies/Git-for-Unity/issues/new)
 and fill out the template to provide us with enough information to investigate
 further.
 
-## Quick Guide to GitHub for Unity
+## Quick Guide to Git for Unity
 
 ### Opening the GitHub window
 
@@ -107,7 +107,7 @@ You can access the GitHub window by going to `Windows` -> `GitHub`. The window o
 
 ![Initialize repository screenshot](https://user-images.githubusercontent.com/10103121/37807041-bb4446a6-2e19-11e8-9fff-a431309b8515.png)
 
-If the current Unity project is not in a Git repository, the GitHub for Unity extension will offer to initialize the repository for you. This will:
+If the current Unity project is not in a Git repository, the Git for Unity extension will offer to initialize the repository for you. This will:
 
 -   Initialize a git repository at the Unity project root via `git init`
 -   Initialize git-lfs via `git lfs install`
@@ -122,7 +122,7 @@ To set up credentials in Git so you can push and pull, you can sign in to GitHub
 
 ![Authentication screenshot](https://user-images.githubusercontent.com/121322/27644895-8f22f904-5bd9-11e7-8a93-e6bfe0c24a74.png)
 
-For more information on Authentication: - **[Authenticating to GitHub](https://github.com/github-for-unity/Unity/blob/master/docs/using/authenticating-to-github.md)**
+For more information on Authentication: - **[Authenticating to GitHub](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/authenticating-to-github.md)**
 
 ### Publish a new repository
 
@@ -138,7 +138,7 @@ You can see which files have been changed and commit them through the `Changes` 
 
 ![Changes tab screenshot](https://user-images.githubusercontent.com/121322/27644933-ab00af72-5bd9-11e7-84c3-edec495f87f5.png)
 
-For more information on working with changes: - **[Working with Changes](https://github.com/github-for-unity/Unity/blob/master/docs/using/working-with-changes.md#commit-changes)**
+For more information on working with changes: - **[Working with Changes](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/working-with-changes.md#commit-changes)**
 
 ### Pushing/pulling your work - History tab
 
@@ -149,7 +149,7 @@ To receive updates from the server by clicking on the `Pull` button. You cannot 
 ![History tab screenshot](https://user-images.githubusercontent.com/121322/27644965-c1109bba-5bd9-11e7-9257-4fa38f5c67d1.png)
 
 
-For more information on working with changes: - **[Working with Changes](https://github.com/github-for-unity/Unity/blob/master/docs/using/working-with-changes.md#pulling-changes)**
+For more information on working with changes: - **[Working with Changes](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/working-with-changes.md#pulling-changes)**
 
 ### Branches tab
 

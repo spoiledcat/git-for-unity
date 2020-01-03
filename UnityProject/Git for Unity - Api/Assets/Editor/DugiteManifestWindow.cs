@@ -22,6 +22,7 @@ class DugiteManifestWindow : BaseWindow
         var env = new ApplicationEnvironment(unityEnv);
         env.Initialize(extensionInstallPath, unityEnv);
         var platform = new Platform(env);
+        platform.Initialize();
 
         env.InitializeRepository();
 
