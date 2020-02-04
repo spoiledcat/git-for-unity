@@ -215,9 +215,10 @@ namespace Unity.VersionControl.Git
                 GitClient.LfsInstall().RunSynchronously();
                 progress.UpdateProgress(30, 100, "Initializing...");
 
-                AssemblyResources.ToFile(ResourceType.Generic, ".gitignore", targetPath, Environment);
-                AssemblyResources.ToFile(ResourceType.Generic, ".gitattributes", targetPath, Environment);
+                AssemblyResources.ToFile(ResourceType.Generic, "gitignore", targetPath, Environment);
+                AssemblyResources.ToFile(ResourceType.Generic, "gitattributes", targetPath, Environment);
                 assetsGitignore.CreateFile();
+
                 GitClient.Add(filesForInitialCommit).RunSynchronously();
                 progress.UpdateProgress(60, 100, "Initializing...");
 
