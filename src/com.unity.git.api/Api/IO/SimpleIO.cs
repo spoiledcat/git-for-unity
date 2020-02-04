@@ -675,7 +675,7 @@ namespace Unity.VersionControl.Git.IO
             if (dest.IsRelative)
                 dest = Parent.Combine(dest);
 
-            if (dest.DirectoryExists())
+            if (FileExists() && dest.DirectoryExists())
                 return CopyWithDeterminedDestination(dest.Combine(FileName), fileFilter);
 
             return CopyWithDeterminedDestination(dest, fileFilter);

@@ -123,12 +123,10 @@ namespace Unity.VersionControl.Git
 
         public static SPath ToFile(ResourceType resourceType, string resource, SPath destinationPath, IGitEnvironment environment)
         {
-            var target = destinationPath.Combine(resource);
             var source = TryGetFile(resourceType, resource, environment);
             if (source.IsInitialized)
             {
-                target.DeleteIfExists();
-                return source.Copy(target);
+                return source.Copy(destinationPath);
             }
             return SPath.Default;
         }
