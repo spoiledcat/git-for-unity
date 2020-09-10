@@ -646,10 +646,10 @@ namespace Unity.VersionControl.Git
                 else
                 {
                     // Publishing a repo
-                    if (GUILayout.Button(Localization.PublishButton, Styles.ToolbarButtonStyle))
-                    {
-                        PopupWindow.OpenWindow(PopupWindow.PopupViewType.PublishView);
-                    }
+                    //if (GUILayout.Button(Localization.PublishButton, Styles.ToolbarButtonStyle))
+                    //{
+                    //    PopupWindow.OpenWindow(PopupWindow.PopupViewType.PublishView);
+                    //}
                 }
 
                 if (GUILayout.Button(refreshButtonContent, Styles.ToolbarButtonStyle))
