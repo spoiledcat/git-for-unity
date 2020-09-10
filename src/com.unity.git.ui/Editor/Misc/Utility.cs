@@ -38,9 +38,8 @@ namespace Unity.VersionControl.Git
             {
                 return iconCache[key];
             }
-            Debug.Log($"Loading {filename}");
-            Texture2D texture2D;
 
+            Texture2D texture2D;
             using (var stream = AssemblyResources.ToStream(ResourceType.Icon, filename, EntryPoint.ApplicationManager.Environment))
             {
                 texture2D = stream.ToTexture2D();
