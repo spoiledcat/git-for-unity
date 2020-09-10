@@ -1,6 +1,7 @@
 {
     "name": "com.unity.git.api.tests",
     "references": [
+        "Unity.Editor.Tasks",
         "com.unity.git"
     ],
     "optionalUnityReferences": [
