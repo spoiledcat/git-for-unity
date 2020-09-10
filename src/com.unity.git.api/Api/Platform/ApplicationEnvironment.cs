@@ -87,28 +87,27 @@ namespace Unity.VersionControl.Git
         {
             switch (folder)
             {
-                case Folders.LocalApplicationData:
-                {
-                    if (IsMac)
-                        return SPath.HomeDirectory.Combine("Library", "Application Support");
-                }
-                break;
                 case Folders.CommonApplicationData:
                 {
-                    return Environment.GetFolderPath(
-                        IsLinux
-                            ? Environment.SpecialFolder.ApplicationData
-                            : Environment.SpecialFolder.CommonApplicationData
-                            ).ToSPath();
+                    if (IsMac)
+                        return SPath.HomeDirectory.Combine("Library");
+                    else if (IsLinux)
+                        return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData).ToSPath();
+                    return Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData).ToSPath();
                 }
                 case Folders.Logs:
                 {
                     if (IsMac)
                         return SPath.HomeDirectory.Combine("Library/Logs");
+                    return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData).ToSPath();
                 }
-                break;
+                // fallback is always to localappdata
+                case Folders.LocalApplicationData:
+                default:
+                    if (IsMac)
+                        return SPath.HomeDirectory.Combine("Library", "Application Support");
+                    return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData).ToSPath();
             }
-            return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData).ToSPath();
         }
 
         public SPath LogPath { get; }
