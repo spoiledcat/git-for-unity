@@ -454,7 +454,7 @@ namespace Unity.VersionControl.Git
         {
             base.OnUI();
 
-            GUILayout.BeginVertical(Styles.HeaderStyle);
+            GUILayout.BeginVertical();
 
             if (HasRepository)
             {
@@ -528,16 +528,16 @@ namespace Unity.VersionControl.Git
                 GUILayout.BeginVertical(GUILayout.Width(16));
                 {
                     GUILayout.Space(9);
-                    GUILayout.Label(Styles.RepoIcon, GUILayout.Height(20), GUILayout.Width(20));
+                    GUILayout.Label(Styles.RepoIcon, GUILayout.Height(32), GUILayout.Width(32));
                 }
                 GUILayout.EndVertical();
 
                 GUILayout.BeginVertical();
                 {
-                    GUILayout.Space(3);
+                    GUILayout.Space(7);
 
                     GUILayout.Label(currentRemoteUrlContent, Styles.HeaderRepoLabelStyle);
-                    GUILayout.Space(-2);
+                    GUILayout.Space(0);
                     GUILayout.Label(currentBranchContent, Styles.HeaderBranchLabelStyle);
                 }
                 GUILayout.EndVertical();

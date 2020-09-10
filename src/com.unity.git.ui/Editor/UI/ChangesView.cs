@@ -386,7 +386,7 @@ namespace Unity.VersionControl.Git
             if (currentBranchHasUpdate)
             {
                 currentBranchHasUpdate = false;
-                currentBranch = string.Format("[{0}]", Repository.CurrentBranchName);
+                currentBranch = Repository.CurrentBranchName;
             }
 
             if (currentLocksHasUpdate)

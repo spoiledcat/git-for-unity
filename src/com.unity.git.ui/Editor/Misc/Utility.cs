@@ -1,4 +1,3 @@
-using Unity.VersionControl.Git;
 using System;
 using System.IO;
 using System.Linq;
@@ -21,24 +20,28 @@ namespace Unity.VersionControl.Git
             }
         }
 
-        public static Texture2D GetIcon(string filename, string filename2x = "", bool invertColors = false)
+        public static Texture2D GetIcon(string filename, string filename2x = null, bool invertColors = false)
         {
-            if (EditorGUIUtility.pixelsPerPoint > 1f && !string.IsNullOrEmpty(filename2x))
+            if (EditorGUIUtility.pixelsPerPoint > 1f)
             {
+                if (filename2x == null)
+                    filename2x = filename + "@2x.png";
                 filename = filename2x;
             }
 
+            if (!filename.EndsWith(".png"))
+                filename += ".png";
+                
             var key = invertColors ? "dark_" + filename : "light_" + filename;
 
             if (iconCache.ContainsKey(key))
             {
                 return iconCache[key];
             }
-
+            Debug.Log($"Loading {filename}");
             Texture2D texture2D;
 
-            using (var stream =
-                AssemblyResources.ToStream(ResourceType.Icon, filename, EntryPoint.ApplicationManager.Environment))
+            using (var stream = AssemblyResources.ToStream(ResourceType.Icon, filename, EntryPoint.ApplicationManager.Environment))
             {
                 texture2D = stream.ToTexture2D();
             }

@@ -1,5 +1,6 @@
 using System;
 using UnityEditor;
+using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
 namespace Unity.VersionControl.Git
@@ -19,7 +20,7 @@ namespace Unity.VersionControl.Git
                            LocksUserHeight = 5f,
                            LocksDateHeight = 5f,
                            HistoryEntryHeight = 40f,
-                           HistorySummaryHeight = 16f,
+                           HistorySummaryHeight = 8f,
                            HistoryDetailsHeight = 16f,
                            HistoryEntryPadding = 16f,
                            HistoryChangesIndentation = 17f,
@@ -104,25 +105,25 @@ namespace Unity.VersionControl.Git
                 switch (status)
                 {
                     case GitFileStatus.Modified:
-                        return Utility.GetIcon("locked.png", "locked@2x.png");
+                        return Utility.GetIcon("locked");
 
                     default:
-                        return Utility.GetIcon("locked-by-person.png", "locked-by-person@2x.png");
+                        return Utility.GetIcon("locked-by-person");
                 }
             }
 
             switch (status)
             {
                 case GitFileStatus.Modified:
-                    return Utility.GetIcon("modified.png", "modified@2x.png");
+                    return Utility.GetIcon("modified");
                 case GitFileStatus.Added:
-                    return Utility.GetIcon("added.png", "added@2x.png");
+                    return Utility.GetIcon("added");
                 case GitFileStatus.Deleted:
-                    return Utility.GetIcon("removed.png", "removed@2x.png");
+                    return Utility.GetIcon("removed");
                 case GitFileStatus.Renamed:
-                    return Utility.GetIcon("renamed.png", "renamed@2x.png");
+                    return Utility.GetIcon("renamed");
                 case GitFileStatus.Untracked:
-                    return Utility.GetIcon("untracked.png", "untracked@2x.png");
+                    return Utility.GetIcon("untracked");
             }
 
             return null;
@@ -289,7 +290,7 @@ namespace Unity.VersionControl.Git
             {
                 if (headerBranchLabelStyle == null)
                 {
-                    headerBranchLabelStyle = new GUIStyle(EditorStyles.label);
+                    headerBranchLabelStyle = new GUIStyle(EditorStyles.boldLabel);
                     //headerBranchLabelStyle.name = "HeaderBranchLabelStyle";
                     headerBranchLabelStyle.margin = new RectOffset(0, 0, 0, 0);
                     headerBranchLabelStyle.wordWrap = true;
@@ -304,7 +305,7 @@ namespace Unity.VersionControl.Git
             {
                 if (headerRepoLabelStyle == null)
                 {
-                    headerRepoLabelStyle = new GUIStyle(EditorStyles.boldLabel);
+                    headerRepoLabelStyle = new GUIStyle(EditorStyles.label);
                     //headerRepoLabelStyle.name = "HeaderRepoLabelStyle";
                     headerRepoLabelStyle.margin = new RectOffset(0, 0, 0, 0);
                     headerRepoLabelStyle.wordWrap = true;
@@ -486,15 +487,28 @@ namespace Unity.VersionControl.Git
                 return historyLockStyle;
             }
         }
+
+        private static GUIStyle historyEntryLine;
+        public static GUIStyle HistoryEntryLine
+        {
+            get
+            {
+                if (historyEntryLine == null)
+                {
+                    historyEntryLine = new GUIStyle("TV Selection");
+                }
+
+                return historyEntryLine;
+            }
+        }
+
         public static GUIStyle HistoryEntrySummaryStyle
         {
             get
             {
                 if (historyEntrySummaryStyle == null)
                 {
-                    historyEntrySummaryStyle = new GUIStyle(LabelNoWrap);
-                    //historyEntrySummaryStyle.name = "HistoryEntrySummaryStyle";
-
+                    historyEntrySummaryStyle = new GUIStyle("TV Line");
                     historyEntrySummaryStyle.contentOffset = new Vector2(BaseSpacing * 2, 0);
                 }
                 return historyEntrySummaryStyle;
@@ -507,17 +521,13 @@ namespace Unity.VersionControl.Git
             {
                 if (historyEntryDetailsStyle == null)
                 {
-                    historyEntryDetailsStyle = new GUIStyle(EditorStyles.miniLabel);
-                    //historyEntryDetailsStyle.name = "HistoryEntryDetailsStyle";
-                    var c = EditorStyles.miniLabel.normal.textColor;
-                    historyEntryDetailsStyle.normal.textColor = new Color(c.r, c.g, c.b, c.a * 0.7f);
-
-                    historyEntryDetailsStyle.onNormal.background = Label.onNormal.background;
-                    historyEntryDetailsStyle.onNormal.textColor = Label.onNormal.textColor;
-                    historyEntryDetailsStyle.onFocused.background = Label.onFocused.background;
-                    historyEntryDetailsStyle.onFocused.textColor = Label.onFocused.textColor;
-
+                    historyEntryDetailsStyle = new GUIStyle("TV Line");
+                    var c = historyEntryDetailsStyle.normal.textColor;
+                    historyEntryDetailsStyle.normal.textColor = new Color(c.r, c.g, c.b, c.a * 0.8f);
+                    c = historyEntryDetailsStyle.focused.textColor;
+                    historyEntryDetailsStyle.focused.textColor = new Color(c.r, c.g, c.b, c.a * 0.8f);
                     historyEntryDetailsStyle.contentOffset = new Vector2(BaseSpacing * 2, 0);
+                    HistoryEntryDetailsStyle.fontSize = HistoryEntryDetailsStyle.fontSize - 1;
                 }
                 return historyEntryDetailsStyle;
             }
@@ -603,6 +613,13 @@ namespace Unity.VersionControl.Git
                     historyDetailsMetaInfoStyle = new GUIStyle(EditorStyles.miniLabel);
                     //historyDetailsMetaInfoStyle.name = "HistoryDetailsMetaInfoStyle";
                     historyDetailsMetaInfoStyle.normal.textColor = new Color(0f, 0f, 0f, 0.6f);
+                    var c = EditorStyles.miniLabel.normal.textColor;
+                    historyDetailsMetaInfoStyle.normal.textColor = new Color(c.r, c.g, c.b, c.a * 0.8f);
+
+                    historyDetailsMetaInfoStyle.onNormal.background = Label.onNormal.background;
+                    historyDetailsMetaInfoStyle.onNormal.textColor = Label.onNormal.textColor;
+                    historyDetailsMetaInfoStyle.onFocused.background = Label.onFocused.background;
+                    historyDetailsMetaInfoStyle.onFocused.textColor = Label.onFocused.textColor;
                 }
                 return historyDetailsMetaInfoStyle;
             }
@@ -820,7 +837,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("current-branch-indicator.png", "current-branch-indicator@2x.png", Utility.IsDarkTheme);
+                return Utility.GetIcon(GetIconName("current-branch-indicator"));
             }
         }
 
@@ -828,7 +845,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("branch.png", "branch@2x.png");
+                return Utility.GetIcon(GetIconName("branch"));
             }
         }
 
@@ -836,7 +853,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("tracked-branch-indicator.png");
+                return Utility.GetIcon("tracked-branch-indicator", "tracked-branch-indicator");
             }
         }
 
@@ -844,7 +861,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("favorite-branch-indicator.png");
+                return Utility.GetIcon("favorite-branch-indicator", "favorite-branch-indicator");
             }
         }
 
@@ -860,7 +877,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.IsDarkTheme ? Utility.GetIcon("small-logo-light.png", "small-logo-light@2x.png") : Utility.GetIcon("small-logo.png", "small-logo@2x.png");
+                return Utility.GetIcon(GetIconName("small-logo"));
             }
         }
 
@@ -868,7 +885,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.IsDarkTheme ? Utility.GetIcon("big-logo-light.png", "big-logo-light@2x.png") : Utility.GetIcon("big-logo.png", "big-logo@2x.png");
+                return Utility.GetIcon(GetIconName("big-logo"));
             }
         }
 
@@ -876,7 +893,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("git-merge.png", "git-merge@2x.png");
+                return Utility.GetIcon(GetIconName("git-merge"));
             }
         }
 
@@ -884,7 +901,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("dot.png", "dot@2x.png", Utility.IsDarkTheme);
+                return Utility.GetIcon(GetIconName("dot"));
             }
         }
 
@@ -892,7 +909,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("local-commit-icon.png", "local-commit-icon@2x.png", Utility.IsDarkTheme);
+                return Utility.GetIcon(GetIconName("local-commit"));
             }
         }
 
@@ -908,7 +925,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("repo.png", "repo@2x.png", Utility.IsDarkTheme);
+                return Utility.GetIcon(GetIconName("repo"));
             }
         }
 
@@ -916,7 +933,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("lock.png", "lock@2x.png");
+                return Utility.GetIcon(GetIconName("lock"));
             }
         }
 
@@ -924,7 +941,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("empty-state-init.png", "empty-state-init@2x.png");
+                return Utility.GetIcon("empty-state-init");
             }
         }
 
@@ -932,7 +949,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("dropdown-list-icon.png", "dropdown-list-icon@2x.png");
+                return Utility.GetIcon("dropdown-list-icon");
             }
         }
 
@@ -940,7 +957,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("globe.png", "globe@2x.png", Utility.IsDarkTheme);
+                return Utility.GetIcon("globe", invertColors: Utility.IsDarkTheme);
             }
         }
 
@@ -948,7 +965,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("spinner-inside.png", "spinner-inside@2x.png");
+                return Utility.GetIcon("spinner-inside");
             }
         }
 
@@ -956,7 +973,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("spinner-outside.png", "spinner-outside@2x.png");
+                return Utility.GetIcon("spinner-outside");
             }
         }
 
@@ -964,7 +981,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("code.png", "code@2x.png");
+                return Utility.GetIcon("code");
             }
         }
 
@@ -972,7 +989,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("rocket.png", "rocket@2x.png");
+                return Utility.GetIcon("rocket");
             }
         }
 
@@ -980,7 +997,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("merge.png", "merge@2x.png");
+                return Utility.GetIcon("merge");
             }
         }
 
@@ -988,7 +1005,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("spinner-inside.png", "spinner-inside@2x.png", true);
+                return Utility.GetIcon("spinner-inside", invertColors: true);
             }
         }
 
@@ -996,7 +1013,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("spinner-outside.png", "spinner-outside@2x.png", true);
+                return Utility.GetIcon("spinner-outside", invertColors: true);
             }
         }
 
@@ -1004,7 +1021,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("code.png", "code@2x.png", true);
+                return Utility.GetIcon("code", invertColors: true);
             }
         }
 
@@ -1012,7 +1029,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("rocket.png", "rocket@2x.png", true);
+                return Utility.GetIcon("rocket", invertColors: true);
             }
         }
 
@@ -1020,7 +1037,7 @@ namespace Unity.VersionControl.Git
         {
             get
             {
-                return Utility.GetIcon("merge.png", "merge@2x.png", true);
+                return Utility.GetIcon("merge", invertColors: true);
             }
         }
         private static GUIStyle foldout;
@@ -1150,5 +1167,7 @@ namespace Unity.VersionControl.Git
                 return lockMetaDataStyle;
             }
         }
+
+        private static string GetIconName(string name) => Utility.IsDarkTheme ? name + "-light" : name;
     }
 }
