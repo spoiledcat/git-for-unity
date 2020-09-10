@@ -912,7 +912,7 @@ namespace Unity.VersionControl.Git
         {
             progressMessageClearTime = EditorApplication.timeSinceStartup + timeout;
             if (repositoryProgress == null)
-                repositoryProgress = new Progress(TaskBase.Default);
+                repositoryProgress = new Unity.Editor.Tasks.Progress(TaskBase.Default);
             repositoryProgress.UpdateProgress(value, repositoryProgress.Total, message);
             UpdateProgress(repositoryProgress);
             Redraw();
