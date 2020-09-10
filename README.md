@@ -8,11 +8,11 @@ This is a fork of [GitHub for Unity](https://github.com/github-for-unity/Unity).
 
 This project is a fork of GitHub for Unity and is currently in preview. The API part of GitHub for Unity is a .NET Git Client library, without any dependencies on Unity itself. Only the UI part of GitHub for Unity is Unity-specific.
 
-The same applies to this project, which is split into two packages - `com.unity.git.api` - the Git client library; and `com.unity.git.ui` - a Unity Git UI based on the GitHub for Unity UI, which examplifies how to use the Git client library.
+The same applies to this project, which is split into two packages - `com.unity.git.api` - the Git client library; and `com.unity.git.ui` - a Unity Git UI based on the GitHub for Unity UI, which exemplifies how to use the Git client library.
 
 Even though this project is currently a fork, we plan for the API part of this project to become the authoritative implementation source, and split entirely from the original GitHub for Unity implementation.
 
-We're doing this so we can improving the integration between Git and Unity by exposing additional version control C# APIs that Git for Unity can leverage. Therefore, the API may change while we build this, and this project may become dependent on more recent versions of Unity.
+We're doing this so we can improve the integration between Git and Unity by exposing additional version control C# APIs that Git for Unity can leverage. Therefore, the API may change while we build this, and this project may become dependent on more recent versions of Unity.
 
 ## How to Build
 
