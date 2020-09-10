@@ -1,7 +1,7 @@
 {
     "name": "com.unity.git.ui",
     "references": [
-        "com.unity.editor.tasks",
+        "Unity.Editor.Tasks",
         "com.unity.git",
         "com.unity.git.shim"
     ],

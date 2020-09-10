@@ -34,13 +34,14 @@ namespace Unity.VersionControl.Git
             get { return SelectedIndex < 0 ? GitLogEntry.Default : entries[SelectedIndex]; }
         }
 
-        public bool Render(Rect containingRect, Action<GitLogEntry> singleClick = null,
+        public bool Render(Rect containingRect, bool viewHasFocus, Action<GitLogEntry> singleClick = null,
             Action<GitLogEntry> doubleClick = null, Action<GitLogEntry> rightClick = null)
         {
             var requiresRepaint = false;
             scroll = GUILayout.BeginScrollView(scroll);
             {
                 controlId = GUIUtility.GetControlID(FocusType.Keyboard);
+                var hasKeyboardFocus = GUIUtility.keyboardControl == controlId && viewHasFocus;
 
                 if (Event.current.type != EventType.Repaint)
                 {
@@ -66,7 +67,7 @@ namespace Unity.VersionControl.Git
                     var shouldRenderEntry = !(entryRect.y > endDisplay || entryRect.yMax < startDisplay);
                     if (shouldRenderEntry && Event.current.type == EventType.Repaint)
                     {
-                        RenderEntry(entryRect, entry, index);
+                        RenderEntry(entryRect, hasKeyboardFocus, entry, index);
                     }
 
                     var entryRequiresRepaint =
@@ -83,26 +84,26 @@ namespace Unity.VersionControl.Git
             return requiresRepaint;
         }
 
-        private void RenderEntry(Rect entryRect, GitLogEntry entry, int index)
+        private void RenderEntry(Rect entryRect, bool viewHasFocus, GitLogEntry entry, int index)
         {
             var isLocalCommit = index < statusAhead;
             var isSelected = index == SelectedIndex;
-            var summaryRect = new Rect(entryRect.x, entryRect.y + Styles.BaseSpacing / 2, entryRect.width, Styles.HistorySummaryHeight + Styles.BaseSpacing);
+            var summaryRect = new Rect(entryRect.x, entryRect.y + Styles.BaseSpacing / 2f, entryRect.width, Styles.HistorySummaryHeight + Styles.BaseSpacing);
             var timestampRect = new Rect(entryRect.x, entryRect.yMax - Styles.HistoryDetailsHeight - Styles.BaseSpacing / 2, entryRect.width, Styles.HistoryDetailsHeight);
 
-            var hasKeyboardFocus = GUIUtility.keyboardControl == controlId;
+            if (isSelected)
+                Styles.HistoryEntryLine.Draw(entryRect, GUIContent.none, false, false, isSelected, viewHasFocus);
 
-            Styles.Label.Draw(entryRect, GUIContent.none, false, false, isSelected, hasKeyboardFocus);
-            Styles.HistoryEntrySummaryStyle.Draw(summaryRect, entry.Summary, false, false, isSelected, hasKeyboardFocus);
+            Styles.HistoryEntrySummaryStyle.Draw(summaryRect, entry.Summary, false, false, isSelected, viewHasFocus);
 
             var historyEntryDetail = string.Format(HistoryEntryDetailFormat, entry.PrettyTimeString, entry.AuthorName);
-            Styles.HistoryEntryDetailsStyle.Draw(timestampRect, historyEntryDetail, false, false, isSelected, hasKeyboardFocus);
+            Styles.HistoryEntryDetailsStyle.Draw(timestampRect, historyEntryDetail, false, false, isSelected, viewHasFocus);
 
             if (!string.IsNullOrEmpty(entry.MergeA))
             {
                 const float MergeIndicatorWidth = 10.28f;
                 const float MergeIndicatorHeight = 12f;
-                var mergeIndicatorRect = new Rect(entryRect.x + 7, summaryRect.y, MergeIndicatorWidth, MergeIndicatorHeight);
+                var mergeIndicatorRect = new Rect(entryRect.x + 7, summaryRect.y + 7, MergeIndicatorWidth, MergeIndicatorHeight);
 
                 GUI.DrawTexture(mergeIndicatorRect, Styles.MergeIcon);
 
@@ -116,7 +117,7 @@ namespace Unity.VersionControl.Git
                 if (isLocalCommit)
                 {
                     const float LocalIndicatorSize = 6f;
-                    var localIndicatorRect = new Rect(entryRect.x + (Styles.BaseSpacing - 2), summaryRect.y + 5, LocalIndicatorSize,
+                    var localIndicatorRect = new Rect(entryRect.x + (Styles.BaseSpacing - 2), summaryRect.y + 7, LocalIndicatorSize,
                         LocalIndicatorSize);
 
                     DrawTimelineRectAroundIconRect(entryRect, localIndicatorRect);
@@ -128,11 +129,10 @@ namespace Unity.VersionControl.Git
                 }
                 else
                 {
-                    const float NormalIndicatorWidth = 6f;
-                    const float NormalIndicatorHeight = 6f;
+                    const float NormalIndicatorSize = 6f;
 
-                    var normalIndicatorRect = new Rect(entryRect.x + (Styles.BaseSpacing - 2), summaryRect.y + 5,
-                        NormalIndicatorWidth, NormalIndicatorHeight);
+                    var normalIndicatorRect = new Rect(entryRect.x + (Styles.BaseSpacing - 2), summaryRect.y + 7,
+                        NormalIndicatorSize, NormalIndicatorSize);
 
                     DrawTimelineRectAroundIconRect(entryRect, normalIndicatorRect);
 
@@ -363,7 +363,7 @@ namespace Unity.VersionControl.Git
             GUILayout.BeginVertical(Styles.HeaderBoxStyle);
             GUILayout.Label(entry.Summary, Styles.HistoryDetailsTitleStyle);
 
-            GUILayout.Space(-5);
+            GUILayout.Space(-3);
 
             GUILayout.BeginHorizontal();
             GUILayout.Label(entry.PrettyTimeString, Styles.HistoryDetailsMetaInfoStyle);
@@ -382,7 +382,7 @@ namespace Unity.VersionControl.Git
             {
                 var historyControlRect = new Rect(0f, 0f, Position.width, Position.height - rect.height);
 
-                var requiresRepaint = HistoryControl.Render(historyControlRect,
+                var requiresRepaint = HistoryControl.Render(historyControlRect, HasFocus,
                     singleClick: entry => {
                         SelectedEntry = entry;
                         BuildTreeChanges();

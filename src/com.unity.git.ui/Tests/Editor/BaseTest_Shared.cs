@@ -201,8 +201,7 @@ namespace BaseTests
 
 #if UNITY_EDITOR
             Environment.Initialize(SPath.Default, projectPath, TheEnvironment.instance.Environment.UnityVersion, TheEnvironment.instance.Environment.UnityApplication, TheEnvironment.instance.Environment.UnityApplicationContents);
-            return;
-#endif
+#else
 
             SPath unityPath, unityContentsPath;
             unityPath = CurrentExecutionDirectory;
@@ -221,6 +220,7 @@ namespace BaseTests
             }
 
             Environment.Initialize(SPath.Default, projectPath, "2019.2", unityPath, unityContentsPath);
+#endif
         }
 
         public void Dispose()
