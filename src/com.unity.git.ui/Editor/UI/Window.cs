@@ -10,7 +10,7 @@ namespace Unity.VersionControl.Git
     class Window : BaseWindow
     {
         private const float DefaultNotificationTimeout = 2f;
-        private const string Title = "GitHub";
+        private const string Title = "Git for Unity";
 
         [NonSerialized] private Spinner spinner;
         [NonSerialized] private IProgress repositoryProgress;
