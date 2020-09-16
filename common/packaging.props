@@ -14,5 +14,6 @@
     <PackageSubFolder>\$(CurrentFullPath.Substring($(PackageSourceRootFull.Length)))\</PackageSubFolder>
 
     <NpmVersionSuffix>-preview</NpmVersionSuffix>
+    <CINeedsCustomVersion Condition=" '$(YAMATO_JOB_ID)' != '' ">true</CINeedsCustomVersion>
   </PropertyGroup>
 </Project>
