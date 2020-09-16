@@ -24,9 +24,7 @@ namespace Unity.VersionControl.Git
                     : environment.IsLinux ? "linux"
                     : "mac";
             }
-            var type = resourceType == ResourceType.Icon ? "IconsAndLogos"
-                : resourceType == ResourceType.Platform ? "PlatformResources"
-                : "Resources";
+            var type = resourceType == ResourceType.Icon ? "IconsAndLogos" : "PlatformResources";
 
             return (type, os);
         }
