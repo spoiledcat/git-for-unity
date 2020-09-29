@@ -57,8 +57,10 @@
 
     <PropertyGroup>
       <NeedsSuffix Condition="'$(PublicRelease)' != 'true' and '$(NpmVersionSuffix)' != '' and !$(NuGetPackageVersion.Contains('$(NpmVersionSuffix)'))">true</NeedsSuffix>
-      <NpmVersion Condition=" '$(NeedsSuffix)' != 'true' ">$(NuGetPackageVersion)</NpmVersion>
-      <NpmVersion Condition=" '$(NeedsSuffix)' == 'true'">$(BuildVersionSimple)$(NpmVersionSuffix)-g$(GitCommitIdShort)</NpmVersion>
+      <NeedsCustomVersion Condition="'$(PublicRelease)' != 'true' and '$(CINeedsCustomVersion)' == 'true' ">true</NeedsCustomVersion>
+      <NpmVersion Condition=" '$(NeedsCustomVersion)' == 'true' ">$(BuildVersionSimple)$(NpmVersionSuffix)$(FileVersion.Substring($(FileVersion.LastIndexOf('.'))))</NpmVersion>
+      <NpmVersion Condition=" '$(NeedsCustomVersion)' != 'true' and '$(NeedsSuffix)' != 'true' ">$(NuGetPackageVersion)</NpmVersion>
+      <NpmVersion Condition=" '$(NeedsCustomVersion)' != 'true' and '$(NeedsSuffix)' == 'true' ">$(BuildVersionSimple)$(NpmVersionSuffix)-g$(GitCommitIdShort)</NpmVersion>
     </PropertyGroup>
 
     <FileUpdate
@@ -162,8 +164,10 @@
 
     <PropertyGroup>
       <NeedsSuffix Condition="'$(PublicRelease)' != 'true' and '$(NpmVersionSuffix)' != '' and !$(NuGetPackageVersion.Contains('$(NpmVersionSuffix)'))">true</NeedsSuffix>
-      <NpmVersion Condition=" '$(NeedsSuffix)' != 'true' ">$(NuGetPackageVersion)</NpmVersion>
-      <NpmVersion Condition=" '$(NeedsSuffix)' == 'true'">$(BuildVersionSimple)$(NpmVersionSuffix)-g$(GitCommitIdShort)</NpmVersion>
+      <NeedsCustomVersion Condition="'$(PublicRelease)' != 'true' and '$(CINeedsCustomVersion)' == 'true' ">true</NeedsCustomVersion>
+      <NpmVersion Condition=" '$(NeedsCustomVersion)' == 'true' ">$(BuildVersionSimple)$(NpmVersionSuffix)$(FileVersion.Substring($(FileVersion.LastIndexOf('.'))))</NpmVersion>
+      <NpmVersion Condition=" '$(NeedsCustomVersion)' != 'true' and '$(NeedsSuffix)' != 'true' ">$(NuGetPackageVersion)</NpmVersion>
+      <NpmVersion Condition=" '$(NeedsCustomVersion)' != 'true' and '$(NeedsSuffix)' == 'true' ">$(BuildVersionSimple)$(NpmVersionSuffix)-g$(GitCommitIdShort)</NpmVersion>
     </PropertyGroup>
 
     <FileUpdate

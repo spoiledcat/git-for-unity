@@ -29,7 +29,7 @@ publish_candidates:
   skip_checkout: true
 
   commands:
-    - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
 {% for package in packages %}
     - upm-ci package publish --package-path build\packages\{{ package.name }}
     - upm-ci package publish --package-path build\packages\{{ package.name }}.tests
@@ -49,7 +49,7 @@ publish_public:
     UPMCI_PROMOTION: 1
 
   commands:
-    - npm install upm-ci-utils@stable -g --registry https://api.bintray.com/npm/unity/unity-npm
+    - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
 {% for package in packages %}
     - upm-ci package promote --package-path build\packages\{{ package.name }}
 {% endfor %}
