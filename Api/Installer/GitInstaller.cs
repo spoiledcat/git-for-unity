@@ -185,6 +185,21 @@ namespace Unity.VersionControl.Git
                 state = ValidateGitLfsVersion(state);
                 if (state.GitLfsIsValid)
                     state.GitLfsInstallationPath = state.GitLfsExecutablePath.Parent;
+                else
+                {
+                    // try somewhere else...
+                    if (platform.Environment.IsWindows)
+                    {
+                        var potentialPath = state.GitInstallationPath.Combine(platform.Environment.Is32Bit ? "mingw32" : "mingw64", "bin", "git-lfs" + platform.Environment.ExecutableExtension);
+                        if (potentialPath.FileExists())
+                        {
+                            state.GitLfsExecutablePath = potentialPath;
+                            state = ValidateGitLfsVersion(state);
+                            if (state.GitLfsIsValid)
+                                state.GitLfsInstallationPath = state.GitLfsExecutablePath.Parent;
+                        }
+                    }
+                }
             }
             return state;
         }
