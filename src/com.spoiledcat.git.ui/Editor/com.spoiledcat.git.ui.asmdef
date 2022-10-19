@@ -1,0 +1,18 @@
+{
+    "name": "com.spoiledcat.git.ui",
+    "references": [
+        "Unity.Editor.Tasks",
+        "com.spoiledcat.git",
+        "com.spoiledcat.git.shim"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": []
+}

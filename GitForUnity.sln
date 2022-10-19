@@ -5,11 +5,11 @@ VisualStudioVersion = 16.0.29503.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Localization", "src\Localization\Localization.csproj", "{F5D69B3F-E2BF-4D32-9DCE-51F3E52D74AF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\com.unity.git.api\Api\Api.csproj", "{B389ADAF-62CC-486E-85B4-2D8B078DF76B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api", "src\com.spoiledcat.git.api\Api\Api.csproj", "{B389ADAF-62CC-486E-85B4-2D8B078DF76B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI", "src\com.unity.git.ui\Editor\UI.csproj", "{ADD7A18B-DD2A-4C22-A2C1-488964EFF30B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UI", "src\com.spoiledcat.git.ui\Editor\UI.csproj", "{ADD7A18B-DD2A-4C22-A2C1-488964EFF30B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnityShim", "src\com.unity.git.ui\Shim\UnityShim.csproj", "{F94F8AE1-C171-4A83-89E8-6557CA91A188}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnityShim", "src\com.spoiledcat.git.ui\Shim\UnityShim.csproj", "{F94F8AE1-C171-4A83-89E8-6557CA91A188}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{D17F1B4C-42DC-4E78-BCEF-9F239A084C4D}"
 EndProject
@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnityApiTests", "tests\Unit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnityUITests", "tests\UnityUITests\UnityUITests.csproj", "{107D8EC5-F87F-498D-BBC8-65512FFADE14}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Git", "src\com.unity.git\Editor\Git.csproj", "{887BFA20-85CD-4E29-BC3A-356B896DCD63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Git", "src\com.spoiledcat.git\Editor\Git.csproj", "{887BFA20-85CD-4E29-BC3A-356B896DCD63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

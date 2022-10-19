@@ -1,0 +1,22 @@
+{
+    "name": "com.spoiledcat.git.ui.tests",
+    "references": [
+        "Unity.Editor.Tasks",
+        "com.spoiledcat.git",
+        "com.spoiledcat.git.ui"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [
+        "Unity.Editor.Tasks.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": []
+}

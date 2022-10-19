@@ -107,15 +107,15 @@ function Bump-Version([string]$versionFile,
 }
 
 if ($NewVersion -ne '' -and !($BumpMajor -or $BumpMinor -or $BumpPatch -or $BumpBuild)) {
-	$versionFile = "$rootDirectory\src\com.unity.git.ui\version.json"
+	$versionFile = "$rootDirectory\src\com.spoiledcat.git.ui\version.json"
 	Set-Version $versionFile $NewVersion
 
-	$versionFile = "$rootDirectory\src\com.unity.git.api\version.json"
+	$versionFile = "$rootDirectory\src\com.spoiledcat.git.api\version.json"
 	Set-Version $versionFile $NewVersion
 } else {
-	$versionFile = "$rootDirectory\src\com.unity.git.ui\version.json"
+	$versionFile = "$rootDirectory\src\com.spoiledcat.git.ui\version.json"
 	Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion
 
-	$versionFile = "$rootDirectory\src\com.unity.git.api\version.json"
+	$versionFile = "$rootDirectory\src\com.spoiledcat.git.api\version.json"
 	Bump-Version $versionFile $BumpMajor $BumpMinor $BumpPatch $BumpBuild $NewVersion
 }

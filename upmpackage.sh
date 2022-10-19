@@ -4,7 +4,7 @@ SOURCE="${BASH_SOURCE[0]}"
 DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 
 dotnet tool install -g nbgv || true
-pushd $DIR/src/com.unity.git.api
+pushd $DIR/src/com.spoiledcat.git.api
 version=$(nbgv get-version|grep AssemblyInformationalVersion|cut -d' ' -f2)
 popd
 
@@ -16,5 +16,5 @@ package() {
 	powershell scripts/CreateCombinedManifest.ps1 $PACKAGE PackageSources/$PACKAGE
 }
 
-package "com.unity.git.api"
-package "com.unity.git.ui"
+package "com.spoiledcat.git.api"
+package "com.spoiledcat.git.ui"

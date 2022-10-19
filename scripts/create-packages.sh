@@ -72,14 +72,14 @@ fi
 # set positional arguments in their proper place
 eval set -- "$PARAMS"
 
-PKGNAME="com.unity.git.api"
+PKGNAME="com.spoiledcat.git.api"
 PKGSRCDIR="$BUILDDIR/$PKGNAME"
 IGNOREFILE="$DIR/src/$PKGNAME/.npmignore"
 BASEINSTALL="Packages/$PKGNAME"
 
 "$SCRIPTDIR/run.sh" -s "$PKGSRCDIR" -o "$OUTDIR" -n "$PKGNAME" -v "$VERSION" -i "$IGNOREFILE" -t "$BASEINSTALL" --tmp "$TMPDIR" "$FLAGS"
 
-PKGNAME="com.unity.git.ui"
+PKGNAME="com.spoiledcat.git.ui"
 PKGSRCDIR="$BUILDDIR/$PKGNAME"
 IGNOREFILE="$DIR/src/$PKGNAME/.npmignore"
 BASEINSTALL="Packages/$PKGNAME"

@@ -10,7 +10,7 @@ This is a fork of [Git for Unity](https://github.com/unity-technologies/git-for-
 
 This is a git client for the Unity editor, split into two parts: The API part is a .NET Git Client library, without any dependencies on Unity itself; The UI part is Unity-specific.
 
-**Until I get to renaming the packages**, the build output of this project is two packages - `com.unity.git.api` - the Git client library; and `com.unity.git.ui` - a Unity Git UI based on the GitHub for Unity UI, which exemplifies how to use the Git client library.
+The same applies to this project, which is split into two packages - `com.spoiledcat.git.api` - the Git client library; and `com.spoiledcat.git.ui` - the Git UI for the Unity Editor.
 
 Even though this project is currently a fork, since neither GitHub nor Unity seem very interested in supporting developer tooling, this is probably going to become the main implementation of this - this is why this repository is not a GitHub(tm) fork, but a completely separate repository, inheriting the history of both GitHub for Unity and Git for Unity.
 

@@ -51,7 +51,7 @@ Write-Output "Cleaning up previous build artifacts from $tmpDir..."
 Remove-Item $tmpDir -Force -Recurse -ErrorAction SilentlyContinue
 Remove-Item $artifactDir -Force -Recurse -ErrorAction SilentlyContinue
 
-$pkgName="com.unity.git.api"
+$pkgName="com.spoiledcat.git.api"
 $pkgSrcDir="$packageDir\$pkgName"
 $ignorefile="$srcDir\$pkgName\.npmignore"
 $baseInstall="Packages\$pkgName"
@@ -61,7 +61,7 @@ Write-Verbose "$packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir
 Write-Output "Packaging $pkgName..."
 Invoke-Command -Fatal { & $packagingScriptsDir\run.ps1 -Source $pkgSrcDir -Out $artifactDir -Name $pkgName -Version $Version -Ignore $ignorefile -BaseInstall $baseInstall -Tmp $tmpDir -SkipUnity:$SkipUnity -SkipPackman:$SkipPackman -SkipUpm:$SkipUpm -Skip:$Skip }
 
-$pkgName="com.unity.git.ui"
+$pkgName="com.spoiledcat.git.ui"
 $pkgSrcDir="$packageDir\$pkgName"
 $ignorefile="$srcDir\$pkgName\.npmignore"
 $baseInstall="Packages\$pkgName"

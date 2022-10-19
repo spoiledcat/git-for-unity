@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "com.unity.git": "file:../../../build/packages/com.unity.git",
-    "com.unity.git.tests": "file:../../../build/packages/com.unity.git.tests",
+    "com.spoiledcat.git": "file:../../../build/packages/com.spoiledcat.git",
+    "com.spoiledcat.git.tests": "file:../../../build/packages/com.spoiledcat.git.tests",
     "com.unity.ext.nunit": "1.0.0",
     "com.unity.ide.rider": "1.1.0",
     "com.unity.ide.vscode": "1.1.2",
@@ -14,6 +14,6 @@
     "com.unity.modules.ui": "1.0.0"
   },
   "testables": [
-    "com.unity.git.tests"
+    "com.spoiledcat.git.tests"
   ]
 }

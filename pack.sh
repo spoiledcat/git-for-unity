@@ -88,10 +88,10 @@ else
   mkdir -p $targetdir
   rm -f $targetdir/*
 
-  pushd "$srcdir/com.unity.git" >/dev/null 2>&1
+  pushd "$srcdir/com.spoiledcat.git" >/dev/null 2>&1
   tgz="$(npm pack -q)"
   mv -f $tgz $targetdir/$tgz  
-  pushd "$srcdir/com.unity.git.tests" >/dev/null 2>&1
+  pushd "$srcdir/com.spoiledcat.git.tests" >/dev/null 2>&1
   tgz="$(npm pack -q)"
   mv -f $tgz $targetdir/$tgz  
   
@@ -113,8 +113,8 @@ EOL
   found=0
   for j in `ls -d *`; do
     # skip the aggregate package
-    if [[ x"$j" == x"com.unity.git" ]]; then continue; fi
-    if [[ x"$j" == x"com.unity.git.tests" ]]; then continue; fi
+    if [[ x"$j" == x"com.spoiledcat.git" ]]; then continue; fi
+    if [[ x"$j" == x"com.spoiledcat.git.tests" ]]; then continue; fi
 
     pushd $j >/dev/null 2>&1
     if [[ -e package.json ]]; then

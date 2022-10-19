@@ -39,7 +39,7 @@ By participating, you are expected to uphold this code.
 
 This project is a fork of GitHub for Unity and is currently in preview. The API part of Git for Unity is a .NET Git Client library, without any dependencies on Unity itself. Only the UI part of Git for Unity is Unity-specific.
 
-The same applies to this project, which is split into two packages - `com.unity.git.api` - the Git client library; and `com.unity.git.ui` - a Unity Git UI based on the Git for Unity UI, which examplifies how to use the Git client library.
+The same applies to this project, which is split into two packages - `com.spoiledcat.git.api` - the Git client library; and `com.spoiledcat.git.ui` - a Unity Git UI based on the Git for Unity UI, which examplifies how to use the Git client library.
 
 Even though this project is currently a fork, we plan for the API part of this project to become the authoritative implementation source, and split entirely from the original GitHub for Unity implementation.
 

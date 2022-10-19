@@ -3,7 +3,7 @@
 
     <TargetFramework>net471</TargetFramework>
     <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RootDir>
-    <PackageName>com.unity.git.api</PackageName>
+    <PackageName>com.spoiledcat.git.api</PackageName>
     <RootNamespace>UnitTests</RootNamespace>
     <AssemblyName>Unit.Tests</AssemblyName>
     <PublishTo>$(RootDir)build\packages\</PublishTo>
@@ -37,7 +37,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TestUtils\TestUtils.csproj" />
-    <ProjectReference Include="..\..\src\com.unity.git.api\Api\Api.csproj" />
+    <ProjectReference Include="..\..\src\com.spoiledcat.git.api\Api\Api.csproj" />
   </ItemGroup>
 
 </Project>

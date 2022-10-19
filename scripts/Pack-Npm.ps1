@@ -19,7 +19,7 @@ Remove-Item "$targetDir\*" -Force -ErrorAction SilentlyContinue
 New-Item -itemtype Directory -Path $targetDir -Force -ErrorAction SilentlyContinue
 
 try {
-	Push-Location (Join-Path $srcDir "com.unity.git")
+	Push-Location (Join-Path $srcDir "com.spoiledcat.git")
 	$package = Invoke-Command -Fatal { & npm pack -q }
 	$package = "$package".Trim()
 	$tgt = Join-Path $targetDir $package
@@ -29,7 +29,7 @@ try {
 }
 
 try {
-	Push-Location (Join-Path $srcDir "com.unity.git.tests")
+	Push-Location (Join-Path $srcDir "com.spoiledcat.git.tests")
 	$package = Invoke-Command -Fatal { & npm pack -q }
 	$package = "$package".Trim()
 	$tgt = Join-Path $targetDir $package
@@ -45,7 +45,7 @@ New-Item -itemtype Directory -Path $targetDir -Force -ErrorAction SilentlyContin
 
 Get-ChildItem -Directory $srcDir | % {
 
-    if ("$($_.Name)" -ne "com.unity.git" -and "$($_.Name)" -ne "com.unity.git.tests" -and (Test-Path "$srcDir\$($_)\package.json")) {
+    if ("$($_.Name)" -ne "com.spoiledcat.git" -and "$($_.Name)" -ne "com.spoiledcat.git.tests" -and (Test-Path "$srcDir\$($_)\package.json")) {
         try {
             Push-Location (Join-Path $srcDir $_.Name)
             $package = Invoke-Command -Fatal { & npm pack -q }

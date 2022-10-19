@@ -2,7 +2,7 @@
 
 ## Important considerations
 
-There are two parts to this codebase - `com.unity.git.api`, which is the base API that includes the low level git client api plus higher level abstractions like `Repository` on top of it; and `com.unity.git.ui`, which is the UI code.
+There are two parts to this codebase - `com.spoiledcat.git.api`, which is the base API that includes the low level git client api plus higher level abstractions like `Repository` on top of it; and `com.spoiledcat.git.ui`, which is the UI code.
 
 It's important to understand that the API library is a pure .NET library with no dependencies on Unity libraries. This makes it easier to develop and test with standard .net tooling on any platform without having to pull in Unity, and has some impact on how the threading model works.
 
@@ -28,9 +28,9 @@ It's standard in .NET for the main thread to have a default synchronization cont
 
 Unfortunately, afaict, Unity only pumps the synchronization context when the Editor is in play mode. This means that any tasks scheduled on a task scheduler based on this synchronization context won't run outside of play mode unless the sync context is manually pumped.
 
-An easier way to have a synchronization context that is guaranteed to always be pumped on the UI thread is to use `EditorApplication.delayCall`, which schedules delegates to be executed in the ui thread. https://github.com/Unity-Technologies/Git-for-Unity/blob/master/src/com.unity.git.ui/UI/Threading/SingleThreadSynchronizationContext.cs is an implementation of a sync context that does just that.
+An easier way to have a synchronization context that is guaranteed to always be pumped on the UI thread is to use `EditorApplication.delayCall`, which schedules delegates to be executed in the ui thread. https://github.com/Unity-Technologies/Git-for-Unity/blob/master/src/com.spoiledcat.git.ui/UI/Threading/SingleThreadSynchronizationContext.cs is an implementation of a sync context that does just that.
 
-As mentioned above, the way to obtain a task scheduler from a sync context is to call `TaskScheduler.FromCurrentSynchronizationContext()`, but in order for this call to work, the current synchronization context must be replaced. We should be careful about trampling over the existing synchronization context, however, because other code might be relying on whatever is set, and we only really need it to create the task scheduler object. [`ThreadingHelper.GetUIScheduler`](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/src/com.unity.git.api/Api/Threading/ThreadingHelper.cs#L20) does the work of temporarily switching out the synchronization context in order to obtain a usable task scheduler and then restoring the original context.
+As mentioned above, the way to obtain a task scheduler from a sync context is to call `TaskScheduler.FromCurrentSynchronizationContext()`, but in order for this call to work, the current synchronization context must be replaced. We should be careful about trampling over the existing synchronization context, however, because other code might be relying on whatever is set, and we only really need it to create the task scheduler object. [`ThreadingHelper.GetUIScheduler`](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/src/com.spoiledcat.git.api/Api/Threading/ThreadingHelper.cs#L20) does the work of temporarily switching out the synchronization context in order to obtain a usable task scheduler and then restoring the original context.
 
 ### TL;DR Initialization
 

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net471</TargetFramework>
     <RootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\..\'))</RootDir>
-    <PackageName>com.unity.git.ui</PackageName>
+    <PackageName>com.spoiledcat.git.ui</PackageName>
     <RootNamespace>UnityTests</RootNamespace>
     <AssemblyName>UnityUITests</AssemblyName>
     <PublishTo>$(RootDir)build\packages\</PublishTo>
@@ -53,6 +53,6 @@
   <ItemGroup>
     <ProjectReference Include="..\TestUtils\TestUtils.csproj" />
     <ProjectReference Include="..\TestWebServer\TestWebServer.csproj" />
-    <ProjectReference Include="$(RootDir)src\com.unity.git.ui\Editor\UI.csproj" />
+    <ProjectReference Include="$(RootDir)src\com.spoiledcat.git.ui\Editor\UI.csproj" />
   </ItemGroup>
 </Project>

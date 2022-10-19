@@ -8,10 +8,10 @@
     <ProjectGuid>{F5D69B3F-E2BF-4D32-9DCE-51F3E52D74AF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Unity.VersionControl.Git</RootNamespace>
-    <AssemblyName>Unity.VersionControl.Git.Localization</AssemblyName>
+    <RootNamespace>SpoiledCat.Git</RootNamespace>
+    <AssemblyName>SpoiledCat.Git.Localization</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <OutputPath>..\com.unity.git.api\Localization\</OutputPath>
+    <OutputPath>..\com.spoiledcat.git.api\Localization\</OutputPath>
     <RuntimeIdentifiers>win</RuntimeIdentifiers>
   </PropertyGroup>
   <Import Project="$(SolutionDir)\common\properties.props" />
