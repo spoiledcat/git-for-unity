@@ -2,7 +2,7 @@
 
 Unity.Editor.Tasks is a TPL-based threading library that simplifies running asynchronous code with explicit thread and scheduler settings.
 
-This repository is a subset of the functionality in the [Git for Unity](https://github.com/Unity-Technologies/Git-for-Unity) repository, specifically the `Threading`, `OutputProcessors`, `Tasks`, `Process` and `IO` directories, as well as various helper classes found in the [Api](https://github.com/Unity-Technologies/Git-for-Unity/tree/master/src/com.spoiledcat.git.api/Api) source directory.
+This repository is a subset of the functionality in the [Git for Unity](https://github.com/spoiledcat/git-for-unity) repository, specifically the `Threading`, `OutputProcessors`, `Tasks`, `Process` and `IO` directories, as well as various helper classes found in the [Api](https://github.com/spoiledcat/git-for-unity/tree/master/src/com.spoiledcat.git.api/Api) source directory.
 
 It's been split up for easier testing and consumption by the Git package and any other packages, libraries or apps that wish to use it.
 
