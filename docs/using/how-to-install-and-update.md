@@ -3,11 +3,11 @@
 [Installing from the Unity Asset Store](#installing-from-the-asset-store)  
 [Updating a Previously Installed Version](#updating-the-github-for-unity-package)
 
-_Note: If your Unity project already has the Git for Unity plugin installed, see our [Getting Started](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/getting-started.md) docs before continuing_
+_Note: If your Unity project already has the Git for Unity plugin installed, see our [Getting Started](https://github.com/spoiledcat/git-for-unity/blob/master/docs/using/getting-started.md) docs before continuing_
 
 
 # Installing from a Package File
-You can download the latest release from the repository at [https://github.com/Unity-Technologies/Git-for-Unity/releases](https://github.com/Unity-Technologies/Git-for-Unity/releases).
+You can download the latest release from the repository at [https://github.com/spoiledcat/git-for-unity/releases](https://github.com/spoiledcat/git-for-unity/releases).
 
 Once you've downloaded the package file, you can quickly install it within Unity.
 1. Open a new Unity Project

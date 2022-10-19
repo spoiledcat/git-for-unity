@@ -147,9 +147,15 @@ if [[ x"$NPM" == x"1" ]]; then
     exit 1
   fi
 
+  npm config set https://registry.spoiledcat.com
   npm config set //registry.spoiledcat.com/:_authToken $NPM_TOKEN
   npm config set always-auth true
   pushd build/npm
+  for pkg in *.tgz;do
+    npm publish -quiet $pkg
+  done
+  popd
+  pushd upm-ci~/packages/
   for pkg in *.tgz;do
     npm publish -quiet $pkg
   done

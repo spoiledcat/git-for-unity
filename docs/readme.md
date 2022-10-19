@@ -1,6 +1,6 @@
 # Git for Unity Documentation
 
-This is the [Git for Unity](https://github.com/Unity-Technologies/Git-for-Unity) development
+This is the [Git for Unity](https://github.com/spoiledcat/git-for-unity) development
 documentation.
 
 ## Contributing

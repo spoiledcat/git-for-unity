@@ -9,7 +9,7 @@
     },
     "repository" : {
       "type" : "git",
-      "url": "git@github.com/Unity-Technologies/Git-for-Unity.git",
+      "url": "git@github.com/spoiledcat/git-for-unity.git",
       "directory": "",
       "revision": ""
     },

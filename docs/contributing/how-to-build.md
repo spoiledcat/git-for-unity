@@ -21,7 +21,7 @@ This repository is LFS-enabled. To clone it, you should use a git client that su
 Clone the repository and its submodules in a git GUI client that supports Git LFS, or via the command line with the following command:
 
 ```
-git lfs clone https://github.com/Unity-Technologies/Git-for-Unity
+git lfs clone https://github.com/spoiledcat/git-for-unity
 
 ```
 

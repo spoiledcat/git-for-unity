@@ -7,7 +7,7 @@ There are often three states that you might be in when you are setting up your G
 # Setting up a New Repository
 If you have a Unity project (new or existing) that is not yet connected to any remote repository, you can use the Git for Unity package to quickly intialize the repository and publish to a repository. 
 
-1. If your Unity project doesn't yet have the GitHub plugin installed, follow [these](https://github.com/Unity-Technologies/Git-for-Unity/blob/master/docs/using/how-to-install-and-update.md) instructions for installing it.
+1. If your Unity project doesn't yet have the GitHub plugin installed, follow [these](https://github.com/spoiledcat/git-for-unity/blob/master/docs/using/how-to-install-and-update.md) instructions for installing it.
 2. Click on the `Initialize a git repository for this project` button
 <img width="950" alt="screen shot 2018-05-18 at 9 39 13 am" src="https://user-images.githubusercontent.com/1314285/40246918-6d8c9156-5a7f-11e8-8087-6ffad9194969.png">  
 And you should see the GitHub spinner:

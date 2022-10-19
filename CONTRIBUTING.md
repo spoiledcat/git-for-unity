@@ -54,7 +54,7 @@ more recent versions of Unity.
 
 This repository is LFS-enabled. To clone it, you should use a git client that supports git LFS 2.x and submodules.
 
-Please read the [How to Build](https://raw.githubusercontent.com/Unity-Technologies/Git-for-Unity/master/docs/contributing/how-to-build.md) document for information on how to build Git for Unity.
+Please read the [How to Build](https://raw.githubusercontent.com/spoiledcat/git-for-unity/master/docs/contributing/how-to-build.md) document for information on how to build Git for Unity.
 
 ### Reporting Bugs
 
@@ -71,7 +71,7 @@ it asks for helps us resolve issues faster.
 
 #### Before Submitting A Bug Report
 
-As this is still a fork, there are a lot of existing issues [reported upstream](https://github.com/github-for-unity/Unity/labels/bug). **Perform a [cursory search](https://github.com/github-for-unity/Unity/labels/bug) there and [here](https://github.com/Unity-Technologies/Git-for-Unity/labels/bug)**
+As this is still a fork, there are a lot of existing issues [reported upstream](https://github.com/github-for-unity/Unity/labels/bug). **Perform a [cursory search](https://github.com/github-for-unity/Unity/labels/bug) there and [here](https://github.com/spoiledcat/git-for-unity/labels/bug)**
 to see if the problem has already been reported.
 
 If it does exist, add a [reaction](https://help.github.com/articles/about-discussions-in-issues-and-pull-requests/#reacting-to-ideas-in-issues-and-pull-requests)
@@ -82,7 +82,7 @@ comment to the existing issue if there is extra information you can contribute.
 
 Bugs are tracked as [Git issues](https://guides.github.com/features/issues/).
 
-Simply create an issue on the [Git for Unity issue tracker](https://github.com/Unity-Technologies/Git-for-Unity/issues)
+Simply create an issue on the [Git for Unity issue tracker](https://github.com/spoiledcat/git-for-unity/issues)
 and fill out the provided [issue template](./.github/ISSUE_TEMPLATE.md).
 
 The information we are interested in includes:
@@ -108,7 +108,7 @@ that you imagine you would take if the feature you're requesting existed.
 
 #### Before Submitting An Enhancement Suggestion
 
-As this is still a fork, there are a lot of existing issues [reported upstream](https://github.com/github-for-unity/Unity/labels/bug). **Perform a [cursory search](https://github.com/github-for-unity/Unity/labels/bug) there and [here](https://github.com/Unity-Technologies/Git-for-Unity/labels/bug)**
+As this is still a fork, there are a lot of existing issues [reported upstream](https://github.com/github-for-unity/Unity/labels/bug). **Perform a [cursory search](https://github.com/github-for-unity/Unity/labels/bug) there and [here](https://github.com/spoiledcat/git-for-unity/labels/bug)**
 to see if the enhancement has already been suggested. If it has, add a
 :thumbsup: to indicate your interest in it, or comment if there is additional
 information you would like to add.
@@ -117,7 +117,7 @@ information you would like to add.
 
 Enhancement suggestions are tracked as [Git issues](https://guides.github.com/features/issues/).
 
-Simply create an issue on the [Git for Unity issue tracker](https://github.com/Unity-Technologies/Git-for-Unity/issues)
+Simply create an issue on the [Git for Unity issue tracker](https://github.com/spoiledcat/git-for-unity/issues)
 and provide the following information:
 
 * **Use a clear and descriptive title** for the issue to identify the
@@ -142,7 +142,7 @@ bugs that can be categorized as tasks that:
  - have a narrow scope and/or easy reproduction steps
  - can be worked on independent of other tasks
 
-These issues will be labelled as [`up-for-grabs`](https://github.com/Unity-Technologies/Git-for-Unity/labels/up-for-grabs)
+These issues will be labelled as [`up-for-grabs`](https://github.com/spoiledcat/git-for-unity/labels/up-for-grabs)
 in the repository. If you are interested in contributing to the project, please
 comment on the issue to let the maintainers (and community) know you are
 interested in picking this up.
@@ -158,26 +158,26 @@ pull requests.
 
 | Label name | :mag_right: | Description |
 | --- | --- | --- |
-| `enhancement` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/enhancement) | Feature requests. |
-| `bug` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/bug)  | Confirmed bugs or reports that are very likely to be bugs. |
-| `question` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/question)  | Questions more than bug reports or feature requests (e.g. how do I do X). |
-| `more-information-needed` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/more-information-needed) | More information needs to be collected about these problems or feature requests (e.g. steps to reproduce). |
-| `needs-reproduction` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/needs-reproduction)  | Likely bugs, but haven't been reliably reproduced. |
-| `macOS` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/macOS)  | Issues specific to macOS users. |
-| `Windows` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/Windows)  | Issues specific to Windows users. |
-| `Linux` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/Linux)  | Issues specific to Linux users. |
+| `enhancement` | [search](https://github.com/spoiledcat/git-for-unity/labels/enhancement) | Feature requests. |
+| `bug` | [search](https://github.com/spoiledcat/git-for-unity/labels/bug)  | Confirmed bugs or reports that are very likely to be bugs. |
+| `question` | [search](https://github.com/spoiledcat/git-for-unity/labels/question)  | Questions more than bug reports or feature requests (e.g. how do I do X). |
+| `more-information-needed` | [search](https://github.com/spoiledcat/git-for-unity/labels/more-information-needed) | More information needs to be collected about these problems or feature requests (e.g. steps to reproduce). |
+| `needs-reproduction` | [search](https://github.com/spoiledcat/git-for-unity/labels/needs-reproduction)  | Likely bugs, but haven't been reliably reproduced. |
+| `macOS` | [search](https://github.com/spoiledcat/git-for-unity/labels/macOS)  | Issues specific to macOS users. |
+| `Windows` | [search](https://github.com/spoiledcat/git-for-unity/labels/Windows)  | Issues specific to Windows users. |
+| `Linux` | [search](https://github.com/spoiledcat/git-for-unity/labels/Linux)  | Issues specific to Linux users. |
 
 #### Topics
 
 | Label name | :mag_right: | Description |
 | --- | --- | --- |
-| `up-for-grabs` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/up-for-grabs)  | Issues marked as ideal for external contributors. |
-| `polish` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/polish) | Issues not critical to the application but would provide a better experience if resolved. |
-| `tech-debt` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/tech-debt) | Issues related to code or architecture decisions. |
-| `design` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/design)  | Issues that require some design input from the maintainers as part of completing the work. |
+| `up-for-grabs` | [search](https://github.com/spoiledcat/git-for-unity/labels/up-for-grabs)  | Issues marked as ideal for external contributors. |
+| `polish` | [search](https://github.com/spoiledcat/git-for-unity/labels/polish) | Issues not critical to the application but would provide a better experience if resolved. |
+| `tech-debt` | [search](https://github.com/spoiledcat/git-for-unity/labels/tech-debt) | Issues related to code or architecture decisions. |
+| `design` | [search](https://github.com/spoiledcat/git-for-unity/labels/design)  | Issues that require some design input from the maintainers as part of completing the work. |
 
 #### Workflow
 
 | Label name | :mag_right: | Description |
 | --- | --- | --- |
-| `ready-for-review` | [search](https://github.com/Unity-Technologies/Git-for-Unity/labels/ready-for-review)  | Pull Requests that are ready to be reviewed by the maintainers. |
+| `ready-for-review` | [search](https://github.com/spoiledcat/git-for-unity/labels/ready-for-review)  | Pull Requests that are ready to be reviewed by the maintainers. |

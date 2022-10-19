@@ -19,7 +19,7 @@
     <Copyright>Copyright (c) 2019 Unity Technologies.
 Copyright (c) 2019 Andreia Gaita.
 Copyright (c) 2016-2018 GitHub</Copyright>
-    <PackageProjectUrl>https://github.com/unity-technologies/git-for-unity</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/spoiledcat/git-for-unity</PackageProjectUrl>
     <PackageIconUrl>https://aka.ms/VsExtensibilityIcon</PackageIconUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>

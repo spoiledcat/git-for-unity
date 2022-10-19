@@ -1,6 +1,6 @@
 <!--
 
-Have you read Git for Unity's Code of Conduct? By filing an Issue, you are expected to comply with it, including treating everyone with respect: https://github.com/Unity-Technologies/Git-for-Unity/blob/master/CODE_OF_CONDUCT.md
+Have you read Git for Unity's Code of Conduct? By filing an Issue, you are expected to comply with it, including treating everyone with respect: https://github.com/spoiledcat/git-for-unity/blob/master/CODE_OF_CONDUCT.md
 
 -->
 
