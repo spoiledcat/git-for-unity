@@ -22,6 +22,14 @@ environment:
     secure: CNIdeIKP5CY48G4+NqkRfNREo4HgGlkSSfzSCv6x0To=
   nodejs_version: "12"
 
+install:
+- |
+  mkdir -p lib
+  pushd lib
+  curl -fSL --output deps.zip https://files.spoiledcat.com/deps.zip
+  7z -y -bb3 x deps.zip
+  popd
+
 before_build:
 - dotnet --list-sdks
 - node --version
