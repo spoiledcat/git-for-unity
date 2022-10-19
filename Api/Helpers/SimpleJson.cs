@@ -1346,8 +1346,13 @@ namespace Unity.VersionControl.Git.Json
             if (type == null) throw new ArgumentNullException("type");
             string str = value as string;
 
-            if (type == typeof(Guid) && string.IsNullOrEmpty(str))
-                return default(Guid);
+            if (string.IsNullOrEmpty(str))
+            {
+                if (type == typeof(Guid))
+                    return default(Guid);
+                if (type == typeof(SPath))
+                    return SPath.Default;
+            }
 
             if (value == null)
                 return null;
@@ -1390,6 +1395,8 @@ namespace Unity.VersionControl.Git.Json
                         obj = default(Guid);
                     else if (ReflectionUtils.IsNullableType(type) && Nullable.GetUnderlyingType(type) == typeof(Guid))
                         obj = null;
+                    else if (type == typeof(SPath))
+                        obj = SPath.Default;
                     else
                         obj = str;
                 }

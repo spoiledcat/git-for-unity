@@ -95,8 +95,9 @@ namespace Unity.VersionControl.Git
                         value = value.FromObject<T>();
                         cacheData[key] = value;
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        logger.Error(ex, "Error deserializing cache");
                         value = fallback;
                         cacheData[key] = fallback;
                     }

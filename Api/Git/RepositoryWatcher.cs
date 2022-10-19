@@ -37,6 +37,8 @@ namespace Unity.VersionControl.Git
         private int lastCountOfProcessedEvents = 0;
         private bool processingEvents;
         private readonly ManualResetEventSlim signalProcessingEventsDone = new ManualResetEventSlim(false);
+        private readonly SPath projectPath;
+        private readonly SPath assetsPath;
 
         public event Action HeadChanged;
         public event Action IndexChanged;
@@ -51,9 +53,13 @@ namespace Unity.VersionControl.Git
             this.paths = paths;
             this.cancellationToken = cancellationToken;
 
+            projectPath = platform.Environment.UnityProjectPath.ToSPath();
+            assetsPath = projectPath.Combine("Assets");
             ignoredPaths = new[] {
-                platform.Environment.UnityProjectPath.ToSPath().Combine("Library"),
-                platform.Environment.UnityProjectPath.ToSPath().Combine("Temp")
+                projectPath.Combine("Library"),
+                projectPath.Combine("Temp"),
+                projectPath.Combine(".vs"),
+                projectPath.Combine(".idea")
             };
 
             pauseEvent = new ManualResetEventSlim();
@@ -216,7 +222,11 @@ namespace Unity.VersionControl.Git
                 }
                 else
                 {
-                    if (events.Contains(EventType.RepositoryChanged) || ignoredPaths.Any(ignoredPath => fileA.IsChildOf(ignoredPath)))
+                    if (events.Contains(EventType.RepositoryChanged) ||
+                        fileA.FileName.StartsWith("~UnityDirMonSync") ||
+                        fileA.FileName.StartsWith(".vs") ||
+                        fileA.DirectoryExists() ||
+                        ignoredPaths.Any(ignoredPath => fileA.IsChildOf(ignoredPath)))
                     {
                         continue;
                     }
