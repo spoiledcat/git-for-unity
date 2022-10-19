@@ -1,0 +1,12 @@
+{
+    "name": "com.spoiledcat.git.shim",
+    "references": [
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "autoReferenced": false,
+    "allowUnsafeCode": false
+}
