@@ -2,6 +2,10 @@ version: '{build}'
 build_cloud: zcd
 image: Linux
 
+branches:
+  except:
+    - /packages\/.+/
+
 nuget:
   disable_publish_on_pr: true
 
@@ -66,8 +70,6 @@ after_test:
 - ./pack.sh -c $CONFIGURATION --ispublic $isPublic
 
 artifacts:
-- path: upm-ci~\packages\*
-  name: npm
 - path: build\npm\*
   name: npm
 - path: build\nuget\**\*nupkg
@@ -75,9 +77,9 @@ artifacts:
 
 deploy_script:
   - |
-    ./publish.sh --branches --version $APPVEYOR_BUILD_VERSION --ispublic $isPublic
+    if [[ x"${APPVEYOR_REPO_BRANCH:-}" == x"main" ]];then
+      ./publish.sh --branches --version $APPVEYOR_BUILD_VERSION --ispublic $isPublic
+    fi
     if [[ $isPublic -eq 1 ]];then
       ./publish.sh --npm
     fi
-    on:
-      branch: main
