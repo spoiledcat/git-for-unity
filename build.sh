@@ -10,10 +10,7 @@ fi
 
 CONFIGURATION=Release
 PUBLIC=""
-BUILD=0
-UPM=0
-UNITYVERSION=2019.2
-YAMATO=0
+UNITYBUILD=0
 
 while (( "$#" )); do
   case "$1" in
@@ -23,18 +20,21 @@ while (( "$#" )); do
     -r|--release)
       CONFIGURATION="Release"
     ;;
+    -n|--unity)
+      UNITYBUILD=1
+    ;;
     -p|--public)
       PUBLIC="-p:PublicRelease=true"
-    ;;
-    -b|--build)
-      BUILD=1
-    ;;
-    -u|--upm)
-      UPM=1
     ;;
     -c)
       shift
       CONFIGURATION=$1
+    ;;
+    --ispublic)
+      shift
+      if [[ x"$1" == x"1" ]]; then
+        PUBLIC="-p:PublicRelease=true"
+      fi
     ;;
     -*|--*=) # unsupported flags
       echo "Error: Unsupported flag $1" >&2
@@ -44,11 +44,8 @@ while (( "$#" )); do
   shift
 done
 
-if [[ x"${YAMATO_JOB_ID:-}" != x"" ]]; then
-  YAMATO=1
-  export GITLAB_CI=1
-  export CI_COMMIT_TAG="${GIT_TAG:-}"
-  export CI_COMMIT_REF_NAME="${GIT_BRANCH:-}"
+if [[ x"$UNITYBUILD" == x"1" ]]; then
+  CONFIGURATION="${CONFIGURATION}Unity"
 fi
 
 pushd $DIR >/dev/null 2>&1

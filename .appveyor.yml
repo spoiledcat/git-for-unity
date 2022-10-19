@@ -1,20 +1,40 @@
-image: Visual Studio 2017
-environment:
-  matrix:
-    - node_version: '8'
+version: '{build}'
+build_cloud: zcd
+image: Linux
+
+nuget:
+  disable_publish_on_pr: true
 
 configuration: Release
 
-install:
-- ps: Install-Product node 8 x64
-- ps: scripts\Get-Deps.ps1
+environment:
+   # Don't report back to the mothership
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  NPM_TOKEN:
+    secure: iNSaHS9YTyJXCAm4vZJaVu/BgIBMF9kfzUc8uxRAo28o3agRlLFSYyyzaNC1FYyzJ/kkCNX/QNwg1N/3yXeVSlJB/x19GLPZeJ6fsu9p1J8=
+  GIT_AUTHOR_NAME:
+    secure: B6rc3yafvlv33LqM4RWK3Q==
+  GIT_COMMITTER_NAME:
+    secure: B6rc3yafvlv33LqM4RWK3Q==
+  GIT_AUTHOR_EMAIL:
+    secure: CNIdeIKP5CY48G4+NqkRfNREo4HgGlkSSfzSCv6x0To=
+  GIT_COMMITTER_EMAIL:
+    secure: CNIdeIKP5CY48G4+NqkRfNREo4HgGlkSSfzSCv6x0To=
+  nodejs_version: "12"
 
 before_build:
-- appveyor-retry nuget restore
-- appveyor-retry dotnet restore -v Minimal
+- dotnet --list-sdks
+- node --version
+- npm --version
+- ps: |
+    $env:isPublic=0
+    if ($env:APPVEYOR_REPO_TAG -eq "true") {
+      $env:isPublic=1
+    }
 
 build_script:
-- .\build -c %CONFIGURATION%
+- for i in 1 2 3 4 5; do dotnet restore -v Minimal && break || sleep 1; done
+- ./build.sh -c $CONFIGURATION --ispublic $isPublic
 
 test:
   assemblies:
@@ -27,7 +47,15 @@ test:
     - DoNotRunOnAppVeyor
 
 after_test:
-- .\pack -c %CONFIGURATION%
+- ps: |
+    if ($env:GHPKEY) {
+      $fileContent = "-----BEGIN OPENSSH PRIVATE KEY-----`n"
+      $fileContent += $env:GHPKEY.Replace(' ', "`n")
+      $fileContent += "`n-----END OPENSSH PRIVATE KEY-----`n"
+      Set-Content \home\appveyor\.ssh\id_rsa $fileContent
+    }
+
+- ./pack.sh -c $CONFIGURATION --ispublic $isPublic
 
 artifacts:
 - path: upm-ci~\packages\*
@@ -37,29 +65,11 @@ artifacts:
 - path: build\nuget\**\*nupkg
   name: nuget
 
-
-# on_success:
-# - ps: |
-
-#     $version = $env:APPVEYOR_BUILD_VERSION
-
-#     Write-Output "Packaging version $($env:GitAssemblyInformationalVersion) ($version)"
-
-#     scripts\Create-Packages.ps1 $version -SkipUpm
-
-#     # save commit and binaries
-#     $sourcedir="$($env:appveyor_build_folder)\build\Release"
-#     $commitfile="$sourcedir\commit"
-#     Add-Content $commitfile $appveyor_repo_commit
-
-#     $dllzip="$($env:appveyor_build_folder)\artifacts\binaries-$version.zip"
-#     Write-Output "Zipping $sourcedir to $dllzip"
-#     7z a $dllzip $sourcedir
-
-# on_finish:
-# - ps: |
-#     Set-Location $env:appveyor_build_folder
-#     $manifest = "$($env:appveyor_build_folder)\artifacts\manifest.json"
-#     scripts\Upload-ToAppveyor.ps1 $manifest
-#     Get-ChildItem $env:appveyor_build_folder\build\*.log | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName logs }
-#     Get-ChildItem $env:appveyor_build_folder\artifacts\binaries*.zip | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name -DeploymentName binaries }
+deploy_script:
+  - |
+    ./publish.sh --branches --version $APPVEYOR_BUILD_VERSION --ispublic $isPublic
+    if [[ $isPublic -eq 1 ]];then
+      ./publish.sh --npm
+    fi
+    on:
+      branch: main
