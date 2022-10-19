@@ -29,6 +29,6 @@ internal static partial class ThisAssembly {
     internal static readonly System.DateTime GitCommitDate = new System.DateTime(638017838890000000L, System.DateTimeKind.Utc);
     internal const string GitCommitId = "4cafca3d2cbccfd40053847f712128d15a256979";
     internal const bool IsPrerelease = false;
-    internal const bool IsPublicRelease = false;
+    internal const bool IsPublicRelease = true;
     internal const string RootNamespace = "UI";
 }
