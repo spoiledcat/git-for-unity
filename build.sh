@@ -51,11 +51,6 @@ fi
 pushd $DIR >/dev/null 2>&1
 
 if [[ x"${APPVEYOR:-}" == x"" ]]; then
-  if [[ x"$OS" != x"Windows" ]]; then
-    mono common/nuget.exe restore
-  else
-    common/nuget.exe restore
-  fi
   dotnet restore
 fi
 dotnet build --no-restore -c $CONFIGURATION $PUBLIC
