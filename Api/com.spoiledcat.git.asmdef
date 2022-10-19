@@ -1,0 +1,20 @@
+{
+    "name": "com.spoiledcat.git",
+    "references": [
+        "Unity.Editor.Tasks"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "sfw.net.dll",
+        "SpoiledCat.Git.Localization.dll",
+        "Mono.Posix.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

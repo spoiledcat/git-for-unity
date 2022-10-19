@@ -1,0 +1,20 @@
+{
+    "name": "com.unity.editor.tasks",
+    "displayName": "Unity Editor Tasks",
+    "description": "A friendly threaded task system for the Unity Editor.",
+    "version": "2.1.0",
+    "unity": "2018.4",
+    "license" : "MIT",
+    "author": {
+      "email": "shana@spoiledcat.net"
+    },
+    "repository" : {
+      "type" : "git",
+      "url": "git@github.com/Unity-Technologies/com.unity.editor.tasks.git",
+      "directory": "src/com.unity.editor.tasks",
+      "revision": "ddab5424a7d6ecae6e65ac8700f468e226a2fbb7"
+    },
+    "relatedPackages": {
+      "com.unity.editor.tasks.tests": "2.1.0"
+    }
+}
