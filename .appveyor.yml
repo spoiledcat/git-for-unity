@@ -70,6 +70,8 @@ after_test:
 - ./pack.sh -c $CONFIGURATION --ispublic $isPublic
 
 artifacts:
+- path: upm-ci~\packages\*
+  name: npm
 - path: build\npm\*
   name: npm
 - path: build\nuget\**\*nupkg
