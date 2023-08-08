@@ -171,7 +171,7 @@ namespace Unity.VersionControl.Git.UI
 
                 var treeRenderRect = treeChanges.Render(rect, treeScroll,
                     node => { },
-                    node => { },
+                    ShowDiff,
                     node => {
                         var menu = CreateContextMenu(node);
                         menu.ShowAsContext();
@@ -188,31 +188,7 @@ namespace Unity.VersionControl.Git.UI
         {
             var genericMenu = new GenericMenu();
 
-            genericMenu.AddItem(new GUIContent("Show Diff"), false, () =>
-            {
-                ITask<SPath[]> calculateDiff = null;
-                if (node.IsFolder)
-                {
-                    calculateDiff = CalculateFolderDiff(node);
-                }
-                else
-                {
-                    calculateDiff = CalculateFileDiff(node);
-                }
-                calculateDiff.FinallyInUI((s, ex, leftRight) =>
-                {
-                    if (s)
-                        EditorUtility.InvokeDiffTool(
-                            leftRight[0].IsInitialized ? leftRight[0].FileName : null,
-                            leftRight[0].IsInitialized ? leftRight[0].MakeAbsolute().ToString() : null,
-                            leftRight[1].IsInitialized ? leftRight[1].FileName : null,
-                            leftRight[1].IsInitialized ? leftRight[1].MakeAbsolute().ToString() : null,
-                            null, null);
-                    else
-                        ex.Rethrow();
-                })
-                .Start();
-            });
+            genericMenu.AddItem(new GUIContent("Show Diff"), false, () => ShowDiff(node));
 
             genericMenu.AddSeparator("");
 
@@ -248,6 +224,29 @@ namespace Unity.VersionControl.Git.UI
             });
 
             return genericMenu;
+        }
+
+        private void ShowDiff(ChangesTreeNode node)
+        {
+            ITask<SPath[]> calculateDiff = null;
+            if (node.IsFolder)
+            {
+                calculateDiff = CalculateFolderDiff(node);
+            }
+            else
+            {
+                calculateDiff = CalculateFileDiff(node);
+            }
+
+            calculateDiff.FinallyInUI((s, ex, leftRight) => {
+                if (s)
+                    EditorUtility.InvokeDiffTool(leftRight[0].IsInitialized ? leftRight[0].FileName : null,
+                        leftRight[0].IsInitialized ? leftRight[0].MakeAbsolute().ToString() : null,
+                        leftRight[1].IsInitialized ? leftRight[1].FileName : null,
+                        leftRight[1].IsInitialized ? leftRight[1].MakeAbsolute().ToString() : null, null, null);
+                else
+                    ex.Rethrow();
+            }).Start();
         }
 
         private ITask<SPath[]> CalculateFolderDiff(ChangesTreeNode node)
