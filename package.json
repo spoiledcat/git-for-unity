@@ -3,7 +3,7 @@
     "displayName": "Tests - Git for Unity",
     "description": "Tests - Git for Unity",
     "type": "tests",
-    "version": "1.0.16-preview-gbac1ce26ee",
+    "version": "1.0.17",
     "license" : "MIT",
     "author": {
       "email": "shana@spoiledcat.net"
@@ -12,9 +12,9 @@
       "type" : "git",
       "url": "git@github.com/spoiledcat/git-for-unity.git",
       "directory": "src/com.spoiledcat.git.ui/Tests",
-      "revision": "bac1ce26ee913b4929cd7051681e814b28857b19"
+      "revision": "aeac73be532bdc5355fe0b26a1e56d3049011090"
     },
     "dependencies": {
-        "com.spoiledcat.git.ui": "1.0.16-preview-gbac1ce26ee"
+        "com.spoiledcat.git.ui": "1.0.17"
     }
 }
