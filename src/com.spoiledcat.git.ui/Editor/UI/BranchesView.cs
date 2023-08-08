@@ -61,6 +61,8 @@ namespace Unity.VersionControl.Git
         [SerializeField] private List<GitBranch> localBranches;
         [SerializeField] private List<GitBranch> remoteBranches;
 
+
+
         public override void InitializeView(IView parent)
         {
             base.InitializeView(parent);
@@ -70,20 +72,6 @@ namespace Unity.VersionControl.Git
         public override void OnEnable()
         {
             base.OnEnable();
-
-            var hasFocus = HasFocus;
-            if (treeLocals != null)
-            {
-                treeLocals.ViewHasFocus = hasFocus;
-                treeLocals.UpdateIcons(Styles.ActiveBranchIcon, Styles.BranchIcon, Styles.FolderIcon, Styles.GlobeIcon);
-            }
-
-            if (treeRemotes != null)
-            {
-                treeRemotes.ViewHasFocus = hasFocus;
-                treeRemotes.UpdateIcons(Styles.ActiveBranchIcon, Styles.BranchIcon, Styles.FolderIcon, Styles.GlobeIcon);
-            }
-
             AttachHandlers(Repository);
             ValidateCachedData(Repository);
         }
@@ -117,7 +105,7 @@ namespace Unity.VersionControl.Git
         {
             base.OnFocusChanged();
             if(treeLocals.ViewHasFocus != HasFocus || treeRemotes.ViewHasFocus != HasFocus)
-            { 
+            {
                 treeLocals.ViewHasFocus = HasFocus;
                 treeRemotes.ViewHasFocus = HasFocus;
                 Redraw();
@@ -149,6 +137,23 @@ namespace Unity.VersionControl.Git
 
         private void MaybeUpdateData()
         {
+            if (FirstRender)
+            {
+                var hasFocus = HasFocus;
+                if (treeLocals != null)
+                {
+                    treeLocals.ViewHasFocus = hasFocus;
+                }
+
+                if (treeRemotes != null)
+                {
+                    treeRemotes.ViewHasFocus = hasFocus;
+                }
+            }
+
+            treeLocals?.UpdateIcons(Styles.ActiveBranchIcon, Styles.BranchIcon, Styles.FolderIcon, Styles.GlobeIcon);
+            treeRemotes?.UpdateIcons(Styles.ActiveBranchIcon, Styles.BranchIcon, Styles.FolderIcon, Styles.GlobeIcon);
+
             if (currentBranchAndRemoteChangeHasUpdate)
             {
                 currentBranch = Repository.CurrentBranch ?? GitBranch.Default;
@@ -210,7 +215,7 @@ namespace Unity.VersionControl.Git
             var rect = GUILayoutUtility.GetLastRect();
             scroll = GUILayout.BeginScrollView(scroll);
             {
-                OnTreeGUI(new Rect(0f, 0f, Position.width, Position.height - rect.height + Styles.CommitAreaPadding)); 
+                OnTreeGUI(new Rect(0f, 0f, Position.width, Position.height - rect.height + Styles.CommitAreaPadding));
             }
             GUILayout.EndScrollView();
 
@@ -400,8 +405,8 @@ namespace Unity.VersionControl.Git
                 treeRenderRect.y += Styles.TreePadding;
 
                 var treeRemoteDisplayRect = new Rect(rect.x, treeRenderRect.y, rect.width, rect.height);
-                treeRenderRect = treeRemotes.Render(treeRemoteDisplayRect, scroll, 
-                    node => { }, 
+                treeRenderRect = treeRemotes.Render(treeRemoteDisplayRect, scroll,
+                    node => { },
                     node => {
                         if (node.IsFolder)
                             return;
@@ -459,11 +464,11 @@ namespace Unity.VersionControl.Git
             var genericMenu = new GenericMenu();
 
             var checkoutGuiContent = new GUIContent(CheckoutBranchContextMenuLabel);
-            
+
             genericMenu.AddItem(checkoutGuiContent, false, () => {
                 CheckoutRemoteBranch(node.Path);
             });
-            
+
             return genericMenu;
         }
 

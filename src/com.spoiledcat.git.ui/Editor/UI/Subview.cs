@@ -107,6 +107,7 @@ namespace Unity.VersionControl.Git
         public Vector2 Size { get; protected set; }
         public Dictionary<CacheType, int> RefreshEvents { get { return Parent.RefreshEvents; } }
         public bool IsRefreshing { get { return Parent.IsRefreshing; } }
+        public bool FirstRender { get { return Parent.FirstRender; } }
 
         private ILogging logger;
 
