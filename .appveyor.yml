@@ -68,6 +68,11 @@ after_test:
       Set-Content \home\appveyor\.ssh\id_rsa $fileContent
     }
 
+- |
+  if [[ x"${GHPKEY:-}" != x"" ]]; then
+    chmod 600 /home/appveyor/.ssh/id_rsa
+  fi
+
 - ./pack.sh -c $CONFIGURATION --ispublic $isPublic
 
 artifacts:
