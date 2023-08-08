@@ -499,7 +499,7 @@ namespace Unity.VersionControl.Git
             else
             {
                 timeSinceLastRotation = -1f;
-                spinner.Stop();
+                spinner?.Stop();
             }
         }
 
