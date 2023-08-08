@@ -406,11 +406,6 @@ namespace Unity.VersionControl.Git
         {
             base.OnEnable();
 
-            if (locksControl != null)
-            {
-                locksControl.LoadIcons();
-            }
-
             AttachHandlers(Repository);
             ValidateCachedData(Repository);
             KeychainConnectionsChanged();
@@ -594,6 +589,16 @@ namespace Unity.VersionControl.Git
 
         private void MaybeUpdateData()
         {
+            if (FirstRender)
+            {
+                if (locksControl != null)
+                {
+                    locksControl.LoadIcons();
+                }
+            }
+
+
+
             if (Repository == null)
             {
                 return;
