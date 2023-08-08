@@ -34,7 +34,6 @@ namespace Unity.VersionControl.Git
 
         private const string Title = "File History";
 
-        [NonSerialized] private bool firstOnGUI = true;
         [NonSerialized] private Texture selectedIcon;
 
         [SerializeField] private bool locked;
@@ -78,8 +77,6 @@ namespace Unity.VersionControl.Git
         public override void OnEnable()
         {
             base.OnEnable();
-
-            LoadSelectedIcon();
 
             if (fileHistoryView != null)
                 fileHistoryView.OnEnable();
@@ -156,11 +153,11 @@ namespace Unity.VersionControl.Git
 
         private void MaybeUpdateData()
         {
-            if (firstOnGUI)
+            if (FirstRender)
             {
+                LoadSelectedIcon();
                 titleContent = new GUIContent(Title, Styles.SmallLogo);
             }
-            firstOnGUI = false;
         }
 
         private void AttachHandlers(IRepository repository)

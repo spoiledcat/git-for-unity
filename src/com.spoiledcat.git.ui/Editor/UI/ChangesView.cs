@@ -50,12 +50,6 @@ namespace Unity.VersionControl.Git
         {
             base.OnEnable();
 
-            if (treeChanges != null)
-            {
-                treeChanges.ViewHasFocus = HasFocus;
-                treeChanges.UpdateIcons(Styles.FolderIcon);
-            }
-
             AttachHandlers(Repository);
             ValidateCachedData(Repository);
         }
@@ -384,6 +378,13 @@ namespace Unity.VersionControl.Git
 
         private void MaybeUpdateData()
         {
+            if (FirstRender && treeChanges != null)
+            {
+                treeChanges.ViewHasFocus = HasFocus;
+            }
+
+            treeChanges?.UpdateIcons(Styles.FolderIcon);
+
             if (currentBranchHasUpdate)
             {
                 currentBranchHasUpdate = false;

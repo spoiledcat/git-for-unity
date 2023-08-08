@@ -24,6 +24,7 @@ namespace Unity.VersionControl.Git
         bool IsBusy { get; }
         bool IsRefreshing { get; }
         bool HasFocus { get; }
+        bool FirstRender { get; }
         Dictionary<CacheType, int> RefreshEvents { get; }
     }
 
