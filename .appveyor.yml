@@ -1,6 +1,7 @@
 version: '{build}'
-build_cloud: zcd
-image: Linux
+#build_cloud: zcd
+#image: Linux
+image: Ubuntu
 
 branches:
   except:
