@@ -436,12 +436,6 @@ namespace Unity.VersionControl.Git
                         var treeRect = new Rect(0f, 0f, 0f, 0f);
                         if (TreeChanges != null)
                         {
-                            TreeChanges.FolderStyle = Styles.Foldout;
-                            TreeChanges.TreeNodeStyle = Styles.TreeNode;
-                            TreeChanges.ActiveTreeNodeStyle = Styles.ActiveTreeNode;
-                            TreeChanges.FocusedTreeNodeStyle = Styles.FocusedTreeNode;
-                            TreeChanges.FocusedActiveTreeNodeStyle = Styles.FocusedActiveTreeNode;
-
                             treeRect = TreeChanges.Render(treeControlRect, DetailsScroll,
                                 singleClick: node => { },
                                 doubleClick: node => { },
@@ -465,12 +459,6 @@ namespace Unity.VersionControl.Git
         public override void OnEnable()
         {
             base.OnEnable();
-
-            if (TreeChanges != null)
-            {
-                TreeChanges.ViewHasFocus = HasFocus;
-                TreeChanges.UpdateIcons(Styles.FolderIcon);
-            }
 
             AttachHandlers(Repository);
             ValidateCachedData(Repository);
@@ -502,7 +490,15 @@ namespace Unity.VersionControl.Git
         protected abstract void AttachHandlers(IRepository repository);
         protected abstract void DetachHandlers(IRepository repository);
         protected abstract void ValidateCachedData(IRepository repository);
-        protected abstract void MaybeUpdateData();
+        protected virtual void MaybeUpdateData()
+        {
+            if (FirstRender && TreeChanges != null)
+            {
+                    TreeChanges.ViewHasFocus = HasFocus;
+            }
+
+            TreeChanges?.UpdateIcons(Styles.FolderIcon);
+        }
     }
 
     [Serializable]
@@ -582,6 +578,16 @@ namespace Unity.VersionControl.Git
 
         protected override void MaybeUpdateData()
         {
+            if (TreeChanges != null)
+            {
+                TreeChanges.FolderStyle = Styles.Foldout;
+                TreeChanges.TreeNodeStyle = Styles.TreeNode;
+                TreeChanges.ActiveTreeNodeStyle = Styles.ActiveTreeNode;
+                TreeChanges.FocusedTreeNodeStyle = Styles.FocusedTreeNode;
+                TreeChanges.FocusedActiveTreeNodeStyle = Styles.FocusedActiveTreeNode;
+                TreeChanges.UpdateIcons(Styles.FolderIcon);
+            }
+
             if (Repository == null)
             {
                 return;

@@ -95,8 +95,6 @@ namespace Unity.VersionControl.Git
 
             if (spinner == null)
                 spinner = new Spinner();
-
-            ClearProgressMessage();
         }
 
         public override void OnDisable()
@@ -108,6 +106,12 @@ namespace Unity.VersionControl.Git
 
         public override void OnDataUpdate()
         {
+            if (FirstRender)
+            {
+                ClearProgressMessage();
+            }
+
+
             base.OnDataUpdate();
             MaybeUpdateData();
 

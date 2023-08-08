@@ -16,6 +16,7 @@ namespace Unity.VersionControl.Git
         [NonSerialized] private IRepository cachedRepository;
         [NonSerialized] private bool initializeWasCalled;
         [NonSerialized] protected bool inLayout;
+        [NonSerialized] private bool firstRender;
 
         public BaseWindow()
         {
@@ -60,6 +61,7 @@ namespace Unity.VersionControl.Git
         {
             if (!initialized)
                 InitializeWindow(EntryPoint.ApplicationManager, false);
+            firstRender = true;
         }
 
         public virtual void OnDisable()
@@ -98,6 +100,8 @@ namespace Unity.VersionControl.Git
             {
                 inLayout = false;
             }
+
+            firstRender = false;
         }
 
         private void OnFocus()
@@ -161,6 +165,7 @@ namespace Unity.VersionControl.Git
         public IApplicationManager Manager { get; private set; }
         public abstract bool IsBusy { get; }
         public bool IsRefreshing { get; private set; }
+        public bool FirstRender { get { return firstRender; } }
         public bool HasFocus { get; private set; }
         public IRepository Repository { get { return inLayout ? cachedRepository : Environment.Repository; } }
         public bool HasRepository { get { return Repository != null; } }
