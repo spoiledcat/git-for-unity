@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Unity.VersionControl.Git
 {
@@ -13,16 +14,40 @@ namespace Unity.VersionControl.Git
 
         private static void OnHierarchyItemTryToDrawStatusIcon(int instanceID, Rect selectionRect)
         {
+            string guid;
             GameObject hierarchyGO = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
-            if (!hierarchyGO || hierarchyGO != PrefabUtility.GetNearestPrefabInstanceRoot(hierarchyGO))
-                return;
+            if (!hierarchyGO)
+            {
+                // if no Object has been returned by the InstanceIDToObject() method, then it is possible, that it is a scene
+                string scenePath = "";
+                for (int i = 0; i < SceneManager.sceneCount; i++)
+                {
+                    Scene scene = SceneManager.GetSceneAt(i);
+                    if (scene.GetHashCode() == instanceID)
+                    {
+                        scenePath = scene.path;
+                        break;
+                    }
+                }
 
-            GameObject prefab = PrefabUtility.GetCorrespondingObjectFromSource(hierarchyGO);
-            if (!prefab)
-                return;
+                if (string.IsNullOrEmpty(scenePath))
+                    return;
 
-            if (!AssetDatabase.TryGetGUIDAndLocalFileIdentifier(prefab, out string guid, out long localId))
-                return;
+                guid = AssetDatabase.AssetPathToGUID(scenePath);
+            }
+            else
+            {
+                if (hierarchyGO != PrefabUtility.GetNearestPrefabInstanceRoot(hierarchyGO))
+                    return;
+
+                GameObject prefab = PrefabUtility.GetCorrespondingObjectFromSource(hierarchyGO);
+                if (!prefab)
+                    return;
+
+                if (!AssetDatabase.TryGetGUIDAndLocalFileIdentifier(prefab, out guid, out long localId))
+                    return;
+            }
+
 
             Texture2D texture = ProjectWindowInterface.GetStatusIconForAssetGUID(guid);
             if (texture == null)
