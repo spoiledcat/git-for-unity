@@ -1,5 +1,4 @@
 using System;
-using Unity.VersionControl.Git;
 using System.Collections.Generic;
 using System.Linq;
 using SpoiledCat.Git;
@@ -53,6 +52,37 @@ namespace Unity.VersionControl.Git
                 Repository.CurrentRemoteChanged += RepositoryOnCurrentRemoteChanged;
                 ValidateCachedData();
             }
+        }
+
+        public static Texture2D GetStatusIconForAssetGUID(string guid)
+        {
+            var index = guids.IndexOf(guid);
+            var indexLock = guidsLocks.IndexOf(guid);
+
+            if (index < 0 && indexLock < 0)
+            {
+                return null;
+            }
+
+            GitStatusEntry? gitStatusEntry = null;
+            GitFileStatus status = GitFileStatus.None;
+
+            if (index >= 0)
+            {
+                gitStatusEntry = entries[index];
+                status = gitStatusEntry.Value.Status;
+            }
+
+            var isLocked = indexLock >= 0;
+            var texture = Styles.GetFileStatusIcon(status, isLocked);
+
+            if (texture == null)
+            {
+                var path = gitStatusEntry.HasValue ? gitStatusEntry.Value.Path : string.Empty;
+                Logger.Warning("Unable to retrieve texture for Guid:{0} EntryPath:{1} Status: {2} IsLocked:{3}", guid, path, status.ToString(), isLocked);
+            }
+
+            return texture;
         }
 
         private static bool EnsureInitialized()
@@ -305,36 +335,11 @@ namespace Unity.VersionControl.Git
                 return;
 
             if (Event.current.type != EventType.Repaint || string.IsNullOrEmpty(guid))
-            {
                 return;
-            }
 
-            var index = guids.IndexOf(guid);
-            var indexLock = guidsLocks.IndexOf(guid);
-
-            if (index < 0 && indexLock < 0)
-            {
-                return;
-            }
-
-            GitStatusEntry? gitStatusEntry = null;
-            GitFileStatus status = GitFileStatus.None;
-
-            if (index >= 0)
-            {
-                gitStatusEntry = entries[index];
-                status = gitStatusEntry.Value.Status;
-            }
-
-            var isLocked = indexLock >= 0;
-            var texture = Styles.GetFileStatusIcon(status, isLocked);
-
+            Texture2D texture = GetStatusIconForAssetGUID(guid);
             if (texture == null)
-            {
-                var path = gitStatusEntry.HasValue ? gitStatusEntry.Value.Path : string.Empty;
-                Logger.Warning("Unable to retrieve texture for Guid:{0} EntryPath:{1} Status: {2} IsLocked:{3}", guid, path, status.ToString(), isLocked);
                 return;
-            }
 
             Rect rect;
 
