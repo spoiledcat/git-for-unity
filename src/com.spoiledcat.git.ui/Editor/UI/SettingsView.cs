@@ -21,6 +21,8 @@ namespace Unity.VersionControl.Git
         private const string PrivacyTitle = "Privacy";
         private const string WebTimeoutLabel = "Timeout of web requests";
         private const string GitTimeoutLabel = "Timeout of git commands";
+        private const string HierarchyIconsVisiblityToggleLabel = "Show Git status icons in Hierarchy View";
+        private const string HierarchyIconsIndentToggleLabel = "Indent Git status icons in Hierarchy View";
         private const string EnableTraceLoggingLabel = "Enable Trace Logging";
         private const string MetricsOptInLabel = "Help us improve by sending anonymous usage data";
         private const string DefaultRepositoryRemoteName = "origin";
@@ -38,6 +40,8 @@ namespace Unity.VersionControl.Git
         [SerializeField] private UserSettingsView userSettingsView = new UserSettingsView();
         [SerializeField] private int webTimeout;
         [SerializeField] private int gitTimeout;
+        [SerializeField] private bool areHierarchyIconsTurnedOn;
+        [SerializeField] private bool areHierarchyIconsIndented;
 
         public override void InitializeView(IView parent)
         {
@@ -241,6 +245,33 @@ namespace Unity.VersionControl.Git
             {
                 ApplicationConfiguration.GitTimeout = gitTimeout;
                 Manager.UserSettings.Set(Constants.GitTimeoutKey, gitTimeout);
+            }
+
+            areHierarchyIconsTurnedOn = ApplicationConfiguration.AreHierarchyIconsTurnedOn;
+            EditorGUI.BeginChangeCheck();
+            {
+                areHierarchyIconsTurnedOn = EditorGUILayout.ToggleLeft(HierarchyIconsVisiblityToggleLabel, areHierarchyIconsTurnedOn);
+            }
+            if (EditorGUI.EndChangeCheck())
+            {
+                ApplicationConfiguration.AreHierarchyIconsTurnedOn = areHierarchyIconsTurnedOn;
+                Manager.UserSettings.Set(Constants.HierarchyIconsVisibilityToggleKey, areHierarchyIconsTurnedOn);
+                EditorApplication.RepaintHierarchyWindow();
+            }
+
+            if (areHierarchyIconsTurnedOn)
+            {
+                areHierarchyIconsIndented = ApplicationConfiguration.AreHierarchyIconsIndented;
+                EditorGUI.BeginChangeCheck();
+                {
+                    areHierarchyIconsIndented = EditorGUILayout.ToggleLeft(HierarchyIconsIndentToggleLabel, areHierarchyIconsIndented);
+                }
+                if (EditorGUI.EndChangeCheck())
+                {
+                    ApplicationConfiguration.AreHierarchyIconsIndented = areHierarchyIconsIndented;
+                    Manager.UserSettings.Set(Constants.HierarchyIconsIndentToggleKey, areHierarchyIconsIndented);
+                    EditorApplication.RepaintHierarchyWindow();
+                }
             }
         }
 

@@ -37,6 +37,8 @@ namespace Unity.VersionControl.Git
             LogHelper.TracingEnabled = UserSettings.Get(Constants.TraceLoggingKey, false);
             ApplicationConfiguration.WebTimeout = UserSettings.Get(Constants.WebTimeoutKey, ApplicationConfiguration.WebTimeout);
             ApplicationConfiguration.GitTimeout = UserSettings.Get(Constants.GitTimeoutKey, ApplicationConfiguration.GitTimeout);
+            ApplicationConfiguration.AreHierarchyIconsTurnedOn = UserSettings.Get(Constants.HierarchyIconsVisibilityToggleKey, ApplicationConfiguration.AreHierarchyIconsTurnedOn);
+            ApplicationConfiguration.AreHierarchyIconsIndented = UserSettings.Get(Constants.HierarchyIconsIndentToggleKey, ApplicationConfiguration.AreHierarchyIconsIndented);
             progress.OnProgress += progressReporter.UpdateProgress;
         }
 
