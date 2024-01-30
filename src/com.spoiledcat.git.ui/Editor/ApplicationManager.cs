@@ -34,6 +34,7 @@ namespace Unity.VersionControl.Git
             isBusy = false;
             LfsLocksModificationProcessor.Initialize(Environment, Platform);
             ProjectWindowInterface.Initialize(this);
+            HierarchyWindowInterface.Initialize();
             var window = Window.GetWindow();
             if (window != null)
                 window.InitializeWindow(this);

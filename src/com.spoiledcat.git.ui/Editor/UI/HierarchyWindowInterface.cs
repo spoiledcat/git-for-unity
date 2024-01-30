@@ -4,10 +4,9 @@ using UnityEngine.SceneManagement;
 
 namespace Unity.VersionControl.Git
 {
-    [InitializeOnLoad]
     public class HierarchyWindowInterface
     {
-        static HierarchyWindowInterface()
+        public static void Initialize()
         {
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItemTryToDrawStatusIcon;
         }
