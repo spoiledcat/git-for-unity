@@ -57,7 +57,8 @@ namespace Unity.VersionControl.Git
 
             // place the icon to the right of the list:
             Rect r = new Rect(selectionRect);
-            r.x = ApplicationConfiguration.AreHierarchyIconsIndented ? r.width + 10 : r.x = r.xMax - 40;
+            r.x = ApplicationConfiguration.AreHierarchyIconsIndented ? r.width + 10 : r.xMax - 40;
+            r.x -= ApplicationConfiguration.HierarchyIconsOffset;
             r.width = 18;
 
             GUI.Label(r, texture);

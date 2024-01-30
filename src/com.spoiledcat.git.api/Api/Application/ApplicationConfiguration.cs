@@ -10,5 +10,6 @@ namespace Unity.VersionControl.Git
         public static int GitTimeout { get; set; } = DefaultGitTimeout;
         public static bool AreHierarchyIconsTurnedOn { get; set; } = true;
         public static bool AreHierarchyIconsIndented { get; set; } = false;
+        public static int HierarchyIconsOffset { get; set; } = 0;
     }
 }

@@ -13,6 +13,7 @@ namespace Unity.VersionControl.Git
         public const string GitTimeoutKey = "GitTimeout";
         public const string HierarchyIconsVisibilityToggleKey = "AreHierarchyIconsTurnedOn";
         public const string HierarchyIconsIndentToggleKey = "IdentHierarchyIcons";
+        public const string HierarchyIconsOffset = "HierarchyIconsOffset";
         public const string Iso8601Format = @"yyyy-MM-dd\THH\:mm\:ss.fffzzz";
         public const string Iso8601FormatZ = @"yyyy-MM-dd\THH\:mm\:ss\Z";
         public static readonly string[] Iso8601Formats = {

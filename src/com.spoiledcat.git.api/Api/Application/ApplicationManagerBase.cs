@@ -39,6 +39,7 @@ namespace Unity.VersionControl.Git
             ApplicationConfiguration.GitTimeout = UserSettings.Get(Constants.GitTimeoutKey, ApplicationConfiguration.GitTimeout);
             ApplicationConfiguration.AreHierarchyIconsTurnedOn = UserSettings.Get(Constants.HierarchyIconsVisibilityToggleKey, ApplicationConfiguration.AreHierarchyIconsTurnedOn);
             ApplicationConfiguration.AreHierarchyIconsIndented = UserSettings.Get(Constants.HierarchyIconsIndentToggleKey, ApplicationConfiguration.AreHierarchyIconsIndented);
+            ApplicationConfiguration.HierarchyIconsOffset = UserSettings.Get(Constants.HierarchyIconsOffset, ApplicationConfiguration.HierarchyIconsOffset);
             progress.OnProgress += progressReporter.UpdateProgress;
         }
 

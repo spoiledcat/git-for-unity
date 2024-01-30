@@ -23,6 +23,7 @@ namespace Unity.VersionControl.Git
         private const string GitTimeoutLabel = "Timeout of git commands";
         private const string HierarchyIconsVisiblityToggleLabel = "Show Git status icons in Hierarchy View";
         private const string HierarchyIconsIndentToggleLabel = "Indent Git status icons in Hierarchy View";
+        private const string HierarchyIconsOffsetLabel = "Hierarchy icons X offset";
         private const string EnableTraceLoggingLabel = "Enable Trace Logging";
         private const string MetricsOptInLabel = "Help us improve by sending anonymous usage data";
         private const string DefaultRepositoryRemoteName = "origin";
@@ -42,6 +43,7 @@ namespace Unity.VersionControl.Git
         [SerializeField] private int gitTimeout;
         [SerializeField] private bool areHierarchyIconsTurnedOn;
         [SerializeField] private bool areHierarchyIconsIndented;
+        [SerializeField] private int hierarchyIconsOffset;
 
         public override void InitializeView(IView parent)
         {
@@ -261,6 +263,7 @@ namespace Unity.VersionControl.Git
 
             if (areHierarchyIconsTurnedOn)
             {
+                EditorGUI.indentLevel++;
                 areHierarchyIconsIndented = ApplicationConfiguration.AreHierarchyIconsIndented;
                 EditorGUI.BeginChangeCheck();
                 {
@@ -272,6 +275,19 @@ namespace Unity.VersionControl.Git
                     Manager.UserSettings.Set(Constants.HierarchyIconsIndentToggleKey, areHierarchyIconsIndented);
                     EditorApplication.RepaintHierarchyWindow();
                 }
+
+                hierarchyIconsOffset = ApplicationConfiguration.HierarchyIconsOffset;
+                EditorGUI.BeginChangeCheck();
+                {
+                    hierarchyIconsOffset = EditorGUILayout.IntSlider(HierarchyIconsOffsetLabel, hierarchyIconsOffset, -30, 200);
+                }
+                if (EditorGUI.EndChangeCheck())
+                {
+                    ApplicationConfiguration.HierarchyIconsOffset = hierarchyIconsOffset;
+                    Manager.UserSettings.Set(Constants.HierarchyIconsOffset, hierarchyIconsOffset);
+                    EditorApplication.RepaintHierarchyWindow();
+                }
+                EditorGUI.indentLevel--;
             }
         }
 
