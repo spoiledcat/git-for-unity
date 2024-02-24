@@ -59,11 +59,12 @@ done
 
 function updateBranchAndPush() {
   local branch=$1
-  local destdir=$2
-  local pkgdir=$3
-  local msg=$4
-  local ver=$5
-  local publ=$6
+  local tag=$2
+  local destdir=$3
+  local pkgdir=$4
+  local msg=$5
+  local ver=$6
+  local publ=$7
 
   echo "Publishing branch: $branch/latest ($VERSION)"
 
@@ -76,7 +77,9 @@ function updateBranchAndPush() {
   cp -R $pkgdir/* .
   git add .
   git commit -m "$msg"
+  git tag $tag
   git push origin HEAD:$branch/latest
+  git push origin $tag
 
   if [[ $publ -eq 1 ]]; then
       echo "Publishing branch: $branch/$VERSION"
@@ -110,8 +113,9 @@ if [[ x"$BRANCHES" == x"1" ]]; then
     branch=packages/$name
     msg="$name v$VERSION"
     pkgdir=$srcdir/$name
+    tag="$name-v$VERSION"
 
-    updateBranchAndPush "$branch" "$destdir" "$pkgdir" "$msg" "$VERSION" $PUBLIC
+    updateBranchAndPush "$branch" "$tag" "$destdir" "$pkgdir" "$msg" "$VERSION" $PUBLIC
 
   done
 
