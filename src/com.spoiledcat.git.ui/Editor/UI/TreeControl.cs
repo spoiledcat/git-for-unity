@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VersionControl.Git.UI;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace Unity.VersionControl.Git
 
     [Serializable]
     public abstract class Tree<TNode, TData>: TreeBase<TNode, TData>
-        where TNode : TreeNode 
+        where TNode : TreeNode
         where TData : struct, ITreeData
     {
         public static float ItemHeight { get { return EditorGUIUtility.singleLineHeight; } }

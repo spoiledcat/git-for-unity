@@ -3,7 +3,7 @@ using SpoiledCat.Git;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
     [Serializable]
     class InitProjectView : Subview

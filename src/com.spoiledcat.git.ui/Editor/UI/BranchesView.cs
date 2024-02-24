@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SpoiledCat.Git;
@@ -8,7 +7,7 @@ using Unity.VersionControl.Git.Helpers;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
     [Serializable]
     class BranchesView : Subview

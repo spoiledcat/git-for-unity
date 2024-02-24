@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
     [Serializable]
     class UserSettingsView : Subview
@@ -19,9 +19,12 @@ namespace Unity.VersionControl.Git
         [SerializeField] private bool needsSaving;
         [SerializeField] private CacheUpdateEvent lastCheckUserChangedEvent;
 
+        [SerializeField] private bool configSettingsHidden;
+
         [NonSerialized] private bool isBusy;
         [NonSerialized] private bool userHasChanges;
         [NonSerialized] private bool gitExecutableIsSet;
+
 
         public override void InitializeView(IView parent)
         {
@@ -43,35 +46,36 @@ namespace Unity.VersionControl.Git
 
         public override void OnGUI()
         {
-            GUILayout.Label(GitConfigTitle, EditorStyles.boldLabel);
-
-            EditorGUI.BeginDisabledGroup(!gitExecutableIsSet || IsBusy || Parent.IsBusy);
+            configSettingsHidden = !Controls.FoldoutScope(!configSettingsHidden, GitConfigTitle, () =>
             {
-                EditorGUI.BeginChangeCheck();
+                EditorGUI.BeginDisabledGroup(!gitExecutableIsSet || IsBusy || Parent.IsBusy);
                 {
-                    newGitName = EditorGUILayout.TextField(GitConfigNameLabel, newGitName);
-                    newGitEmail = EditorGUILayout.TextField(GitConfigEmailLabel, newGitEmail);
-                }
-
-                if (EditorGUI.EndChangeCheck())
-                {
-                    needsSaving = !(string.IsNullOrEmpty(newGitName) || string.IsNullOrEmpty(newGitEmail))
-                        && (newGitName != gitName || newGitEmail != gitEmail);
-                }
-
-                EditorGUI.BeginDisabledGroup(!needsSaving);
-                {
-                    if (GUILayout.Button(GitConfigUserSave, GUILayout.ExpandWidth(false)))
+                    EditorGUI.BeginChangeCheck();
                     {
-                        GUI.FocusControl(null);
-                        isBusy = true;
-
-                        User.SetNameAndEmail(newGitName, newGitEmail);
+                        newGitName = EditorGUILayout.TextField(GitConfigNameLabel, newGitName);
+                        newGitEmail = EditorGUILayout.TextField(GitConfigEmailLabel, newGitEmail);
                     }
+
+                    if (EditorGUI.EndChangeCheck())
+                    {
+                        needsSaving = !(string.IsNullOrEmpty(newGitName) || string.IsNullOrEmpty(newGitEmail))
+                                      && (newGitName != gitName || newGitEmail != gitEmail);
+                    }
+
+                    EditorGUI.BeginDisabledGroup(!needsSaving);
+                    {
+                        if (GUILayout.Button(GitConfigUserSave, GUILayout.ExpandWidth(false)))
+                        {
+                            GUI.FocusControl(null);
+                            isBusy = true;
+
+                            User.SetNameAndEmail(newGitName, newGitEmail);
+                        }
+                    }
+                    EditorGUI.EndDisabledGroup();
                 }
                 EditorGUI.EndDisabledGroup();
-            }
-            EditorGUI.EndDisabledGroup();
+            });
         }
 
         public override void OnEnable()
@@ -87,7 +91,7 @@ namespace Unity.VersionControl.Git
             base.OnDisable();
             DetachHandlers();
         }
-        
+
         private void AttachHandlers()
         {
             User.Changed += UserOnChanged;

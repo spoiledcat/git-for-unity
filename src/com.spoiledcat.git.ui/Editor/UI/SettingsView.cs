@@ -1,28 +1,49 @@
-using Unity.VersionControl.Git;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Unity.Editor.Tasks;
 using Unity.Editor.Tasks.Logging;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
     [Serializable]
     class SettingsView : Subview
     {
         private const string GitRepositoryTitle = "Repository Configuration";
+
         private const string GitRepositoryRemoteLabel = "Remote";
         private const string GitRepositorySave = "Save Repository";
+
         private const string GeneralSettingsTitle = "General";
-        private const string DebugSettingsTitle = "Debug";
-        private const string PrivacyTitle = "Privacy";
+
         private const string WebTimeoutLabel = "Timeout of web requests";
         private const string GitTimeoutLabel = "Timeout of git commands";
+
+        private const string DebugSettingsTitle = "Debug";
         private const string EnableTraceLoggingLabel = "Enable Trace Logging";
-        private const string MetricsOptInLabel = "Help us improve by sending anonymous usage data";
+
+        private const string UISceneHierarchySettingsTitle = "UI - Scene Hierarchy";
+        private const string UIProjectViewSettingsTitle = "UI - Project Window";
+        private const string IconsEnabledToggleLabel = "Show Git Status Icons";
+        private const string HierarchyIconsIndentToggleLabel = "Align to end of label";
+        private const string HierarchyIconsIndentToggleTooltip = "You probably don't want this";
+        private static GUIContent hierarchyIconsIndentToggleContent;
+        private static GUIContent HierarchyIconsIndentToggleContent => hierarchyIconsIndentToggleContent ?? (hierarchyIconsIndentToggleContent = new GUIContent(HierarchyIconsIndentToggleLabel, HierarchyIconsIndentToggleTooltip));
+
+        private const string HierarchyIconsOffsetLabel = "Offset";
+        private const string HierarchyIconsOffsetRightTooltip = "Offset from the right edge of the hierarchy window. Increase this value to move icons away from the edge.";
+        private const string HierarchyIconsOffsetLeftTooltip = "Offset from the left edge of the hierarchy window.";
+        private static GUIContent hierarchyIconsOffsetRightContent;
+        private static GUIContent HierarchyIconsOffsetRightContent => hierarchyIconsOffsetRightContent ?? (hierarchyIconsOffsetRightContent = new GUIContent(HierarchyIconsOffsetLabel, HierarchyIconsOffsetRightTooltip));
+        private static GUIContent hierarchyIconsOffsetLeftContent;
+        private static GUIContent HierarchyIconsOffsetLeftContent => hierarchyIconsOffsetLeftContent ?? (hierarchyIconsOffsetLeftContent = new GUIContent(HierarchyIconsOffsetLabel, HierarchyIconsOffsetLeftTooltip));
+
+        private const string HierarchyIconsAlignmentLabel = "Align icons to";
+        private const string HierarchyIconsAlignmentTooltip = "Align the icons to the left or right of the hiearchy entry. Note that the icons will visually overlap the scene object buttons when aligned on the left, but the buttons will still work.";
+        private static GUIContent hierarchyIconsAlignmentContent;
+        private static GUIContent HierarchyIconsAlignmentContent => hierarchyIconsAlignmentContent ?? (hierarchyIconsAlignmentContent = new GUIContent(HierarchyIconsAlignmentLabel, HierarchyIconsAlignmentTooltip));
+
         private const string DefaultRepositoryRemoteName = "origin";
 
         [NonSerialized] private bool currentRemoteHasUpdate;
@@ -36,8 +57,12 @@ namespace Unity.VersionControl.Git
         [SerializeField] private string repositoryRemoteUrl;
         [SerializeField] private Vector2 scroll;
         [SerializeField] private UserSettingsView userSettingsView = new UserSettingsView();
-        [SerializeField] private int webTimeout;
-        [SerializeField] private int gitTimeout;
+
+        [SerializeField] private bool repositorySettingsHidden;
+        [SerializeField] private bool generalSettingsHidden;
+        [SerializeField] private bool debugSettingsHidden;
+        [SerializeField] private bool uiSceneSettingsHidden;
+        [SerializeField] private bool uiProjectSettingsHidden;
 
         public override void InitializeView(IView parent)
         {
@@ -101,6 +126,7 @@ namespace Unity.VersionControl.Git
                 gitPathView.OnGUI();
                 OnGeneralSettingsGui();
                 OnLoggingSettingsGui();
+                OnUISettingsGui();
             }
 
             GUILayout.EndScrollView();
@@ -168,80 +194,156 @@ namespace Unity.VersionControl.Git
 
         private void OnRepositorySettingsGUI()
         {
-            GUILayout.Label(GitRepositoryTitle, EditorStyles.boldLabel);
-
-            EditorGUI.BeginDisabledGroup(IsBusy);
+            repositorySettingsHidden = !Controls.FoldoutScope(!repositorySettingsHidden, GitRepositoryTitle, () =>
             {
-                newRepositoryRemoteUrl = EditorGUILayout.TextField(GitRepositoryRemoteLabel + ": " + repositoryRemoteName, newRepositoryRemoteUrl);
-                var needsSaving = newRepositoryRemoteUrl != repositoryRemoteUrl && !String.IsNullOrEmpty(newRepositoryRemoteUrl);
-                EditorGUI.BeginDisabledGroup(!needsSaving);
+                EditorGUI.BeginDisabledGroup(IsBusy);
                 {
-                    if (GUILayout.Button(GitRepositorySave, GUILayout.ExpandWidth(false)))
+                    newRepositoryRemoteUrl = EditorGUILayout.TextField(GitRepositoryRemoteLabel + ": " + repositoryRemoteName, newRepositoryRemoteUrl);
+                    var needsSaving = newRepositoryRemoteUrl != repositoryRemoteUrl && !String.IsNullOrEmpty(newRepositoryRemoteUrl);
+
+                    EditorGUI.BeginDisabledGroup(!needsSaving);
                     {
-                        try
+                        if (GUILayout.Button(GitRepositorySave, GUILayout.ExpandWidth(false)))
                         {
-                            isBusy = true;
-                            Repository.SetupRemote(repositoryRemoteName, newRepositoryRemoteUrl)
-                                .FinallyInUI((_, __) =>
-                                {
-                                    isBusy = false;
-                                    Redraw();
-                                })
-                                .Start();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error(ex);
+                            try
+                            {
+                                isBusy = true;
+                                Repository.SetupRemote(repositoryRemoteName, newRepositoryRemoteUrl)
+                                    .FinallyInUI((_, __) =>
+                                    {
+                                        isBusy = false;
+                                        Redraw();
+                                    })
+                                    .Start();
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error(ex);
+                            }
                         }
                     }
+                    EditorGUI.EndDisabledGroup();
                 }
                 EditorGUI.EndDisabledGroup();
-            }
-            EditorGUI.EndDisabledGroup();
+            });
         }
 
         private void OnLoggingSettingsGui()
         {
-            GUILayout.Label(DebugSettingsTitle, EditorStyles.boldLabel);
-
-            var traceLogging = LogHelper.TracingEnabled;
-
-            EditorGUI.BeginChangeCheck();
+            debugSettingsHidden = !Controls.FoldoutScope(!debugSettingsHidden, DebugSettingsTitle, () =>
             {
-                traceLogging = GUILayout.Toggle(traceLogging, EnableTraceLoggingLabel);
-            }
-            if (EditorGUI.EndChangeCheck())
-            {
-                LogHelper.TracingEnabled = traceLogging;
-                Manager.UserSettings.Set(Constants.TraceLoggingKey, traceLogging);
-            }
+                Controls.DoControl(LogHelper.TracingEnabled,
+                    value => EditorGUILayout.Toggle(EnableTraceLoggingLabel, value),
+                    value =>
+                    {
+                        LogHelper.TracingEnabled = value;
+                        Manager.UserSettings.Set(Constants.TraceLoggingKey, value);
+                    });
+            });
         }
 
         private void OnGeneralSettingsGui()
         {
-            GUILayout.Label(GeneralSettingsTitle, EditorStyles.boldLabel);
+            generalSettingsHidden = !Controls.FoldoutScope(!generalSettingsHidden, GeneralSettingsTitle, () =>
+            {
+                Controls.DoControl(ApplicationConfiguration.WebTimeout,
+                    value => EditorGUILayout.IntField(WebTimeoutLabel, value),
+                    value =>
+                    {
+                        ApplicationConfiguration.WebTimeout = value;
+                        Manager.UserSettings.Set(Constants.WebTimeoutKey, value);
+                    });
 
-            webTimeout = ApplicationConfiguration.WebTimeout;
-            EditorGUI.BeginChangeCheck();
+                Controls.DoControl(ApplicationConfiguration.GitTimeout,
+                    value => EditorGUILayout.IntField(GitTimeoutLabel, value),
+                    value =>
+                    {
+                        ApplicationConfiguration.GitTimeout = value;
+                        Manager.UserSettings.Set(Constants.GitTimeoutKey, value);
+                    });
+            });
+        }
+
+        private void OnUISettingsGui()
+        {
+            bool dirty = false;
+
+            uiSceneSettingsHidden = !Controls.FoldoutScope(!uiSceneSettingsHidden, UISceneHierarchySettingsTitle, () =>
             {
-                webTimeout = EditorGUILayout.IntField(WebTimeoutLabel, webTimeout);
-            }
-            if (EditorGUI.EndChangeCheck())
+                Controls.DoControl(ApplicationConfiguration.HierarchyIconsEnabled,
+                    value => EditorGUILayout.Toggle(IconsEnabledToggleLabel, value),
+                    value =>
+                    {
+                        ApplicationConfiguration.HierarchyIconsEnabled = value;
+                        Manager.UserSettings.Set(Constants.HierarchyIconsEnabledKey, value);
+                        dirty = true;
+                    });
+
+                Controls.DoControl(ApplicationConfiguration.HierarchyIconsAlignment,
+                    value => (ApplicationConfiguration.HierarchyIconAlignment) EditorGUILayout.EnumPopup(HierarchyIconsAlignmentContent, value),
+                    value =>
+                    {
+                        ApplicationConfiguration.HierarchyIconsAlignment = value;
+                        Manager.UserSettings.Set(Constants.HierarchyIconsAlignmentKey, value);
+                        dirty = true;
+                    });
+
+                if (ApplicationConfiguration.HierarchyIconsAlignment == ApplicationConfiguration.HierarchyIconAlignment.Right)
+                {
+                    Controls.DoControl(ApplicationConfiguration.HierarchyIconsIndented,
+                        value => EditorGUILayout.Toggle(HierarchyIconsIndentToggleContent, value),
+                        value =>
+                        {
+                            ApplicationConfiguration.HierarchyIconsIndented = value;
+                            Manager.UserSettings.Set(Constants.HierarchyIconsIndentedKey, value);
+                            dirty = true;
+                        });
+
+                    Controls.DoControl(ApplicationConfiguration.HierarchyIconsOffsetRight,
+                        value => EditorGUILayout.IntSlider(HierarchyIconsOffsetRightContent, value, 0, 200),
+                        value =>
+                        {
+                            ApplicationConfiguration.HierarchyIconsOffsetRight = value;
+                            Manager.UserSettings.Set(Constants.HierarchyIconsOffsetRightKey, value);
+                            dirty = true;
+                        });
+                }
+                else
+                {
+                    Controls.DoControl(ApplicationConfiguration.HierarchyIconsOffsetLeft,
+                        value => EditorGUILayout.IntSlider(HierarchyIconsOffsetLeftContent, value, -16, 16),
+                        value =>
+                        {
+                            ApplicationConfiguration.HierarchyIconsOffsetLeft = value;
+                            Manager.UserSettings.Set(Constants.HierarchyIconsOffsetLeftKey, value);
+                            dirty = true;
+                        });
+                }
+            });
+
+            if (dirty)
             {
-                ApplicationConfiguration.WebTimeout = webTimeout;
-                Manager.UserSettings.Set(Constants.WebTimeoutKey, webTimeout);
+                EditorApplication.RepaintHierarchyWindow();
             }
 
-            gitTimeout = ApplicationConfiguration.GitTimeout;
-            EditorGUI.BeginChangeCheck();
+            dirty = false;
+
+            uiProjectSettingsHidden = !Controls.FoldoutScope(!uiProjectSettingsHidden, UIProjectViewSettingsTitle, () =>
             {
-                gitTimeout = EditorGUILayout.IntField(GitTimeoutLabel, gitTimeout);
-            }
-            if (EditorGUI.EndChangeCheck())
-            {
-                ApplicationConfiguration.GitTimeout = gitTimeout;
-                Manager.UserSettings.Set(Constants.GitTimeoutKey, gitTimeout);
-            }
+                Controls.DoControl(ApplicationConfiguration.ProjectIconsEnabled,
+                    value => EditorGUILayout.Toggle(IconsEnabledToggleLabel, value),
+                    value =>
+                    {
+                        ApplicationConfiguration.ProjectIconsEnabled = value;
+                        Manager.UserSettings.Set(Constants.ProjectIconsEnabledKey, value);
+                        dirty = true;
+                    });
+
+                if (dirty)
+                {
+                    EditorApplication.RepaintProjectWindow();
+                }
+            });
         }
 
         public override bool IsBusy => isBusy || userSettingsView.IsBusy || gitPathView.IsBusy;
