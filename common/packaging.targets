@@ -23,8 +23,11 @@
 
   <!-- Assemble all sources into a folder called (PackageName) -->
   <Target Name="EnumeratePackageFiles" Returns="@(SourcesToCopy)">
+    <ItemGroup>
+      <Readme Include="$(RepoRoot)README.md" Condition="!Exists('$(PackageSourceRootFull)README.md')" />
+    </ItemGroup>
     <CreateItem
-      Include="$(PackageSourceRootFull)**\*.*;$(RootDir)\extras\$(PackageName)\**\*.*"
+      Include="$(PackageSourceRootFull)**\*.*;$(RootDir)\extras\$(PackageName)\**\*.*;@(Readme)"
       Exclude="$(PackageSourceRootFull)**\*.csproj*;$(PackageSourceRootFull)**\*.ncrunch*;$(PackageSourceRootFull)**\obj\**;$(PackageSourceRootFull)version.json*;$(PackageSourceRootFull)Tests\**;$(RootDir)\extras\$(PackageName)\Tests\**;$(PackageSourceRootFull)Tests.meta">
       <Output TaskParameter="Include" ItemName="SourcesToCopy" />
     </CreateItem>
