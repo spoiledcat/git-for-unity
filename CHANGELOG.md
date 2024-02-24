@@ -2,7 +2,7 @@
 
 <!-- Do not change the line immediately below this comment, the build system will replace it with the actual version and date. -->
 
-## [1.0.31] - 2024-02-24
+## [1.0.32] - 2024-02-24
 
 - Hierarchy Icons added by @MateuszBudny in https://github.com/spoiledcat/git-for-unity/pull/26
 - Add project icons visibility toggle
