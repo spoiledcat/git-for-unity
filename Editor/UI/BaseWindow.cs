@@ -1,4 +1,3 @@
-using Unity.VersionControl.Git;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,7 @@ using Unity.Editor.Tasks.Logging;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
     public abstract class BaseWindow :  EditorWindow, IView
     {

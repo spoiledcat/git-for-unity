@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VersionControl.Git.UI;
 
 namespace Unity.VersionControl.Git
 {

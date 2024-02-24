@@ -3,8 +3,9 @@ using System.Text;
 using Unity.Editor.Tasks;
 using UnityEditor;
 using UnityEngine;
+using Unity.VersionControl.Git.Extensions;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
     using IO;
 
@@ -33,11 +34,13 @@ namespace Unity.VersionControl.Git
         [SerializeField] private bool resetToBundled;
         [SerializeField] private bool resetToSystem;
         [SerializeField] private bool changingManually;
+        [SerializeField] private bool installSettingsHidden;
 
         [NonSerialized] private bool isBusy;
         [NonSerialized] private bool refresh;
         [NonSerialized] private GitInstaller.GitInstallationState installationState;
         [NonSerialized] private GitInstaller.GitInstallDetails installDetails;
+        private GitInstaller.GitInstallDetails InstallDetails => installDetails ?? (installDetails = new GitInstaller.GitInstallDetails(Environment.UserCachePath, Environment));
 
         public override void InitializeView(IView parent)
         {
@@ -63,7 +66,6 @@ namespace Unity.VersionControl.Git
                 installationState = Environment.GitInstallationState;
                 gitPath = installationState.GitExecutablePath;
                 gitLfsPath = installationState.GitLfsExecutablePath;
-                installDetails = new GitInstaller.GitInstallDetails(Environment.UserCachePath, Environment);
                 refresh = false;
             }
         }
@@ -71,155 +73,160 @@ namespace Unity.VersionControl.Git
         public override void OnGUI()
         {
             // Install path
-            GUILayout.Label(GitInstallTitle, EditorStyles.boldLabel);
-
-            EditorGUI.BeginDisabledGroup(IsBusy || Parent.IsBusy);
+            installSettingsHidden = !Controls.FoldoutScope(!installSettingsHidden, GitInstallTitle, () =>
             {
-                GUILayout.BeginVertical();
+                EditorGUI.BeginDisabledGroup(IsBusy || Parent.IsBusy);
                 {
+                    GUILayout.BeginVertical();
+                    {
+                        GUILayout.BeginHorizontal();
+                        {
+                            EditorGUI.BeginChangeCheck();
+                            {
+                                gitPath = EditorGUILayout.TextField(PathToGit, gitPath);
+                                gitPath = gitPath != null ? gitPath.Trim() : gitPath;
+                                if (GUILayout.Button(BrowseButton, EditorStyles.miniButton,
+                                        GUILayout.Width(Styles.BrowseButtonWidth)))
+                                {
+                                    GUI.FocusControl(null);
+
+                                    var newPath = EditorUtility.OpenFilePanel(GitInstallBrowseTitle,
+                                        !String.IsNullOrEmpty(gitPath) ? gitPath.ToSPath().Parent : "",
+                                        Environment.ExecutableExtension.TrimStart('.'));
+
+                                    if (!string.IsNullOrEmpty(newPath))
+                                    {
+                                        gitPath = newPath.ToSPath().ToString();
+                                    }
+                                }
+                            }
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                changingManually = ViewHasChanges;
+                            }
+                        }
+                        GUILayout.EndHorizontal();
+
+                        GUILayout.BeginHorizontal();
+                        {
+                            EditorGUI.BeginChangeCheck();
+                            {
+                                gitLfsPath = EditorGUILayout.TextField(PathToGitLfs, gitLfsPath);
+                                gitLfsPath = gitLfsPath != null ? gitLfsPath.Trim() : gitLfsPath;
+                                if (GUILayout.Button(BrowseButton, EditorStyles.miniButton,
+                                        GUILayout.Width(Styles.BrowseButtonWidth)))
+                                {
+                                    GUI.FocusControl(null);
+
+                                    var newPath = EditorUtility.OpenFilePanel(GitInstallBrowseTitle,
+                                        !String.IsNullOrEmpty(gitLfsPath) ? gitLfsPath.ToSPath().Parent : "",
+                                        Environment.ExecutableExtension.TrimStart('.'));
+
+                                    if (!string.IsNullOrEmpty(newPath))
+                                    {
+                                        gitLfsPath = newPath.ToSPath().ToString();
+                                    }
+                                }
+                            }
+                            if (EditorGUI.EndChangeCheck())
+                            {
+                                changingManually = ViewHasChanges;
+                                errorMessage = "";
+                            }
+                        }
+                        GUILayout.EndHorizontal();
+
+                    }
+                    GUILayout.EndVertical();
+
+                    GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
+
                     GUILayout.BeginHorizontal();
                     {
-                        EditorGUI.BeginChangeCheck();
+                        EditorGUI.BeginDisabledGroup(!changingManually && !resetToBundled && !resetToSystem);
                         {
-                            gitPath = EditorGUILayout.TextField(PathToGit, gitPath);
-                            gitPath = gitPath != null ? gitPath.Trim() : gitPath;
-                            if (GUILayout.Button(BrowseButton, EditorStyles.miniButton, GUILayout.Width(Styles.BrowseButtonWidth)))
+                            if (GUILayout.Button(GitPathSaveButton, GUILayout.ExpandWidth(false)))
+                            {
+                                GUI.FocusControl(null);
+                                isBusy = true;
+                                ValidateAndSetGitInstallPath();
+                            }
+                        }
+                        EditorGUI.EndDisabledGroup();
+
+                        // disable the button if the paths are already pointing to the bundled git
+                        // both on windows, only lfs on mac
+                        EditorGUI.BeginDisabledGroup(
+                            (!Environment.IsWindows || gitPath == InstallDetails.GitExecutablePath) &&
+                            gitLfsPath == InstallDetails.GitLfsExecutablePath);
+                        {
+                            if (GUILayout.Button(SetToBundledGitButton, GUILayout.ExpandWidth(false)))
                             {
                                 GUI.FocusControl(null);
 
-                                var newPath = EditorUtility.OpenFilePanel(GitInstallBrowseTitle,
-                                    !String.IsNullOrEmpty(gitPath) ? gitPath.ToSPath().Parent : "",
-                                    Environment.ExecutableExtension.TrimStart('.'));
-
-                                if (!string.IsNullOrEmpty(newPath))
-                                {
-                                    gitPath = newPath.ToSPath().ToString();
-                                }
+                                if (Environment.IsWindows)
+                                    gitPath = InstallDetails.GitExecutablePath;
+                                gitLfsPath = InstallDetails.GitLfsExecutablePath;
+                                resetToBundled = ViewHasChanges;
+                                resetToSystem = false;
+                                changingManually = false;
+                                errorMessage = "";
                             }
                         }
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            changingManually = ViewHasChanges;
-                        }
-                    }
-                    GUILayout.EndHorizontal();
+                        EditorGUI.EndDisabledGroup();
 
-                    GUILayout.BeginHorizontal();
-                    {
-                        EditorGUI.BeginChangeCheck();
-                        {
-                            gitLfsPath = EditorGUILayout.TextField(PathToGitLfs, gitLfsPath);
-                            gitLfsPath = gitLfsPath != null ? gitLfsPath.Trim() : gitLfsPath;
-                            if (GUILayout.Button(BrowseButton, EditorStyles.miniButton, GUILayout.Width(Styles.BrowseButtonWidth)))
-                            {
-                                GUI.FocusControl(null);
-
-                                var newPath = EditorUtility.OpenFilePanel(GitInstallBrowseTitle,
-                                    !String.IsNullOrEmpty(gitLfsPath) ? gitLfsPath.ToSPath().Parent : "",
-                                    Environment.ExecutableExtension.TrimStart('.'));
-
-                                if (!string.IsNullOrEmpty(newPath))
-                                {
-                                    gitLfsPath = newPath.ToSPath().ToString();
-                                }
-                            }
-                        }
-                        if (EditorGUI.EndChangeCheck())
-                        {
-                            changingManually = ViewHasChanges;
-                            errorMessage = "";
-                        }
-                    }
-                    GUILayout.EndHorizontal();
-
-                }
-                GUILayout.EndVertical();
-
-                GUILayout.Space(EditorGUIUtility.standardVerticalSpacing);
-
-                GUILayout.BeginHorizontal();
-                {
-                    EditorGUI.BeginDisabledGroup(!changingManually && !resetToBundled && !resetToSystem);
-                    {
-                        if (GUILayout.Button(GitPathSaveButton, GUILayout.ExpandWidth(false)))
+                        //Find button - for attempting to locate a new install
+                        if (GUILayout.Button(FindSystemGitButton, GUILayout.ExpandWidth(false)))
                         {
                             GUI.FocusControl(null);
                             isBusy = true;
-                            ValidateAndSetGitInstallPath();
-                        }
-                    }
-                    EditorGUI.EndDisabledGroup();
-
-                    // disable the button if the paths are already pointing to the bundled git
-                    // both on windows, only lfs on mac
-                    EditorGUI.BeginDisabledGroup(
-                        (!Environment.IsWindows || gitPath == installDetails.GitExecutablePath) &&
-                         gitLfsPath == installDetails.GitLfsExecutablePath);
-                    {
-                        if (GUILayout.Button(SetToBundledGitButton, GUILayout.ExpandWidth(false)))
-                        {
-                            GUI.FocusControl(null);
-
-                            if (Environment.IsWindows)
-                                gitPath = installDetails.GitExecutablePath;
-                            gitLfsPath = installDetails.GitLfsExecutablePath;
-                            resetToBundled = ViewHasChanges;
-                            resetToSystem = false;
-                            changingManually = false;
-                            errorMessage = "";
-                        }
-                    }
-                    EditorGUI.EndDisabledGroup();
-
-                    //Find button - for attempting to locate a new install
-                    if (GUILayout.Button(FindSystemGitButton, GUILayout.ExpandWidth(false)))
-                    {
-                        GUI.FocusControl(null);
-                        isBusy = true;
-                        TaskManager.With(() =>
-                            {
-                                var gitInstaller = new GitInstaller(Platform);
-                                return gitInstaller.FindSystemGit(new GitInstaller.GitInstallationState());
-                            }, "Locating git...")
-                            .FinallyInUI((success, ex, state) =>
-                            {
-                                if (success)
+                            TaskManager.With(() =>
                                 {
-                                    if (state.GitIsValid)
-                                    {
-                                        gitPath = state.GitExecutablePath;
-                                    }
-                                    if (state.GitLfsIsValid)
-                                    {
-                                        gitLfsPath = state.GitLfsExecutablePath;
-                                    }
-                                }
-                                else
+                                    var gitInstaller = new GitInstaller(Platform);
+                                    return gitInstaller.FindSystemGit(new GitInstaller.GitInstallationState());
+                                }, "Locating git...")
+                                .FinallyInUI((success, ex, state) =>
                                 {
-                                    Logger.Error(ex);
-                                }
-                                isBusy = false;
-                                resetToBundled = false;
-                                resetToSystem = ViewHasChanges;
-                                changingManually = false;
-                                errorMessage = "";
-                                Redraw();
-                            })
-                        .Start();
-                    }
-                }
-                GUILayout.EndHorizontal();
+                                    if (success)
+                                    {
+                                        if (state.GitIsValid)
+                                        {
+                                            gitPath = state.GitExecutablePath;
+                                        }
 
-                if (!String.IsNullOrEmpty(errorMessage))
-                {
-                    GUILayout.BeginHorizontal();
-                    {
-                        GUILayout.Label(errorMessage, Styles.ErrorLabel);
+                                        if (state.GitLfsIsValid)
+                                        {
+                                            gitLfsPath = state.GitLfsExecutablePath;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Logger.Error(ex);
+                                    }
+
+                                    isBusy = false;
+                                    resetToBundled = false;
+                                    resetToSystem = ViewHasChanges;
+                                    changingManually = false;
+                                    errorMessage = "";
+                                    Redraw();
+                                })
+                                .Start();
+                        }
                     }
                     GUILayout.EndHorizontal();
+
+                    if (!String.IsNullOrEmpty(errorMessage))
+                    {
+                        GUILayout.BeginHorizontal();
+                        {
+                            GUILayout.Label(errorMessage, Styles.ErrorLabel);
+                        }
+                        GUILayout.EndHorizontal();
+                    }
                 }
-            }
-            EditorGUI.EndDisabledGroup();
+                EditorGUI.EndDisabledGroup();
+            });
         }
 
         private void ValidateAndSetGitInstallPath()

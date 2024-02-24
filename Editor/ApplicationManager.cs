@@ -2,8 +2,8 @@
 using System.Reflection;
 using System.Threading;
 using Unity.Editor.Tasks;
+using Unity.VersionControl.Git.UI;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.Events;
 
 namespace Unity.VersionControl.Git
@@ -34,6 +34,7 @@ namespace Unity.VersionControl.Git
             isBusy = false;
             LfsLocksModificationProcessor.Initialize(Environment, Platform);
             ProjectWindowInterface.Initialize(this);
+            HierarchyWindowInterface.Initialize();
             var window = Window.GetWindow();
             if (window != null)
                 window.InitializeWindow(this);
