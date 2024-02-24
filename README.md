@@ -90,7 +90,7 @@ file, so once you commit a change to the major or minor parts, the patch will re
 
 **[MIT](LICENSE)**
 
-Copyright 2020-2022 Andreia Gaita
+Copyright 2020-2024 Andreia Gaita
 
 Copyright 2019 Unity
 
