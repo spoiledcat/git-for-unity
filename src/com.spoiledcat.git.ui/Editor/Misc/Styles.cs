@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
     class Styles
     {
@@ -30,8 +30,6 @@ namespace Unity.VersionControl.Git
                            CommitAreaPadding = 5f,
                            PublishViewSpacingHeight = 5f,
                            MinCommitTreePadding = 20f,
-                           FoldoutWidth = 11f,
-                           FoldoutIndentation = -2f,
                            TreePadding = 12f,
                            TreeIndentation = 12f,
                            TreeRootIndentation = -5f,
@@ -50,6 +48,11 @@ namespace Unity.VersionControl.Git
                            GitIgnoreRulesEffectRatio = .2f,
                            GitIgnoreRulesFileRatio = .3f,
                            GitIgnoreRulesLineRatio = .5f;
+
+        const int
+            FoldoutContentRightPadding = 6,
+            FoldoutContentBottomPadding = 4,
+            FoldoutIndentation = 15;
 
         public const int HalfSpacing = (int)(BaseSpacing / 2);
 
@@ -752,7 +755,7 @@ namespace Unity.VersionControl.Git
                 return boldCenteredLabel;
             }
         }
-        
+
         public static GUIStyle CommitDescriptionFieldStyle
         {
             get
@@ -1168,6 +1171,86 @@ namespace Unity.VersionControl.Git
             }
         }
 
+        private static GUIStyle indentedBox;
+        public static GUIStyle IndentedBox
+        {
+            get
+            {
+                if (indentedBox == null)
+                {
+                    indentedBox = new GUIStyle
+                    {
+                        padding = new RectOffset(FoldoutIndentation, 0, 0, 0),
+                    };
+                }
+
+                return indentedBox;
+            }
+        }
+
+        private static GUIStyle foldoutContent;
+        public static GUIStyle FoldoutContent
+        {
+            get
+            {
+                if (foldoutContent == null)
+                {
+                    foldoutContent = new GUIStyle
+                    {
+                        padding = new RectOffset(FoldoutIndentation, FoldoutContentRightPadding, 0, FoldoutContentBottomPadding),
+                    };
+                }
+
+                return foldoutContent;
+            }
+        }
+
         private static string GetIconName(string name) => Utility.IsDarkTheme ? name + "-light" : name;
+    }
+
+    public static partial class Controls
+    {
+        public static bool Foldout(bool value, string label)
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUILayout.BeginHorizontal();
+
+            var ret = EditorGUILayout.Toggle(value, Styles.Foldout);
+
+            EditorGUILayout.EndHorizontal();
+            EditorGUILayout.EndVertical();
+
+            var rect = GUILayoutUtility.GetLastRect();
+            rect.x += 20;
+            rect.width -= 20;
+
+            EditorGUI.LabelField(rect, label, Styles.BoldLabel);
+
+            return ret;
+        }
+
+        public static bool FoldoutScope(bool open, string title, Action draw)
+        {
+            var ret = Foldout(open, title);
+
+            if (ret)
+            {
+                GUILayout.BeginVertical(Styles.FoldoutContent, GUILayout.ExpandWidth(true));
+                draw();
+                GUILayout.EndVertical();
+            }
+
+            return ret;
+        }
+
+        public static void DoControl<T>(T val, Func<T, T> draw, Action<T> update)
+        {
+            EditorGUI.BeginChangeCheck();
+            T updated = draw(val);
+            if (EditorGUI.EndChangeCheck())
+            {
+                update(updated);
+            }
+        }
     }
 }

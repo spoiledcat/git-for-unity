@@ -1,65 +1,90 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
-    public class HierarchyWindowInterface
+    public static class HierarchyWindowInterface
     {
+        private static Dictionary<int, Texture2D> iconCache;
+        private static float rightEdge;
+
         public static void Initialize()
         {
+            iconCache = new Dictionary<int, Texture2D>();
             EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItemTryToDrawStatusIcon;
         }
 
         private static void OnHierarchyItemTryToDrawStatusIcon(int instanceID, Rect selectionRect)
         {
-            if (!ApplicationConfiguration.AreHierarchyIconsTurnedOn)
+            if (!ApplicationConfiguration.HierarchyIconsEnabled)
                 return;
 
-            string guid;
-            GameObject hierarchyGO = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
-            if(!hierarchyGO)
+            if (!iconCache.TryGetValue(instanceID, out Texture2D texture))
             {
-                // if no Object has been returned by the InstanceIDToObject() method, then it is possible, that it is a Scene
-                string scenePath = "";
-                for (int i = 0; i < SceneManager.sceneCount; i++)
+                string guid = null;
+                GameObject hierarchyGO = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+                if (!hierarchyGO)
                 {
-                    Scene scene = SceneManager.GetSceneAt(i);
-                    if (scene.GetHashCode() == instanceID)
+                    // if no Object has been returned by the InstanceIDToObject() method, then it is possible, that it is a Scene
+                    string scenePath = "";
+                    for (int i = 0; i < SceneManager.sceneCount; i++)
                     {
-                        scenePath = scene.path;
-                        break;
+                        Scene scene = SceneManager.GetSceneAt(i);
+                        if (scene.GetHashCode() == instanceID)
+                        {
+                            scenePath = scene.path;
+                            break;
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(scenePath))
+                    {
+                        iconCache.Add(instanceID, null);
+                        return;
+                    }
+
+                    guid = AssetDatabase.AssetPathToGUID(scenePath);
+                    rightEdge = selectionRect.x;
+                }
+                else
+                {
+                    if (PrefabUtility.GetNearestPrefabInstanceRoot(hierarchyGO) == hierarchyGO)
+                    {
+                        GameObject prefab = PrefabUtility.GetCorrespondingObjectFromOriginalSource(hierarchyGO);
+                        if (prefab)
+                        {
+                            AssetDatabase.TryGetGUIDAndLocalFileIdentifier(prefab, out guid, out long _);
+                        }
                     }
                 }
 
-                if (string.IsNullOrEmpty(scenePath))
-                    return;
+                if (guid != null)
+                {
+                    texture = ProjectWindowInterface.GetStatusIconForAssetGUID(guid);
+                }
 
-                guid = AssetDatabase.AssetPathToGUID(scenePath);
-            }
-            else
-            {
-                if (hierarchyGO != PrefabUtility.GetNearestPrefabInstanceRoot(hierarchyGO))
-                    return;
-
-                GameObject prefab = PrefabUtility.GetCorrespondingObjectFromOriginalSource(hierarchyGO);
-                if (!prefab)
-                    return;
-
-                if (!AssetDatabase.TryGetGUIDAndLocalFileIdentifier(prefab, out guid, out long localId))
-                    return;
+                iconCache.Add(instanceID, texture);
             }
 
-
-            Texture2D texture = ProjectWindowInterface.GetStatusIconForAssetGUID(guid);
             if (texture == null)
                 return;
 
             // place the icon to the right of the list:
             Rect r = new Rect(selectionRect);
-            r.x = ApplicationConfiguration.AreHierarchyIconsIndented ? r.width + 10 : r.xMax - 40;
-            r.x -= ApplicationConfiguration.HierarchyIconsOffset;
             r.width = 18;
+
+            if (ApplicationConfiguration.HierarchyIconsAlignment == ApplicationConfiguration.HierarchyIconAlignment.Right)
+            {
+                r.x = ApplicationConfiguration.HierarchyIconsIndented ? selectionRect.width + 6 : selectionRect.xMax - 40;
+                r.x -= ApplicationConfiguration.HierarchyIconsOffsetRight - 22f;
+            }
+            else
+            {
+                r.x = rightEdge - r.width - 22f;
+                r.x += ApplicationConfiguration.HierarchyIconsOffsetLeft;
+            }
 
             GUI.Label(r, texture);
         }

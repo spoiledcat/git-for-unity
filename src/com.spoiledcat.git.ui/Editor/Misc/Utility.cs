@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using Unity.Editor.Tasks.Logging;
+using Unity.VersionControl.Git.UI;
 
 namespace Unity.VersionControl.Git
 {
@@ -31,12 +32,12 @@ namespace Unity.VersionControl.Git
 
             if (!filename.EndsWith(".png"))
                 filename += ".png";
-                
+
             var key = invertColors ? "dark_" + filename : "light_" + filename;
 
-            if (iconCache.ContainsKey(key))
+            if (iconCache.TryGetValue(key, out var icon))
             {
-                return iconCache[key];
+                return icon;
             }
 
             Texture2D texture2D;

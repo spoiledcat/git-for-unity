@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.Editor.Tasks;
 using UnityEngine;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
     interface IView : IUIEmpty, IUIProgress
     {

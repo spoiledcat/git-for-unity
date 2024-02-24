@@ -8,11 +8,11 @@ using UnityEditor;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
     using IO;
 
-    class ProjectWindowInterface : AssetPostprocessor
+    class ProjectWindowInterface
     {
         private const string AssetsMenuRequestLock = "Assets/Request Lock";
         private const string AssetsMenuReleaseLock = "Assets/Release Lock";
@@ -20,7 +20,7 @@ namespace Unity.VersionControl.Git
 
         private static List<GitStatusEntry> entries = new List<GitStatusEntry>();
         private static List<GitLock> locks = new List<GitLock>();
-        private static List<string> guids = new List<string>();
+        private static Dictionary<string, int> guids = new Dictionary<string, int>();
         private static List<string> guidsLocks = new List<string>();
         private static string currentUsername;
 
@@ -56,7 +56,9 @@ namespace Unity.VersionControl.Git
 
         public static Texture2D GetStatusIconForAssetGUID(string guid)
         {
-            var index = guids.IndexOf(guid);
+            if (!guids.TryGetValue(guid, out int index))
+                return null;
+
             var indexLock = guidsLocks.IndexOf(guid);
 
             if (index < 0 && indexLock < 0)
@@ -92,7 +94,7 @@ namespace Unity.VersionControl.Git
             if (entries == null)
                 entries = new List<GitStatusEntry>();
             if (guids == null)
-                guids = new List<string>();
+                guids = new Dictionary<string, int>();
             if (guidsLocks == null)
                 guidsLocks = new List<string>();
             return IsInitialized;
@@ -318,12 +320,10 @@ namespace Unity.VersionControl.Git
 
         private static void OnStatusUpdate()
         {
-            guids.Clear();
             for (var index = 0; index < entries.Count; ++index)
             {
-                var path = entries[index].ProjectPath;
-                var guid = AssetDatabase.AssetPathToGUID(path);
-                guids.Add(guid);
+                var guid = AssetDatabase.AssetPathToGUID(entries[index].ProjectPath);
+                guids[guid] = index;
             }
 
             AssetDatabase.Refresh();
@@ -332,6 +332,9 @@ namespace Unity.VersionControl.Git
         private static void OnProjectWindowItemGUI(string guid, Rect itemRect)
         {
             if (!EnsureInitialized())
+                return;
+
+            if (!ApplicationConfiguration.ProjectIconsEnabled)
                 return;
 
             if (Event.current.type != EventType.Repaint || string.IsNullOrEmpty(guid))

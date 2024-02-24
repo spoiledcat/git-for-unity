@@ -1,13 +1,11 @@
 #pragma warning disable 649
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Editor.Tasks;
 using Unity.Editor.Tasks.Logging;
-using Unity.VersionControl.Git;
 using UnityEditor;
 using UnityEngine;
 
-namespace Unity.VersionControl.Git
+namespace Unity.VersionControl.Git.UI
 {
     using IO;
 

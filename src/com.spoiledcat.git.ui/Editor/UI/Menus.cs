@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 namespace Unity.VersionControl.Git.UI
@@ -11,7 +6,7 @@ namespace Unity.VersionControl.Git.UI
     using IO;
 
     [InitializeOnLoad]
-    class Menus : ScriptableObject
+    class Menus
     {
 #if GFU_DEBUG_BUILD
 

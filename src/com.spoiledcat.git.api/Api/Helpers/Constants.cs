@@ -4,16 +4,16 @@ namespace Unity.VersionControl.Git
 {
     public static class Constants
     {
-        public const string GuidKey = "Guid";
-        public const string MetricsKey = "MetricsEnabled";
-        public const string UsageFile = "metrics.json";
         public const string GitInstallPathKey = "GitInstallPath";
         public const string TraceLoggingKey = "EnableTraceLogging";
         public const string WebTimeoutKey = "WebTimeout";
         public const string GitTimeoutKey = "GitTimeout";
-        public const string HierarchyIconsVisibilityToggleKey = "AreHierarchyIconsTurnedOn";
-        public const string HierarchyIconsIndentToggleKey = "IdentHierarchyIcons";
-        public const string HierarchyIconsOffset = "HierarchyIconsOffset";
+        public const string HierarchyIconsEnabledKey = "HierarchyIconsEnabled";
+        public const string HierarchyIconsIndentedKey = "HierarchyIconsIndented";
+        public const string HierarchyIconsOffsetRightKey = "HierarchyIconsOffsetRight";
+        public const string HierarchyIconsOffsetLeftKey = "HierarchyIconsOffsetLeft";
+        public const string HierarchyIconsAlignmentKey = "HierarchyIconsAlignment";
+        public const string ProjectIconsEnabledKey = "ProjectIconsEnabled";
         public const string Iso8601Format = @"yyyy-MM-dd\THH\:mm\:ss.fffzzz";
         public const string Iso8601FormatZ = @"yyyy-MM-dd\THH\:mm\:ss\Z";
         public static readonly string[] Iso8601Formats = {
