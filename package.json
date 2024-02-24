@@ -2,7 +2,7 @@
   "name": "com.spoiledcat.git",
   "displayName": "Git for Unity",
   "description": "Git for Unity integrates source control into your work with friendly and accessible tools and workflows.",
-  "version": "1.0.31",
+  "version": "1.0.32",
   "license" : "MIT",
     "author": {
       "email": "shana@spoiledcat.net"
@@ -11,9 +11,9 @@
       "type" : "git",
       "url": "git@github.com/spoiledcat/git-for-unity.git",
       "directory": "src/com.spoiledcat.git",
-      "revision": "413898c192a08447dfe3804330480aa8fb468fbf"
+      "revision": "f21f3f91484ff8b87205949c3f37cf2fdbcc1e02"
     },
     "relatedPackages": {
-      "com.spoiledcat.git.tests": "1.0.31"
+      "com.spoiledcat.git.tests": "1.0.32"
     }
 }
