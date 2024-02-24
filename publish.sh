@@ -77,9 +77,13 @@ function updateBranchAndPush() {
   cp -R $pkgdir/* .
   git add .
   git commit -m "$msg"
-  git tag $tag
   git push origin HEAD:$branch/latest
-  git push origin $tag
+
+  # for now, just tag the git one so openupm picks it up, until https://github.com/openupm/openupm/pull/4746 is merged
+  if [[ x"$tag" =~ x"com.spoiledcat.git-" ]];then
+    git tag $tag
+    git push origin $tag
+  fi
 
   if [[ $publ -eq 1 ]]; then
       echo "Publishing branch: $branch/$VERSION"
