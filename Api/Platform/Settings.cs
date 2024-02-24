@@ -172,9 +172,8 @@ namespace Unity.VersionControl.Git
                 if (c != null)
                 {
                     // upgrade from old format
-                    if (c.ContainsKey("GitHubUnity"))
+                    if (c.TryGetValue("GitHubUnity", out var oldRoot))
                     {
-                        var oldRoot = c["GitHubUnity"];
                         cacheData = oldRoot.FromObject<Dictionary<string, object>>();
                         SaveToCache(path);
                     }
