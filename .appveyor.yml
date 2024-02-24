@@ -41,7 +41,7 @@ before_build:
 - npm --version
 - ps: |
     $env:isPublic=0
-    if ($env:APPVEYOR_REPO_TAG -eq "true") {
+    if ($env:APPVEYOR_REPO_TAG -eq "true" -and $env:APPVEYOR_REPO_TAG_NAME.StartsWith("v")) {
       $env:isPublic=1
     }
 
