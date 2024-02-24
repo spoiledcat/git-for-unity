@@ -2,7 +2,7 @@
   "name": "com.spoiledcat.git.api",
   "displayName": "Git for Unity API",
   "description": "Git for Unity API library. This package contains all the functionality of Git for Unity, without any UI. Git for Unity integrates source control into your work with friendly and accessible tools and workflows.",
-  "version": "1.0.30",
+  "version": "1.0.31",
   "license" : "MIT",
     "author": {
       "email": "shana@spoiledcat.net"
@@ -11,9 +11,9 @@
       "type" : "git",
       "url": "git@github.com/spoiledcat/git-for-unity.git",
       "directory": "src/com.spoiledcat.git.api",
-      "revision": "a4aaf6406a7a8b00b731b8ac224ef43d3e01c4a4"
+      "revision": "413898c192a08447dfe3804330480aa8fb468fbf"
     },
     "relatedPackages": {
-      "com.spoiledcat.git.api.tests": "1.0.30"
+      "com.spoiledcat.git.api.tests": "1.0.31"
     }
 }
