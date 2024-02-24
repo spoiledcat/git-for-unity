@@ -6,6 +6,8 @@ This is a fork of [Git for Unity](https://github.com/unity-technologies/git-for-
 
 [![Build status](https://ci.appveyor.com/api/projects/status/8l2f8numfkp6yhnw?svg=true)](https://ci.appveyor.com/project/shana/git-for-unity)
 
+![spinner](https://raw.githubusercontent.com/spoiledcat/git-for-unity/main/spinner.gif)
+
 ## How to Install
 
 ### Quick install
