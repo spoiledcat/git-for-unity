@@ -29,6 +29,7 @@ environment:
 
 install:
 - |
+  sudo apt install -y jq
   mkdir -p lib
   pushd lib
   curl -fSL --output deps.zip https://files.spoiledcat.com/deps.zip
@@ -60,6 +61,17 @@ test:
     - DoNotRunOnAppVeyor
 
 after_test:
+- ./pack.sh -c $CONFIGURATION --ispublic $isPublic
+
+artifacts:
+- path: upm-ci~\packages\*
+  name: npm
+- path: build\npm\*
+  name: npm
+- path: build\nuget\**\*nupkg
+  name: nuget
+
+deploy_script:
 - ps: |
     if ($env:GHPKEY) {
       $fileContent = "-----BEGIN OPENSSH PRIVATE KEY-----`n"
@@ -72,22 +84,13 @@ after_test:
   if [[ x"${GHPKEY:-}" != x"" ]]; then
     chmod 600 /home/appveyor/.ssh/id_rsa
   fi
+  ssh-keygen -R github.com
+  curl -L https://api.github.com/meta | jq -r '.ssh_keys | .[]' | sed -e 's/^/github.com /' >> ~/.ssh/known_hosts
 
-- ./pack.sh -c $CONFIGURATION --ispublic $isPublic
-
-artifacts:
-- path: upm-ci~\packages\*
-  name: npm
-- path: build\npm\*
-  name: npm
-- path: build\nuget\**\*nupkg
-  name: nuget
-
-deploy_script:
-  - |
-    if [[ x"${APPVEYOR_REPO_BRANCH:-}" == x"main" ]];then
-      ./publish.sh --branches --version $APPVEYOR_BUILD_VERSION --ispublic $isPublic
-    fi
-    if [[ $isPublic -eq 1 ]];then
-      ./publish.sh --npm
-    fi
+- |
+  if [[ x"${APPVEYOR_REPO_BRANCH:-}" == x"main" ]];then
+    ./publish.sh --branches --version $APPVEYOR_BUILD_VERSION --ispublic $isPublic
+  fi
+  if [[ $isPublic -eq 1 ]];then
+    ./publish.sh --npm
+  fi
