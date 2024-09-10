@@ -6,7 +6,7 @@ namespace Unity.VersionControl.Git
         public const int DefaultGitTimeout = 5000;
         public static int WebTimeout { get; set; } = DefaultWebTimeout;
         public static int GitTimeout { get; set; } = DefaultGitTimeout;
-        public static bool HierarchyIconsEnabled { get; set; } = true;
+        public static bool HierarchyIconsEnabled { get; set; } = false;
         public static bool HierarchyIconsIndented { get; set; } = false;
         public static int HierarchyIconsOffsetRight { get; set; } = 0;
         public static int HierarchyIconsOffsetLeft { get; set; } = 0;
