@@ -1,6 +1,7 @@
 using System;
 using Unity.Editor.Tasks;
 using Unity.Editor.Tasks.Logging;
+using Unity.VersionControl.Git.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -14,6 +15,8 @@ namespace Unity.VersionControl.Git.UI
 
         private const string GitRepositoryRemoteLabel = "Remote";
         private const string GitRepositorySave = "Save Repository";
+        private const string InitializeGitAttributesLabel = "Setup .gitattributes";
+        private const string SetupUnityMergeLabel = "Setup Unity Yaml Merge";
 
         private const string GeneralSettingsTitle = "General";
 
@@ -223,6 +226,56 @@ namespace Unity.VersionControl.Git.UI
                         }
                     }
                     EditorGUI.EndDisabledGroup();
+
+                    if (GUILayout.Button(InitializeGitAttributesLabel, GUILayout.ExpandWidth(false)))
+                    {
+                        bool doit = true;
+                        var gitAttrs = Repository.LocalPath.Combine(".gitattributes");
+                        if (gitAttrs.FileExists())
+                        {
+                            doit = EditorUtility.DisplayDialog("Overwrite .gitattributes",
+                                "A .gitattributes file already exists. Are you sure you want to overwrite it?",
+                                "Overwrite", "Cancel");
+                        }
+
+                        if (doit)
+                        {
+                            try
+                            {
+                                isBusy = true;
+                                SPath unityYamlMergeExec = this.Environment.UnityApplicationContents.ToSPath().Combine("Tools", "UnityYAMLMerge" + Environment.ExecutableExtension);
+                                Repository.UpdateGitAttributes()
+                                    .Then(Repository.UpdateMergeSettings(unityYamlMergeExec))
+                                    .FinallyInUI((_, __) =>
+                                    {
+                                        isBusy = false;
+                                        Redraw();
+                                    }).Start();
+                            }
+                            catch (Exception ex)
+                            {
+                                Logger.Error(ex);
+                            }
+                        }
+                    }
+
+                    if (GUILayout.Button(SetupUnityMergeLabel, GUILayout.ExpandWidth(false)))
+                    {
+                        try
+                        {
+                            isBusy = true;
+                            SPath unityYamlMergeExec = this.Environment.UnityApplicationContents.ToSPath().Combine("Tools", "UnityYAMLMerge" + Environment.ExecutableExtension);
+                            Repository.UpdateMergeSettings(unityYamlMergeExec).FinallyInUI((_, __) => {
+                                isBusy = false;
+                                Redraw();
+                            }).Start();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex);
+                        }
+                    }
                 }
                 EditorGUI.EndDisabledGroup();
             });

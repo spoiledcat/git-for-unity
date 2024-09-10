@@ -149,7 +149,19 @@ namespace Unity.Editor.Tasks
 		/// <inheritdoc />
 		public override void RunSynchronously()
 		{
-			RaiseOnStart();
+            if (!(DependsOn?.IsCompleted ?? true))
+            {
+                if (DependsOn is ITask<T>)
+                {
+                    ((ITask<T>) DependsOn).RunSynchronously();
+                }
+                else
+                {
+                    DependsOn.RunSynchronously();
+                }
+            }
+
+            RaiseOnStart();
 			Token.ThrowIfCancellationRequested();
 			var previousIsSuccessful = previousSuccess.HasValue ? previousSuccess.Value : (DependsOn?.Successful ?? true);
 

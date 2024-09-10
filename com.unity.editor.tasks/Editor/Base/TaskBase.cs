@@ -529,6 +529,11 @@ namespace Unity.Editor.Tasks
 		/// <inheritdoc />
 		public virtual void RunSynchronously()
 		{
+            if (!(DependsOn?.IsCompleted ?? true))
+            {
+                DependsOn.RunSynchronously();
+            }
+
 			RaiseOnStart();
 			Token.ThrowIfCancellationRequested();
 			var previousIsSuccessful = previousSuccess ?? (DependsOn?.Successful ?? true);
@@ -1094,7 +1099,19 @@ namespace Unity.Editor.Tasks
 		/// <inheritdoc />
 		public new virtual TResult RunSynchronously()
 		{
-			RaiseOnStart();
+            if (!(DependsOn?.IsCompleted ?? true))
+            {
+                if (DependsOn is ITask<TResult>)
+                {
+                    ((ITask<TResult>) DependsOn).RunSynchronously();
+                }
+                else
+                {
+                    DependsOn.RunSynchronously();
+                }
+            }
+
+            RaiseOnStart();
 			Token.ThrowIfCancellationRequested();
 			var previousIsSuccessful = previousSuccess ?? (DependsOn?.Successful ?? true);
 			TResult ret = default;
@@ -1219,6 +1236,26 @@ namespace Unity.Editor.Tasks
 		/// <inheritdoc />
 		public override TResult RunSynchronously()
 		{
+            if (!(DependsOn?.IsCompleted ?? true))
+            {
+                if (DependsOn is ITask<T, TResult>)
+                {
+                    ((ITask<T, TResult>) DependsOn).RunSynchronously();
+                }
+                else if (DependsOn is ITask<T>)
+                {
+                    ((ITask<T>) DependsOn).RunSynchronously();
+                }
+                else if (DependsOn is ITask<TResult>)
+                {
+                    ((ITask<TResult>) DependsOn).RunSynchronously();
+                }
+                else
+                {
+                    DependsOn.RunSynchronously();
+                }
+            }
+
 			RaiseOnStart();
 			Token.ThrowIfCancellationRequested();
 			var previousIsSuccessful = previousSuccess ?? (DependsOn?.Successful ?? true);

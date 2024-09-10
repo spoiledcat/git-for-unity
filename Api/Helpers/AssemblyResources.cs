@@ -115,6 +115,14 @@ namespace Unity.VersionControl.Git
                 return possiblePath;
             }
 
+            // Try on the UI side, this might be a two package api+ui type of installation
+            basePath = "Editor";
+            possiblePath = environment.ExtensionInstallPath.Parent.Combine(basePath, type + "~", os, resource);
+            if (possiblePath.FileExists())
+            {
+                return possiblePath;
+            }
+
             return SPath.Default;
         }
 
