@@ -281,7 +281,7 @@ namespace Unity.VersionControl.Git.UI
         {
             var rightFile = node.Path.ToSPath();
             var tmpDir = Manager.Environment.UnityProjectPath.ToSPath().Combine("Temp", "ghu-diffs").EnsureDirectoryExists();
-            var leftFile = tmpDir.Combine(rightFile.FileName + "_" + Repository.CurrentHead + rightFile.ExtensionWithDot);
+            var leftFile = tmpDir.Combine(rightFile.FileNameWithoutExtension + "_" + Repository.CurrentHead + rightFile.ExtensionWithDot);
             return new GitProcessTask(Platform, "show HEAD:\"" + rightFile.ToString(SlashMode.Forward) + "\"")
                    .Configure(Manager.ProcessManager)
                    .Catch(_ => true)
@@ -307,7 +307,7 @@ namespace Unity.VersionControl.Git.UI
                        {
                            rightFolder.Combine(rightFile).WriteAllText(rightFile.ReadAllText());
                        }
-                       return new SPath[] { leftFolder, rightFolder };
+                       return new SPath[] { leftFolder.Combine(rightFile), rightFolder.Combine(rightFile) };
                    });
         }
 
