@@ -11,8 +11,8 @@
 #pragma warning disable CA2243
 
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.33.38810")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.33+9a975ee591")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.39.43242")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.39+eaa8421fd6")]
 #if NETSTANDARD || NETFRAMEWORK || NETCOREAPP
 [System.CodeDom.Compiler.GeneratedCode("Nerdbank.GitVersioning.Tasks","3.4.255.64262")]
 #endif
@@ -21,13 +21,13 @@
 #endif
 internal static partial class ThisAssembly {
     internal const string AssemblyConfiguration = "Release";
-    internal const string AssemblyFileVersion = "1.0.33.38810";
-    internal const string AssemblyInformationalVersion = "1.0.33+9a975ee591";
+    internal const string AssemblyFileVersion = "1.0.39.43242";
+    internal const string AssemblyInformationalVersion = "1.0.39+eaa8421fd6";
     internal const string AssemblyName = "SpoiledCat.Git";
     internal const string AssemblyTitle = "SpoiledCat.Git";
     internal const string AssemblyVersion = "1.0.0.0";
-    internal static readonly System.DateTime GitCommitDate = new System.DateTime(638444008650000000L, System.DateTimeKind.Utc);
-    internal const string GitCommitId = "9a975ee591b80d5a0361ee61e729f9cbd5f460e4";
+    internal static readonly System.DateTime GitCommitDate = new System.DateTime(638615748260000000L, System.DateTimeKind.Utc);
+    internal const string GitCommitId = "eaa8421fd67be2716e914175c32ad2d074c32f4a";
     internal const bool IsPrerelease = false;
     internal const bool IsPublicRelease = true;
     internal const string RootNamespace = "Git";
