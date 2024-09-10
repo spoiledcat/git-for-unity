@@ -145,6 +145,20 @@ fi
 
 if [[ x"$NPM" == x"1" ]]; then
 
+  #if in appveyor, only publish if public or in main
+  if [[ x"${APPVEYOR:-}" != x"" ]]; then
+    if [[ x"$PUBLIC" != x"1" ]]; then
+      if [[ x"${APPVEYOR_PULL_REQUEST_NUMBER:-}" != x"" ]]; then
+        echo "Skipping publishing non-public packages in CI on pull request builds"
+        exit 0
+      fi
+      if [[ x"${APPVEYOR_REPO_BRANCH:-}" != x"main" ]]; then
+        echo "Skipping publishing non-public packages in CI on pushes to branches other than main"
+        exit 0
+      fi
+    fi
+  fi
+
   if [[ x"${NPM_TOKEN:-}" == x"" ]]; then
     echo "Can't publish without a NPM_TOKEN environment variable" >&2
     popd >/dev/null 2>&1

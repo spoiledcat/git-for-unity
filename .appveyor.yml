@@ -61,17 +61,6 @@ test:
     - DoNotRunOnAppVeyor
 
 after_test:
-- ./pack.sh -c $CONFIGURATION --ispublic $isPublic
-
-artifacts:
-- path: upm-ci~\packages\*
-  name: npm
-- path: build\npm\*
-  name: npm
-- path: build\nuget\**\*nupkg
-  name: nuget
-
-deploy_script:
 - ps: |
     if ($env:GHPKEY) {
       $fileContent = "-----BEGIN OPENSSH PRIVATE KEY-----`n"
@@ -87,10 +76,14 @@ deploy_script:
   ssh-keygen -R github.com
   curl -L https://api.github.com/meta | jq -r '.ssh_keys | .[]' | sed -e 's/^/github.com /' >> ~/.ssh/known_hosts
 
-- |
-  if [[ x"${APPVEYOR_REPO_BRANCH:-}" == x"main" ]];then
-    ./publish.sh --branches --version $APPVEYOR_BUILD_VERSION --ispublic $isPublic
-  fi
-  if [[ $isPublic -eq 1 ]];then
-    ./publish.sh --npm
-  fi
+- ./pack.sh -c $CONFIGURATION --ispublic $isPublic
+- ./publish.sh --branches --version $APPVEYOR_BUILD_VERSION --ispublic $isPublic
+- ./publish.sh --npm --ispublic $isPublic
+
+artifacts:
+- path: upm-ci~\packages\*
+  name: npm
+- path: build\npm\*
+  name: npm
+- path: build\nuget\**\*nupkg
+  name: nuget
