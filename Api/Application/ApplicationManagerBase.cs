@@ -249,10 +249,9 @@ namespace Unity.VersionControl.Git
                 .Start();
         }
 
-        private void ConfigureMergeSettings(string keyName = null)
+        private void ConfigureMergeSettings(string keyName = "unityyamlmerge")
         {
-            var unityYamlMergeExec =
-                Environment.UnityApplicationContents.ToSPath().Combine("Tools", "UnityYAMLMerge" + Environment.ExecutableExtension);
+            SPath unityYamlMergeExec = Environment.UnityApplicationContents.ToSPath().Combine("Tools", "UnityYAMLMerge" + Environment.ExecutableExtension);
 
             var yamlMergeCommand = $"'{unityYamlMergeExec}' merge -h -p --force %O %B %A %A";
 
@@ -276,18 +275,6 @@ namespace Unity.VersionControl.Git
 
         private void UpdateMergeSettings()
         {
-            var gitAttributesPath = Environment.RepositoryPath.Combine(".gitattributes");
-            if (gitAttributesPath.FileExists())
-            {
-                var readAllText = gitAttributesPath.ReadAllText();
-                var containsLegacyUnityYamlMergeError = readAllText.Contains("unityamlmerge");
-
-                if (containsLegacyUnityYamlMergeError)
-                {
-                    ConfigureMergeSettings("unityamlmerge");
-                }
-            }
-
             GitClient.UnSetConfig("merge.unityyamlmerge.cmd", GitConfigSource.Local).Catch(e => {
                 Logger.Error(e, "Error removing merge.unityyamlmerge.cmd");
                 return true;

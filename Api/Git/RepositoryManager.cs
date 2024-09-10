@@ -56,6 +56,7 @@ namespace Unity.VersionControl.Git
         IGitConfig Config { get; }
         IGitClient GitClient { get; }
         bool IsBusy { get; }
+        IPlatform Platform { get; }
     }
 
     public interface IRepositoryPathConfiguration
@@ -129,6 +130,8 @@ namespace Unity.VersionControl.Git
 
     public class RepositoryManager : IRepositoryManager
     {
+        public IPlatform Platform { get; }
+
         private readonly IGitConfig config;
         private readonly IGitClient gitClient;
         private readonly IRepositoryPathConfiguration repositoryPaths;
@@ -150,12 +153,14 @@ namespace Unity.VersionControl.Git
 
         public event Action<CacheType> DataNeedsRefreshing;
 
-        public RepositoryManager(ITaskManager taskManager,
+        public RepositoryManager(IPlatform platform,
+            ITaskManager taskManager,
             IGitConfig gitConfig,
             IRepositoryWatcher repositoryWatcher,
             IGitClient gitClient,
             IRepositoryPathConfiguration repositoryPaths)
         {
+            this.Platform = platform;
             this.taskManager = taskManager;
             cts = CancellationTokenSource.CreateLinkedTokenSource(taskManager.Token);
             this.repositoryPaths = repositoryPaths;
@@ -181,7 +186,7 @@ namespace Unity.VersionControl.Git
 
             var repositoryWatcher = new RepositoryWatcher(platform, repositoryPathConfiguration, taskManager.Token);
 
-            return new RepositoryManager(taskManager, gitConfig, repositoryWatcher,
+            return new RepositoryManager(platform, taskManager, gitConfig, repositoryWatcher,
                 gitClient, repositoryPathConfiguration);
         }
 

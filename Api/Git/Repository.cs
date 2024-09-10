@@ -213,6 +213,55 @@ namespace Unity.VersionControl.Git
             }
         }
 
+        public ITask ConfigureMergeSettings(SPath unityYamlMergeExec, string keyName = "unityyamlmerge")
+        {
+            var yamlMergeCommand = $"'{unityYamlMergeExec}' merge -h -p --force %O %B %A %A";
+
+            keyName = keyName ?? "unityyamlmerge";
+
+            var task1 = repositoryManager.GitClient.SetConfig($"merge.{keyName}.name", "Unity SmartMerge (UnityYamlMerge)", GitConfigSource.Local).Catch(e => {
+                Logger.Error(e, "Error setting merge." + keyName + ".name");
+                return true;
+            });
+
+            var task2 = repositoryManager.GitClient.SetConfig($"merge.{keyName}.driver", yamlMergeCommand, GitConfigSource.Local).Catch(e => {
+                Logger.Error(e, "Error setting merge." + keyName + ".driver");
+                return true;
+            });
+
+            var task3 = repositoryManager.GitClient.SetConfig($"merge.{keyName}.recursive", "binary", GitConfigSource.Local).Catch(e => {
+                Logger.Error(e, "Error setting merge." + keyName + ".recursive");
+                return true;
+            });
+
+            return task1.Then(task2).Then(task3);
+        }
+
+        public ITask UpdateMergeSettings(SPath unityYamlMergeExec)
+        {
+            var task1 = repositoryManager.GitClient.UnSetConfig("merge.unityyamlmerge.cmd", GitConfigSource.Local).Catch(e => {
+                Logger.Error(e, "Error removing merge.unityyamlmerge.cmd");
+                return true;
+            });
+
+            var task2 = repositoryManager.GitClient.UnSetConfig("merge.unityyamlmerge.trustExitCode", GitConfigSource.Local).Catch(e => {
+                Logger.Error(e, "Error removing merge.unityyamlmerge.trustExitCode");
+                return true;
+            });
+
+            return task1.Then(task2).Then(ConfigureMergeSettings(unityYamlMergeExec));
+        }
+
+        public ITask UpdateGitAttributes()
+        {
+            return repositoryManager.Platform.TaskManager.With(() => {
+                var gitAttrs = LocalPath.Combine(".gitattributes");
+                AssemblyResources.ToFile(ResourceType.Generic, "gitattributes", gitAttrs,
+                    repositoryManager.Platform.Environment);
+            });
+        }
+
+
         private void CacheHasBeenInvalidated(CacheType cacheType)
         {
             if (repositoryManager == null)

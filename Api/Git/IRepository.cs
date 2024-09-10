@@ -88,5 +88,8 @@ namespace Unity.VersionControl.Git
         ITask UpdateFileLog(string path);
         void Refresh(CacheType cacheType);
         event Action<IProgress> OnProgress;
+        ITask ConfigureMergeSettings(SPath unityYamlMergeExec, string keyName = "unityyamlmerge");
+        ITask UpdateMergeSettings(SPath unityYamlMergeExec);
+        ITask UpdateGitAttributes();
     }
 }
