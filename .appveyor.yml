@@ -49,6 +49,9 @@ before_build:
 build_script:
 - for i in 1 2 3 4 5; do dotnet restore -v Minimal && break || sleep 1; done
 - ./build.sh -c $CONFIGURATION --ispublic $isPublic
+- ps: |
+    $version = get-content .\packageversion
+    Update-AppveyorBuild -Version "$version"
 
 test:
   assemblies:
@@ -77,7 +80,7 @@ after_test:
   curl -L https://api.github.com/meta | jq -r '.ssh_keys | .[]' | sed -e 's/^/github.com /' >> ~/.ssh/known_hosts
 
 - ./pack.sh -c $CONFIGURATION --ispublic $isPublic
-- ./publish.sh --branches --version $APPVEYOR_BUILD_VERSION --ispublic $isPublic
+- ./publish.sh --branches --ispublic $isPublic
 - ./publish.sh --npm --ispublic $isPublic
 
 artifacts:

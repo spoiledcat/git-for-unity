@@ -56,6 +56,9 @@ while (( "$#" )); do
   shift
 done
 
+if [[ x"$VERSION" == x"" ]]; then
+  VERSION=$(cat packageversion)
+fi
 
 function updateBranchAndPush() {
   local branch=$1
@@ -90,16 +93,6 @@ function updateBranchAndPush() {
 }
 
 if [[ x"$BRANCHES" == x"1" ]]; then
-
-  if [[ x"$VERSION" == x"" ]]; then
-    dotnet tool install -v q --tool-path . nbgv || true
-    VERSION=$(./nbgv cloud -s VisualStudioTeamServices --all-vars -p src|grep NBGV_CloudBuildNumber|cut -d']' -f2)
-    _public=$(./nbgv cloud -s VisualStudioTeamServices --all-vars -p src|grep NBGV_PublicRelease|cut -d']' -f2)
-    if [[ x"${_public}" == x"True" ]]; then
-      PUBLIC=1
-    fi
-  fi
-
   srcdir=$DIR/build/packages
   destdir=$( cd .. >/dev/null 2>&1 && pwd )/branches
   test -d $destdir && rm -rf $destdir

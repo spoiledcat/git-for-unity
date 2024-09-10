@@ -100,6 +100,11 @@
       ReplacementText="## [$(NpmVersion)] - $([System.DateTime]::Now.ToString(&quot;yyyy-MM-dd&quot;))"
       Encoding="utf-8-without-bom" />
 
+    <WriteLinesToFile
+      File="$(RepoRoot)packageversion"
+      Lines="$(NpmVersion)"
+      Overwrite="True" />
+
     <Message Condition="'$(FileWasStamped)' == 'true'"
       Importance="High"
       Text="$(AssemblyName) -> $(NuGetPackageVersion)"
