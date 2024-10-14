@@ -69,7 +69,7 @@ namespace Unity.VersionControl.Git.UI
             GitStatusEntry? gitStatusEntry = null;
             GitFileStatus status = GitFileStatus.None;
 
-            if (index >= 0)
+            if (index >= 0 && index < entries.Count)
             {
                 gitStatusEntry = entries[index];
                 status = gitStatusEntry.Value.Status;
