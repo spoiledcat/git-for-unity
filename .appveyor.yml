@@ -65,23 +65,25 @@ test:
 
 after_test:
 - ps: |
+    $env:canPublish=0
     if ($env:GHPKEY) {
       $fileContent = "-----BEGIN OPENSSH PRIVATE KEY-----`n"
       $fileContent += $env:GHPKEY.Replace(' ', "`n")
       $fileContent += "`n-----END OPENSSH PRIVATE KEY-----`n"
       Set-Content \home\appveyor\.ssh\id_rsa $fileContent
+      $env:canPublish=1
     }
 
 - |
   if [[ x"${GHPKEY:-}" != x"" ]]; then
     chmod 600 /home/appveyor/.ssh/id_rsa
+    ssh-keygen -R github.com
+    curl -L https://api.github.com/meta | jq -r '.ssh_keys | .[]' | sed -e 's/^/github.com /' >> ~/.ssh/known_hosts
   fi
-  ssh-keygen -R github.com
-  curl -L https://api.github.com/meta | jq -r '.ssh_keys | .[]' | sed -e 's/^/github.com /' >> ~/.ssh/known_hosts
 
-- ./pack.sh -c $CONFIGURATION --ispublic $isPublic
-- ./publish.sh --branches --ispublic $isPublic
-- ./publish.sh --npm --ispublic $isPublic
+- if [ x"${canPublish}" == x"1" ]; then ./pack.sh -c $CONFIGURATION --ispublic $isPublic;fi
+- if [ x"${canPublish}" == x"1" ]; then ./publish.sh --branches --ispublic $isPublic;fi
+- if [ x"${canPublish}" == x"1" ]; then ./publish.sh --npm --ispublic $isPublic;fi
 
 artifacts:
 - path: upm-ci~\packages\*
