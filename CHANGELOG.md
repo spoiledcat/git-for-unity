@@ -2,5 +2,5 @@
 
 <!-- Do not change the line immediately below this comment, the build system will replace it with the actual version and date. -->
 
-## [1.0.58] - 2025-11-23
+## [1.0.59] - 2025-11-23
 
