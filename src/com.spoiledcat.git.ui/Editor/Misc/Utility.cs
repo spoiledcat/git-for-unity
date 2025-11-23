@@ -103,7 +103,10 @@ namespace Unity.VersionControl.Git
                 if (t != null)
                 {
                     // looking for ImageConversion.LoadImage(this Texture2D tex, byte[] data)
-                    loadImage = t.GetMethods().FirstOrDefault(x => x.Name == "LoadImage" && x.GetParameters().Length == 2);
+                    loadImage = t.GetMethods().FirstOrDefault(x =>
+                        x.Name == "LoadImage" &&
+                        x.GetParameters().Length == 2 &&
+                        x.GetParameters()[1].ParameterType == typeof(byte[]));
                     invokeLoadImage = (tex, ms) =>
                     {
                         loadImage.Invoke(null, new object[] { tex, ms.ToArray() });
