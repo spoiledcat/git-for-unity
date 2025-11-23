@@ -81,7 +81,8 @@ namespace Unity.VersionControl.Git
         {
             // 5.6
             // looking for Texture2D.LoadImage(byte[] data)
-            loadImage = typeof(Texture2D).GetMethods().FirstOrDefault(x => x.Name == "LoadImage" && x.GetParameters().Length == 1);
+            loadImage = typeof(Texture2D).FindMethod("LoadImage", 1, null);
+
             if (loadImage != null)
             {
                 invokeLoadImage = (tex, ms) =>
@@ -103,12 +104,14 @@ namespace Unity.VersionControl.Git
                 if (t != null)
                 {
                     // looking for ImageConversion.LoadImage(this Texture2D tex, byte[] data)
-                    loadImage = t.GetMethods().FirstOrDefault(x => x.Name == "LoadImage" && x.GetParameters().Length == 2);
-                    invokeLoadImage = (tex, ms) =>
+                    loadImage = typeof(Texture2D).FindMethod("LoadImage", 2, new[] {null, typeof(byte[])});
+                    if (loadImage != null)
                     {
-                        loadImage.Invoke(null, new object[] { tex, ms.ToArray() });
-                        return tex;
-                    };
+                        invokeLoadImage = (tex, ms) => {
+                            loadImage.Invoke(null, new object[] { tex, ms.ToArray() });
+                            return tex;
+                        };
+                    }
                 }
             }
 
@@ -116,6 +119,38 @@ namespace Unity.VersionControl.Git
             {
                 LogHelper.LogAdapter.Error("Utility", "Could not find ImageConversion.LoadImage method");
             }
+        }
+
+        static MethodInfo FindMethod(this Type t, string name, int paramCount, Type[] desiredTypes)
+        {
+            var possible = t.GetMethods().Where(x => x.Name == name);
+            foreach (var m in possible)
+            {
+                var args = m.GetParameters();
+                if (args.Length == paramCount)
+                {
+                    bool found = true;
+                    if (desiredTypes != null)
+                    {
+                        for (var i = 0; i < paramCount; i++)
+                        {
+                            if (desiredTypes[i] == null) continue;
+                            if (desiredTypes[i] != args[i].ParameterType)
+                            {
+                                found = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (found)
+                    {
+                        return m;
+                    }
+                }
+            }
+
+            return null;
         }
 
         public static Texture2D ToTexture2D(this Stream input)
