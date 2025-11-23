@@ -9,21 +9,21 @@ if [[ -e "/c/" ]]; then
 fi
 
 PUBLIC=""
-BUILD=0
 NPM=0
 UNITYVERSION=2019.2
+YAMATO=0
 BRANCHES=0
 NUGET=0
 VERSION=
 PUBLIC=0
+CI=0
+SKIP_CLONE=0
+LATEST=0
 
 while (( "$#" )); do
   case "$1" in
     -p|--public)
       PUBLIC=1
-    ;;
-    -b|--build)
-      BUILD=1
     ;;
     -u|--npm)
       NPM=1
@@ -45,6 +45,16 @@ while (( "$#" )); do
       shift
       PUBLIC=$1
     ;;
+    --latest)
+      shift
+      LATEST=$1
+    ;;
+    --ci)
+      CI=1
+    ;;
+    --skip-clone)
+      SKIP_CLONE=1
+    ;;
     --trace)
       { set -x; } 2>/dev/null
     ;;
@@ -56,18 +66,33 @@ while (( "$#" )); do
   shift
 done
 
-if [[ x"$VERSION" == x"" ]]; then
-  VERSION=$(cat packageversion)
+if [[ x"${APPVEYOR:-}" != x"" ]]; then
+  CI=1
 fi
+
+if [[ x"${GITHUB_REPOSITORY:-}" != x"" ]]; then
+  CI=1
+fi
+
+if [[ x"${YAMATO_JOB_ID:-}" != x"" ]]; then
+  CI=1
+  YAMATO=1
+  export GITLAB_CI=1
+  export CI_COMMIT_TAG="${GIT_TAG:-}"
+  export CI_COMMIT_REF_NAME="${GIT_BRANCH:-}"
+fi
+
+if [[ x"$VERSION" == x"" ]]; then
+  VERSION=${NBGV_NpmPackageVersion:-}
+fi  
 
 function updateBranchAndPush() {
   local branch=$1
-  local tag=$2
-  local destdir=$3
-  local pkgdir=$4
-  local msg=$5
-  local ver=$6
-  local publ=$7
+  local destdir=$2
+  local pkgdir=$3
+  local msg=$4
+  local ver=$5
+  local publ=$6
 
   echo "Publishing branch: $branch/latest ($VERSION)"
 
@@ -80,24 +105,38 @@ function updateBranchAndPush() {
   cp -R $pkgdir/* .
   git add .
   git commit -m "$msg"
-  git tag $tag
-  git push origin HEAD:$branch/latest
-  git push origin $tag
+
+  if [[ x"${LATEST}" == x"1" ]]; then
+    git push origin HEAD:refs/heads/$branch/latest
+  fi
 
   if [[ $publ -eq 1 ]]; then
       echo "Publishing branch: $branch/$VERSION"
-      git push origin HEAD:$branch/$VERSION
+      git push origin +HEAD:refs/heads/$branch/$VERSION
   fi
 
   popd
 }
 
 if [[ x"$BRANCHES" == x"1" ]]; then
+
+  if [[ x"$VERSION" == x"" ]]; then
+    dotnet tool install -v q --tool-path . nbgv || true
+    VERSION=$(./nbgv cloud -s VisualStudioTeamServices --all-vars -p src|grep NBGV_CloudBuildNumber|cut -d']' -f2)
+    _public=$(./nbgv cloud -s VisualStudioTeamServices --all-vars -p src|grep NBGV_PublicRelease|cut -d']' -f2)
+    if [[ x"${_public}" == x"True" ]]; then
+      PUBLIC=1
+    fi
+  fi
+
   srcdir=$DIR/build/packages
   destdir=$( cd .. >/dev/null 2>&1 && pwd )/branches
-  test -d $destdir && rm -rf $destdir
-  mkdir -p $destdir
-  git clone -q --branch=empty git@github.com:spoiledcat/git-for-unity $destdir
+
+  if [[ x"${SKIP_CLONE}" == "0" ]]; then
+    test -d $destdir && rm -rf $destdir
+    mkdir -p $destdir
+    git clone -q --branch=empty git@github.com:spoiledcat/git-for-unity $destdir
+  fi
 
   pushd $srcdir
 
@@ -106,10 +145,8 @@ if [[ x"$BRANCHES" == x"1" ]]; then
     branch=packages/$name
     msg="$name v$VERSION"
     pkgdir=$srcdir/$name
-    tag="$name-v$VERSION"
 
-    updateBranchAndPush "$branch" "$tag" "$destdir" "$pkgdir" "$msg" "$VERSION" $PUBLIC
-
+    updateBranchAndPush "$branch" "$destdir" "$pkgdir" "$msg" "$VERSION" $PUBLIC
   done
 
   popd
@@ -138,16 +175,26 @@ fi
 
 if [[ x"$NPM" == x"1" ]]; then
 
-  #if in appveyor, only publish if public or in main
-  if [[ x"${APPVEYOR:-}" != x"" ]]; then
+  #if in ci, only publish if public or in master
+  if [[ x"${CI}" == x"1" ]]; then
     if [[ x"$PUBLIC" != x"1" ]]; then
-      if [[ x"${APPVEYOR_PULL_REQUEST_NUMBER:-}" != x"" ]]; then
-        echo "Skipping publishing non-public packages in CI on pull request builds"
-        exit 0
+
+      if [[ x"${APPVEYOR:-}" != x"" ]]; then
+        if [[ x"${APPVEYOR_PULL_REQUEST_NUMBER:-}" != x"" ]]; then
+          echo "Skipping publishing non-public packages in CI on pull request builds"
+          exit 0
+        fi
+        if [[ x"${APPVEYOR_REPO_BRANCH:-}" != x"master" ]]; then
+          echo "Skipping publishing non-public packages in CI on pushes to branches other than master"
+          exit 0
+        fi
       fi
-      if [[ x"${APPVEYOR_REPO_BRANCH:-}" != x"main" ]]; then
-        echo "Skipping publishing non-public packages in CI on pushes to branches other than main"
-        exit 0
+
+      if [[ x"${GITHUB_REPOSITORY:-}" != x"" ]]; then
+        if [[ x"${GITHUB_REF:-}" != x"refs/heads/master" ]]; then
+          echo "Skipping publishing non-public packages in CI on pushes to branches other than master"
+          exit 0
+        fi
       fi
     fi
   fi
@@ -160,15 +207,7 @@ if [[ x"$NPM" == x"1" ]]; then
 
   npm config set registry https://registry.spoiledcat.com
   npm config set //registry.spoiledcat.com/:_authToken $NPM_TOKEN
-  npm config set always-auth true
-
   pushd build/npm
-  for pkg in *.tgz;do
-    npm publish -quiet $pkg
-  done
-  popd
-
-  pushd upm-ci~/packages/
   for pkg in *.tgz;do
     npm publish -quiet $pkg
   done

@@ -56,7 +56,9 @@ New-Module -ScriptBlock {
 
         if ($exitCode -ne 0) {
             if (!$Fatal) {
+                if (!$Quiet) {
                 Write-Host "``$Command`` failed" $output
+                }
             } else {
                 Die $exitCode "``$Command`` failed" $output
             }

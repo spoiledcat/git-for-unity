@@ -16,6 +16,7 @@
     <HubInstallDir Condition="!Exists('$(HubInstallDir)')"></HubInstallDir>
     <UnityDir Condition="$(UnityDir) == '' and Exists('$(RootDir)\script\lib\Managed\UnityEditor.dll')">$(RootDir)script\lib\</UnityDir>
     <UnityDir Condition="$(UnityDir) == '' and Exists('$(RootDir)\lib\Managed\UnityEditor.dll')">$(RootDir)lib\</UnityDir>
+    <UnityDir Condition="$(UnityDir) == '' and Exists('$(RootDir)\.bin\Managed\UnityEditor.dll')">$(RootDir).bin\</UnityDir>
     <UnityDir Condition="$(UnityDir) == '' and Exists('\Applications\Unity\Unity.app\Contents\Managed\UnityEditor.dll')">\Applications\Unity\Unity.app\Contents\</UnityDir>
     <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files\Unity\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files\Unity\Editor\Data\</UnityDir>
     <UnityDir Condition="$(UnityDir) == '' and Exists('C:\Program Files (x86)\Unity\Editor\Data\Managed\UnityEditor.dll')">C:\Program Files (x86)\Unity\Editor\Data\</UnityDir>

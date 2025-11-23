@@ -11,6 +11,7 @@ fi
 CONFIGURATION=Release
 PUBLIC=""
 UNITYBUILD=0
+CI=0
 
 while (( "$#" )); do
   case "$1" in
@@ -36,6 +37,12 @@ while (( "$#" )); do
         PUBLIC="-p:PublicRelease=true"
       fi
     ;;
+    --ci)
+      CI=1
+    ;;
+    --trace)
+      { set -x; } 2>/dev/null
+    ;;
     -*|--*=) # unsupported flags
       echo "Error: Unsupported flag $1" >&2
       exit 1
@@ -44,13 +51,19 @@ while (( "$#" )); do
   shift
 done
 
-if [[ x"$UNITYBUILD" == x"1" ]]; then
+if [[ x"${APPVEYOR:-}" != x"" ]]; then
+  CI=1
+fi
+if [[ x"${GITHUB_REPOSITORY:-}" != x"" ]]; then
+  CI=1
+fi
+if [[ x"${UNITYBUILD}" == x"1" ]]; then
   CONFIGURATION="${CONFIGURATION}Unity"
 fi
 
 pushd $DIR >/dev/null 2>&1
 
-if [[ x"${APPVEYOR:-}" == x"" ]]; then
+if [[ x"${CI}" == x"0" ]]; then
   dotnet restore
 fi
 dotnet build --no-restore -c $CONFIGURATION $PUBLIC

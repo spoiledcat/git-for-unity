@@ -1,0 +1,106 @@
+name: Build and Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish packages'
+        type: boolean
+        required: false
+        default: false
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      CONFIGURATION: Release
+      ISPUBLIC: 0
+      LATEST: 0
+
+    steps:
+    - if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
+      run: echo "ISPUBLIC=1" >> $GITHUB_ENV
+
+    - if: ${{ github.event_name == 'workflow_dispatch' && startsWith(github.ref, 'refs/tags/') }}
+      run: echo "ISPUBLIC=1" >> $GITHUB_ENV
+
+    - if: ${{ github.ref == 'refs/heads/master' }}
+      run: echo "LATEST=1" >> $GITHUB_ENV
+
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        path: source
+    - uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: source/global.json
+
+    # - uses: dotnet/nbgv@master
+    #   with:
+    #     setAllVars: true
+    #     path: source
+
+    - name: dependencies
+      working-directory: source
+      run: |
+        mkdir -p lib
+        pushd lib
+        curl -fSL --output deps.zip https://files.spoiledcat.com/deps.zip
+        7z -y -bb3 x deps.zip
+        popd
+    - run: dotnet --list-sdks
+      working-directory: source
+    - run: node --version
+      working-directory: source
+    - run: npm --version
+      working-directory: source
+
+    - run: for i in 1 2 3 4 5; do dotnet restore -v Minimal && break || sleep 1; done
+      working-directory: source
+
+    - run: ./build.sh -c $CONFIGURATION --ispublic $ISPUBLIC --trace
+      working-directory: source
+
+    - name: SpoiledBot
+      id: token
+      uses: getsentry/action-github-app-token@v2
+      with:
+        app_id: ${{ secrets.SPOILEDBOT_ID }}
+        private_key: ${{ secrets.SPOILEDBOT_KEY }}
+
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        path: branches
+
+    # this lets us do commits and pushes without fiddling with keys
+    - name: GH cli
+      working-directory: branches
+      run: |
+        gh --version
+        echo "${{ steps.token.outputs.token }}" | gh auth login --with-token
+        gh auth status
+        git config --global user.name "SpoiledBot"
+        git config --global user.email "github@spoiledcat.net"
+
+    - run: ./publish.sh --ispublic $ISPUBLIC --branches --skip-clone --latest $LATEST
+      if: ${{ github.event_name != 'workflow_dispatch' || inputs.publish }}
+      working-directory: source
+
+    - run: ./pack.sh -c $CONFIGURATION --ispublic $ISPUBLIC
+      working-directory: source
+
+    - run: ./publish.sh --npm --ispublic $ISPUBLIC
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      if: ${{ github.event_name != 'workflow_dispatch' || inputs.publish }}
+      working-directory: source
+
+    - uses: spoiledcat/upload-artifact@main
+      with:
+        path: 'source/build/**/*.nupkg'
+
+    - uses: spoiledcat/upload-artifact@main
+      with:
+        path: 'source/build/**/*.tgz'

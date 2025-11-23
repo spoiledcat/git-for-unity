@@ -17,6 +17,7 @@ PUBLIC=""
 BUILD=0
 UPM=0
 UNITYVERSION=2019.2
+CI=0
 YAMATO=0
 
 while (( "$#" )); do
@@ -48,6 +49,14 @@ while (( "$#" )); do
       shift
       CONFIGURATION=$1
     ;;
+    --ispublic)
+    ;;
+    --ci)
+      CI=1
+    ;;
+    --trace)
+      { set -x; } 2>/dev/null
+    ;;
     -*|--*=) # unsupported flags
       echo "Error: Unsupported flag $1" >&2
       exit 1
@@ -56,6 +65,13 @@ while (( "$#" )); do
   shift
 done
 
+if [[ x"${APPVEYOR:-}" != x"" ]]; then
+  CI=1
+fi
+
+if [[ x"${GITHUB_REPOSITORY:-}" != x"" ]]; then
+  CI=1
+fi
 # set positional arguments in their proper place
 eval set -- "$PARAMS"
 
@@ -68,7 +84,7 @@ pushd $DIR >/dev/null 2>&1
 
   if [[ x"$BUILD" == x"1" ]]; then
 
-    if [[ x"${APPVEYOR:-}" == x"" ]]; then
+  if [[ x"${CI}" == x"0" ]]; then
       dotnet restore
     fi
 
