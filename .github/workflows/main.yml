@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     env:
       CONFIGURATION: Release
       ISPUBLIC: 0
@@ -32,6 +32,7 @@ jobs:
       with:
         fetch-depth: 0
         path: source
+        lfs: true
     - uses: actions/setup-dotnet@v4
       with:
         global-json-file: source/global.json
@@ -75,6 +76,7 @@ jobs:
       with:
         fetch-depth: 0
         path: branches
+        lfs: true
 
     # this lets us do commits and pushes without fiddling with keys
     - name: GH cli
