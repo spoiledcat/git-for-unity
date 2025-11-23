@@ -212,4 +212,10 @@ if [[ x"$NPM" == x"1" ]]; then
     npm publish -quiet $pkg
   done
   popd
+
+  pushd upm-ci~/packages
+  for pkg in *.tgz;do
+    npm publish -quiet $pkg
+  done
+  popd
 fi
