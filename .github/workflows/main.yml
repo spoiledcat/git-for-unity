@@ -51,6 +51,8 @@ jobs:
         popd
     - run: dotnet --list-sdks
       working-directory: source
+    - run: dotnet --version
+      working-directory: source
     - run: node --version
       working-directory: source
     - run: npm --version
