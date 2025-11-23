@@ -58,7 +58,7 @@ jobs:
     - run: npm --version
       working-directory: source
 
-    - run: for i in 1 2 3 4 5; do dotnet restore -v Minimal && break || sleep 1; done
+    - run: for i in 1 2 3 4 5; do dotnet restore -v Detailed && break || sleep 1; done
       working-directory: source
 
     - run: ./build.sh -c $CONFIGURATION --ispublic $ISPUBLIC --trace
