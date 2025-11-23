@@ -84,7 +84,7 @@ fi
 
 if [[ x"$VERSION" == x"" ]]; then
   VERSION=${NBGV_NpmPackageVersion:-}
-fi  
+fi
 
 function updateBranchAndPush() {
   local branch=$1
@@ -93,8 +93,6 @@ function updateBranchAndPush() {
   local msg=$4
   local ver=$5
   local publ=$6
-
-  echo "Publishing branch: $branch/latest ($VERSION)"
 
   pushd $destdir
 
@@ -107,12 +105,13 @@ function updateBranchAndPush() {
   git commit -m "$msg"
 
   if [[ x"${LATEST}" == x"1" ]]; then
-    git push origin HEAD:refs/heads/$branch/latest
+    echo "Publishing branch $branch/latest ($VERSION)"
+    git push origin +HEAD:refs/heads/$branch/latest
   fi
 
   if [[ $publ -eq 1 ]]; then
-      echo "Publishing branch: $branch/$VERSION"
-      git push origin +HEAD:refs/heads/$branch/$VERSION
+    echo "Publishing branch: $branch/$VERSION"
+    git push origin +HEAD:refs/heads/$branch/$VERSION
   fi
 
   popd
