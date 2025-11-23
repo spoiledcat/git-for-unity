@@ -175,7 +175,7 @@ fi
 
 if [[ x"$NPM" == x"1" ]]; then
 
-  #if in ci, only publish if public or in master
+  #if in ci, only publish if public or in main
   if [[ x"${CI}" == x"1" ]]; then
     if [[ x"$PUBLIC" != x"1" ]]; then
 
@@ -184,15 +184,15 @@ if [[ x"$NPM" == x"1" ]]; then
           echo "Skipping publishing non-public packages in CI on pull request builds"
           exit 0
         fi
-        if [[ x"${APPVEYOR_REPO_BRANCH:-}" != x"master" ]]; then
-          echo "Skipping publishing non-public packages in CI on pushes to branches other than master"
+        if [[ x"${APPVEYOR_REPO_BRANCH:-}" != x"main" ]]; then
+          echo "Skipping publishing non-public packages in CI on pushes to branches other than main"
           exit 0
         fi
       fi
 
       if [[ x"${GITHUB_REPOSITORY:-}" != x"" ]]; then
-        if [[ x"${GITHUB_REF:-}" != x"refs/heads/master" ]]; then
-          echo "Skipping publishing non-public packages in CI on pushes to branches other than master"
+        if [[ x"${GITHUB_REF:-}" != x"refs/heads/main" ]]; then
+          echo "Skipping publishing non-public packages in CI on pushes to branches other than main"
           exit 0
         fi
       fi

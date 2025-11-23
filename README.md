@@ -4,7 +4,7 @@ This is a Git client for your Unity Editor, supporting all versions from 2017.x 
 
 This is a fork of [Git for Unity](https://github.com/unity-technologies/git-for-unity), which in itself is a fork of [GitHub for Unity](https://github.com/github-for-unity/Unity), which I wrote, so I guess the wheel has turned all the way back around 🤷‍♀️ 😁
 
-[![Build status](https://ci.appveyor.com/api/projects/status/8l2f8numfkp6yhnw?svg=true)](https://ci.appveyor.com/project/shana/git-for-unity)
+[![Build status](https://github.com/spoiledcat/git-for-unity/actions/workflows/main.yml/badge.svg?event=push)](https://github.com/spoiledcat/git-for-unity/actions/workflows/main.yml)
 
 ![spinner](https://raw.githubusercontent.com/spoiledcat/git-for-unity/main/spinner.gif)
 
