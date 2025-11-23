@@ -32,7 +32,7 @@ Copyright (c) 2016-2018 GitHub</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net471" Version="1.0.0" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers" Condition=" '$(TargetFramework)' == 'net471' " />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net471" Version="1.0.3" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers" Condition=" '$(TargetFramework)' == 'net471' " />
     <PackageReference Include="Custom.Unity.NETFramework.ReferenceAssemblies.net35" Version="1.0.1-custom" IncludeAssets="runtime; build; native; contentfiles; analyzers" PrivateAssets="All" Condition=" '$(TargetFramework)' == 'net35' "/>
   </ItemGroup>
 

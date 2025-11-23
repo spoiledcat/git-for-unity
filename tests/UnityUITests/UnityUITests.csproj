@@ -47,7 +47,6 @@
 
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.12.0" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net471" Version="1.0.0" IncludeAssets="runtime; build; native; contentfiles; analyzers" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
