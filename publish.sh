@@ -122,8 +122,8 @@ if [[ x"$BRANCHES" == x"1" ]]; then
   if [[ x"$VERSION" == x"" ]]; then
     dotnet tool install -v q --tool-path . nbgv || true
     ./nbgv cloud -s VisualStudioTeamServices --all-vars -p src
-    VERSION=$(./nbgv cloud -s VisualStudioTeamServices --all-vars -p src|grep NBGV_CloudBuildNumber|cut -d']' -f2)
-    _public=$(./nbgv cloud -s VisualStudioTeamServices --all-vars -p src|grep NBGV_PublicRelease|cut -d']' -f2)
+    VERSION=$(./nbgv cloud -s VisualStudioTeamServices --all-vars -p src|grep NBGV_CloudBuildNumber|cut -d']' -f2|head -n1)
+    _public=$(./nbgv cloud -s VisualStudioTeamServices --all-vars -p src|grep NBGV_PublicRelease|cut -d']' -f2|head -n1)
     if [[ x"${_public}" == x"True" ]]; then
       PUBLIC=1
     fi
