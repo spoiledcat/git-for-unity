@@ -104,7 +104,7 @@ namespace Unity.VersionControl.Git
                 if (t != null)
                 {
                     // looking for ImageConversion.LoadImage(this Texture2D tex, byte[] data)
-                    loadImage = typeof(Texture2D).FindMethod("LoadImage", 2, new[] {null, typeof(byte[])});
+                    loadImage = t.FindMethod("LoadImage", 2, new[] {null, typeof(byte[])});
                     if (loadImage != null)
                     {
                         invokeLoadImage = (tex, ms) => {
