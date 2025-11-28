@@ -3,7 +3,7 @@
     "displayName": "Tests - Git for Unity",
     "description": "Tests - Git for Unity",
     "type": "tests",
-    "version": "1.0.62-preview-g8b39814829",
+    "version": "1.0.62",
     "license" : "MIT",
     "author": {
       "email": "shana@spoiledcat.net"
@@ -15,6 +15,6 @@
       "revision": "8b3981482976f2504c04c523aa6c31ba5bf18b81"
     },
     "dependencies": {
-        "com.spoiledcat.git.api": "1.0.62-preview-g8b39814829"
+        "com.spoiledcat.git.api": "1.0.62"
     }
 }
