@@ -244,7 +244,7 @@ namespace Unity.VersionControl.Git.UI
             if (selected == null)
                 return false;
 
-            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToSPath();
+            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetEntityId()).ToSPath();
             SPath repositoryPath = assetPath.RelativeToRepository(manager.Environment);
 
             var alreadyLocked = locks.Any(x => repositoryPath == x.Path);
@@ -269,7 +269,7 @@ namespace Unity.VersionControl.Git.UI
             if (selected == null)
                 return false;
 
-            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToSPath();
+            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetEntityId()).ToSPath();
             SPath repositoryPath = assetPath.RelativeToRepository(manager.Environment);
 
             return locks.Any(x => repositoryPath == x.Path && (!isLockedByCurrentUser || x.Owner.Name == currentUsername));
@@ -277,7 +277,7 @@ namespace Unity.VersionControl.Git.UI
 
         private static ITask CreateUnlockObjectTask(Object selected, bool force)
         {
-            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToSPath();
+            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetEntityId()).ToSPath();
             SPath repositoryPath = assetPath.RelativeToRepository(manager.Environment);
 
             var task = Repository.ReleaseLock(repositoryPath, force);
@@ -287,7 +287,7 @@ namespace Unity.VersionControl.Git.UI
 
         private static ITask CreateLockObjectTask(Object selected)
         {
-            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetInstanceID()).ToSPath();
+            SPath assetPath = AssetDatabase.GetAssetPath(selected.GetEntityId()).ToSPath();
             SPath repositoryPath = assetPath.RelativeToRepository(manager.Environment);
 
             var task = Repository.RequestLock(repositoryPath);

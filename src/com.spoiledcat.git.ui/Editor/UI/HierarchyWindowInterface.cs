@@ -13,26 +13,26 @@ namespace Unity.VersionControl.Git.UI
         public static void Initialize()
         {
             iconCache = new Dictionary<int, Texture2D>();
-            EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItemTryToDrawStatusIcon;
+            EditorApplication.hierarchyWindowItemByEntityIdOnGUI += OnHierarchyItemTryToDrawStatusIcon;
         }
 
-        private static void OnHierarchyItemTryToDrawStatusIcon(int instanceID, Rect selectionRect)
+        private static void OnHierarchyItemTryToDrawStatusIcon(EntityId entityId, Rect selectionRect)
         {
             if (!ApplicationConfiguration.HierarchyIconsEnabled)
                 return;
 
-            if (!iconCache.TryGetValue(instanceID, out Texture2D texture))
+            if (!iconCache.TryGetValue(entityId.GetHashCode(), out Texture2D texture))
             {
                 string guid = null;
-                GameObject hierarchyGO = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+                GameObject hierarchyGO = EditorUtility.EntityIdToObject(entityId) as GameObject;
                 if (!hierarchyGO)
                 {
-                    // if no Object has been returned by the InstanceIDToObject() method, then it is possible, that it is a Scene
+                    // if no Object has been returned by the EntityIDToObject() method, then it is possible, that it is a Scene
                     string scenePath = "";
                     for (int i = 0; i < SceneManager.sceneCount; i++)
                     {
                         Scene scene = SceneManager.GetSceneAt(i);
-                        if (scene.GetHashCode() == instanceID)
+                        if (scene.GetHashCode() == entityId.GetHashCode())
                         {
                             scenePath = scene.path;
                             break;
@@ -41,7 +41,7 @@ namespace Unity.VersionControl.Git.UI
 
                     if (string.IsNullOrEmpty(scenePath))
                     {
-                        iconCache.Add(instanceID, null);
+                        iconCache.Add(entityId.GetHashCode(), null);
                         return;
                     }
 
@@ -65,7 +65,7 @@ namespace Unity.VersionControl.Git.UI
                     texture = ProjectWindowInterface.GetStatusIconForAssetGUID(guid);
                 }
 
-                iconCache.Add(instanceID, texture);
+                iconCache.Add(entityId.GetHashCode(), texture);
             }
 
             if (texture == null)
