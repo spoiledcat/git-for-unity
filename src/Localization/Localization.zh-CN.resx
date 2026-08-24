@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="LockedOut" xml:space="preserve">
+    <value>登录次数超过上限，请稍等几分钟后重试。</value>
+  </data>
+  <data name="LoginFailed" xml:space="preserve">
+    <value>登录失败</value>
+  </data>
+  <data name="NoGitError" xml:space="preserve">
+    <value>在未找到 Git 的情况下试图运行 Git 任务。</value>
+  </data>
+  <data name="NotLoggedIn" xml:space="preserve">
+    <value>您需要登录。</value>
+  </data>
+  <data name="Wrong2faCode" xml:space="preserve">
+    <value>双重验证码错误</value>
+  </data>
+  <data name="GitInitBrowseButton" xml:space="preserve">
+    <value>…</value>
+  </data>
+  <data name="GitInitBrowseTitle" xml:space="preserve">
+    <value>选择仓库根目录</value>
+  </data>
+  <data name="GitInitButton" xml:space="preserve">
+    <value>设置 Git</value>
+  </data>
+  <data name="NoActiveRepositoryMessage" xml:space="preserve">
+    <value>当前项目不在活动的 Git 仓库中：</value>
+  </data>
+  <data name="NoActiveRepositoryTitle" xml:space="preserve">
+    <value>未找到仓库</value>
+  </data>
+  <data name="InvalidInitDirectoryTitle" xml:space="preserve">
+    <value>无效的仓库根目录</value>
+  </data>
+  <data name="InvalidInitDirectoryMessage" xml:space="preserve">
+    <value>所选文件夹“{0}”不是当前项目的有效仓库根目录。</value>
+  </data>
+  <data name="InvalidInitDirectoryOK" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="ViewModeHistoryTab" xml:space="preserve">
+    <value>历史</value>
+  </data>
+  <data name="ViewModeChangesTab" xml:space="preserve">
+    <value>更改</value>
+  </data>
+  <data name="ViewModeSettingsTab" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="RefreshButton" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="UnknownViewModeError" xml:space="preserve">
+    <value>不支持该视图模式：{0}</value>
+  </data>
+  <data name="HistoryFocusAll" xml:space="preserve">
+    <value>（全部）</value>
+  </data>
+  <data name="HistoryFocusSingle" xml:space="preserve">
+    <value />
+  </data>
+  <data name="PullButton" xml:space="preserve">
+    <value>拉取</value>
+  </data>
+  <data name="PullButtonCount" xml:space="preserve">
+    <value>拉取（{0}）</value>
+  </data>
+  <data name="PushButton" xml:space="preserve">
+    <value>推送</value>
+  </data>
+  <data name="PushButtonCount" xml:space="preserve">
+    <value>推送（{0}）</value>
+  </data>
+  <data name="PullConfirmTitle" xml:space="preserve">
+    <value>拉取更改？</value>
+  </data>
+  <data name="PullConfirmDescription" xml:space="preserve">
+    <value>是否从远程仓库“{0}”拉取更改？</value>
+  </data>
+  <data name="PullConfirmYes" xml:space="preserve">
+    <value>拉取</value>
+  </data>
+  <data name="PushConfirmTitle" xml:space="preserve">
+    <value>推送更改？</value>
+  </data>
+  <data name="PushConfirmDescription" xml:space="preserve">
+    <value>是否将更改推送到远程仓库“{0}”？</value>
+  </data>
+  <data name="PushConfirmYes" xml:space="preserve">
+    <value>推送</value>
+  </data>
+  <data name="SummaryLabel" xml:space="preserve">
+    <value>提交摘要</value>
+  </data>
+  <data name="DescriptionLabel" xml:space="preserve">
+    <value>提交说明</value>
+  </data>
+  <data name="CommitButton" xml:space="preserve">
+    <value />
+  </data>
+  <data name="CommitSelectAllButton" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="CommitSelectNoneButton" xml:space="preserve">
+    <value>全不选</value>
+  </data>
+  <data name="ChangedFilesLabel" xml:space="preserve">
+    <value>更改了 {0} 个文件</value>
+  </data>
+  <data name="OneChangedFileLabel" xml:space="preserve">
+    <value>更改了 1 个文件</value>
+  </data>
+  <data name="NoChangedFilesLabel" xml:space="preserve">
+    <value>没有更改的文件</value>
+  </data>
+  <data name="BasePathLabel" xml:space="preserve">
+    <value>{0}</value>
+  </data>
+  <data name="NoChangesLabel" xml:space="preserve">
+    <value>未发现更改</value>
+  </data>
+  <data name="RemotesTitle" xml:space="preserve">
+    <value>远程</value>
+  </data>
+  <data name="RemoteNameTitle" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="RemoteUserTitle" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="RemoteHostTitle" xml:space="preserve">
+    <value>主机</value>
+  </data>
+  <data name="RemoteAccessTitle" xml:space="preserve">
+    <value>访问权限</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>GitHub</value>
+  </data>
+  <data name="Ok" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="PullActionTitle" xml:space="preserve">
+    <value>拉取</value>
+  </data>
+  <data name="PullFailureDescription" xml:space="preserve">
+    <value>无法更新本地分支。</value>
+  </data>
+  <data name="PullSuccessDescription" xml:space="preserve">
+    <value>本地分支已与 {0} 同步</value>
+  </data>
+  <data name="PushActionTitle" xml:space="preserve">
+    <value>推送</value>
+  </data>
+  <data name="PushFailureDescription" xml:space="preserve">
+    <value>无法推送分支</value>
+  </data>
+  <data name="PushSuccessDescription" xml:space="preserve">
+    <value>分支已推送</value>
+  </data>
+  <data name="InitializeRepositoryButtonText" xml:space="preserve">
+    <value>为当前项目初始化 Git 仓库</value>
+  </data>
+  <data name="SwitchBranchTitle" xml:space="preserve">
+    <value>切换分支</value>
+  </data>
+  <data name="SwitchBranchFailedDescription" xml:space="preserve">
+    <value>无法切换到分支 {0}</value>
+  </data>
+  <data name="GitLFSNotFound" xml:space="preserve">
+    <value>系统中未找到 Git LFS。</value>
+  </data>
+  <data name="GitLfsVersionTooLow" xml:space="preserve">
+    <value>检测到 {0} 的 LFS 版本为 {1}，版本过低，最低要求版本为 {2}。</value>
+  </data>
+  <data name="GitNotFound" xml:space="preserve">
+    <value>系统中未找到 Git。</value>
+  </data>
+  <data name="GitVersionTooLow" xml:space="preserve">
+    <value>检测到 {0} 的 Git 版本为 {1}，版本过低，最低要求版本为 {2}。</value>
+  </data>
+  <data name="BranchesTitle" xml:space="preserve">
+    <value>分支</value>
+  </data>
+  <data name="ChangesTitle" xml:space="preserve">
+    <value>更改</value>
+  </data>
+  <data name="DefaultRepoUrl" xml:space="preserve">
+    <value>未配置远程仓库</value>
+  </data>
+  <data name="FetchActionTitle" xml:space="preserve">
+    <value>提取更改</value>
+  </data>
+  <data name="FetchButton" xml:space="preserve">
+    <value>提取</value>
+  </data>
+  <data name="FetchFailureDescription" xml:space="preserve">
+    <value>无法提取更改</value>
+  </data>
+  <data name="HistoryTitle" xml:space="preserve">
+    <value>历史</value>
+  </data>
+  <data name="InitializeTitle" xml:space="preserve">
+    <value>初始化</value>
+  </data>
+  <data name="PublishButton" xml:space="preserve">
+    <value>发布</value>
+  </data>
+  <data name="SettingsTitle" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Window_RepoBranchTooltip" xml:space="preserve">
+    <value>当前分支</value>
+  </data>
+  <data name="Window_RepoNoUrlTooltip" xml:space="preserve">
+    <value>在“设置”页签中添加远程仓库</value>
+  </data>
+  <data name="Window_RepoUrlTooltip" xml:space="preserve">
+    <value>远程仓库 {0} 的 URL</value>
+  </data>
+  <data name="ReleaseLockActionTitle" xml:space="preserve">
+    <value>释放锁定</value>
+  </data>
+  <data name="RequestLockActionTitle" xml:space="preserve">
+    <value>请求锁定</value>
+  </data>
+  <data name="ForceUnlockFileAssetsMenuItem" xml:space="preserve">
+    <value>Assets/强制释放锁定</value>
+  </data>
+  <data name="ForceUnlockFileMenuItem" xml:space="preserve">
+    <value>强制释放锁定</value>
+  </data>
+  <data name="LockFileAssetsMenuItem" xml:space="preserve">
+    <value>Assets/请求锁定</value>
+  </data>
+  <data name="LockFileMenuItem" xml:space="preserve">
+    <value>请求锁定</value>
+  </data>
+  <data name="LocksTitle" xml:space="preserve">
+    <value>锁定</value>
+  </data>
+  <data name="UnlockFileAssetsMenuItem" xml:space="preserve">
+    <value>Assets/释放锁定</value>
+  </data>
+  <data name="UnlockFileMenuItem" xml:space="preserve">
+    <value>释放锁定</value>
+  </data>
+  <data name="AccountButton" xml:space="preserve">
+    <value>账户</value>
+  </data>
+  <data name="MessageBranchCreated" xml:space="preserve">
+    <value>已创建分支 {0}</value>
+  </data>
+  <data name="MessageBranchDeleted" xml:space="preserve">
+    <value>已删除分支 {0}</value>
+  </data>
+  <data name="MessageBranchSwitched" xml:space="preserve">
+    <value>已切换到分支 {0}</value>
+  </data>
+  <data name="MessageCommitFailed" xml:space="preserve">
+    <value>提交失败</value>
+  </data>
+  <data name="MessageCommitted" xml:space="preserve">
+    <value>已提交</value>
+  </data>
+  <data name="MessageCommitting" xml:space="preserve">
+    <value>正在提交</value>
+  </data>
+  <data name="MessageFetched" xml:space="preserve">
+    <value>提取完成</value>
+  </data>
+  <data name="MessageFetchFailed" xml:space="preserve">
+    <value>提取失败</value>
+  </data>
+  <data name="MessageFetching" xml:space="preserve">
+    <value>正在提取</value>
+  </data>
+  <data name="MessagePulled" xml:space="preserve">
+    <value>拉取完成</value>
+  </data>
+  <data name="MessagePullFailed" xml:space="preserve">
+    <value>拉取失败</value>
+  </data>
+  <data name="MessagePulling" xml:space="preserve">
+    <value>正在拉取</value>
+  </data>
+  <data name="MessagePushed" xml:space="preserve">
+    <value>推送完成</value>
+  </data>
+  <data name="MessagePushFailed" xml:space="preserve">
+    <value>推送失败</value>
+  </data>
+  <data name="MessagePushing" xml:space="preserve">
+    <value>正在推送</value>
+  </data>
+  <data name="MessageRefreshed" xml:space="preserve">
+    <value>刷新完成</value>
+  </data>
+  <data name="MessageRefreshing" xml:space="preserve">
+    <value>正在刷新</value>
+  </data>
+  <data name="DiscardConfirmDescription" xml:space="preserve">
+    <value>确定要丢弃这些更改吗？</value>
+  </data>
+  <data name="DiscardConfirmTitle" xml:space="preserve">
+    <value>丢弃更改？</value>
+  </data>
+  <data name="DiscardConfirmYes" xml:space="preserve">
+    <value>丢弃</value>
+  </data>
+</root>

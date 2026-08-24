@@ -1,6 +1,8 @@
-﻿using Unity.VersionControl.Git;
+using Unity.VersionControl.Git;
 using System;
+using System.Globalization;
 using System.IO;
+using SpoiledCat.Git;
 using Unity.Editor.Tasks;
 using Unity.Editor.Tasks.Logging;
 using UnityEditor;
@@ -30,6 +32,11 @@ namespace Unity.VersionControl.Git
         private static void Initialize()
         {
             EditorApplication.update -= Initialize;
+
+            // Activate localized resources (satellite assemblies) matching the Unity editor language.
+            // Falls back to the neutral English resources when no satellite exists for the culture.
+            Localization.Culture = CultureInfo.GetCultureInfo(
+                Application.systemLanguage == SystemLanguage.ChineseSimplified ? "zh-CN" : "en-US");
 
             // this will initialize ApplicationManager and Environment if they haven't yet
             var logPath = ApplicationManager.Environment.LogPath;
