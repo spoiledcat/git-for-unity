@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using NUnit.Framework;
+using FluentAssertions;
 using TestUtils;
 using Unity.VersionControl.Git;
 
@@ -147,6 +148,79 @@ namespace UnitTests
             };
 
             AssertProcessOutput(output, expected);
+        }
+
+        [Test]
+        public void ShouldParseParentsForSingleParentCommit()
+        {
+            var output = new[]
+            {
+                "1cd4b9154a88bc8c7b09cb8cacc79bf1d5bde8cf",
+                "865b8d9d6e5e3bd6d7a4dc9c9f3588192314942c",
+                "Author Person",
+                "author@example.com",
+                "2017-01-06T15:36:57+01:00",
+                "Author Person",
+                "author@example.com",
+                "2017-01-06T15:36:57+01:00",
+                "Some commit",
+                "---GHUBODYEND---",
+                null,
+            };
+
+            var results = Process(output);
+
+            results.Should().HaveCount(1);
+            results[0].Parents.Should().Equal("865b8d9d6e5e3bd6d7a4dc9c9f3588192314942c");
+            // mergeA/mergeB stay empty for single-parent commits (backwards compatible)
+            results[0].MergeA.Should().BeEmpty();
+            results[0].MergeB.Should().BeEmpty();
+        }
+
+        [Test]
+        public void ShouldParseAllParentsForOctopusMerge()
+        {
+            var output = new[]
+            {
+                "1cd4b9154a88bc8c7b09cb8cacc79bf1d5bde8cf",
+                "aaaa111111111111111111111111111111111111 bbbb222222222222222222222222222222222222 cccc333333333333333333333333333333333333",
+                "Merger Person",
+                "merger@example.com",
+                "2017-01-06T15:36:57+01:00",
+                "Merger Person",
+                "merger@example.com",
+                "2017-01-06T15:36:57+01:00",
+                "Merge branch 'feature-x'",
+                "---GHUBODYEND---",
+                null,
+            };
+
+            var results = Process(output);
+
+            results.Should().HaveCount(1);
+            results[0].Parents.Should().Equal(
+                "aaaa111111111111111111111111111111111111",
+                "bbbb222222222222222222222222222222222222",
+                "cccc333333333333333333333333333333333333");
+            // first two parents still exposed via mergeA/mergeB for compatibility
+            results[0].MergeA.Should().Be("aaaa111111111111111111111111111111111111");
+            results[0].MergeB.Should().Be("bbbb222222222222222222222222222222222222");
+        }
+
+        private List<GitLogEntry> Process(IEnumerable<string> lines)
+        {
+            var gitObjectFactory = SubstituteFactory.CreateGitObjectFactory(TestRootPath);
+
+            var results = new List<GitLogEntry>();
+            var outputProcessor = new LogEntryOutputProcessor(gitObjectFactory);
+            outputProcessor.OnEntry += logEntry => { results.Add(logEntry); };
+
+            foreach (var line in lines)
+            {
+                outputProcessor.Process(line);
+            }
+
+            return results;
         }
 
         private void AssertProcessOutput(IEnumerable<string> lines, GitLogEntry[] expected)

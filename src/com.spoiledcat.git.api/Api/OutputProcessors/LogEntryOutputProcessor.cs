@@ -15,6 +15,7 @@ namespace Unity.VersionControl.Git
         private string authorName;
         private string mergeA;
         private string mergeB;
+        private List<string> parents;
         private List<GitStatusEntry> changes;
         private string authorEmail;
         private string summary;
@@ -44,6 +45,7 @@ namespace Unity.VersionControl.Git
             authorName = null;
             mergeA = null;
             mergeB = null;
+            parents = new List<string>();
             changes = new List<GitStatusEntry>();
             authorEmail = null;
             summary = null;
@@ -89,6 +91,7 @@ namespace Unity.VersionControl.Git
 
                 case ProcessingPhase.ParentHash:
                     var parentHashes = line.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                    parents.AddRange(parentHashes);
 
                     if (parentHashes.Length > 1)
                     {
@@ -274,7 +277,7 @@ namespace Unity.VersionControl.Git
                     description,
                     time.Value,  committerTime.Value,
                     changes,
-                    mergeA, mergeB);
+                    mergeA, mergeB, parents);
 
                 RaiseOnEntry(gitLogEntry);
             }
