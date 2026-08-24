@@ -13,6 +13,7 @@ namespace Unity.VersionControl.Git
         public string commitID;
         public string mergeA;
         public string mergeB;
+        public List<string> parents;
         public string authorName;
         public string authorEmail;
         public string commitEmail;
@@ -30,7 +31,7 @@ namespace Unity.VersionControl.Git
             string description,
             DateTimeOffset time, DateTimeOffset commitTime,
             List<GitStatusEntry> changes, 
-            string mergeA = null, string mergeB = null) : this()
+            string mergeA = null, string mergeB = null, List<string> parents = null) : this()
         {
             Guard.ArgumentNotNull(commitID, "commitID");
             Guard.ArgumentNotNull(authorName, "authorName");
@@ -56,6 +57,21 @@ namespace Unity.VersionControl.Git
 
             this.mergeA = mergeA ?? string.Empty;
             this.mergeB = mergeB ?? string.Empty;
+
+            // Preserve full parent history when available. mergeA/mergeB remain the
+            // first two parents for backwards compatibility (octopus merges have more).
+            if (parents != null)
+            {
+                this.parents = parents;
+            }
+            else
+            {
+                this.parents = new List<string>();
+                if (!string.IsNullOrEmpty(this.mergeA))
+                    this.parents.Add(this.mergeA);
+                if (!string.IsNullOrEmpty(this.mergeB))
+                    this.parents.Add(this.mergeB);
+            }
         }
 
         public string PrettyTimeString => Time.ToLocalTime().CreateRelativeTime(DateTimeOffset.Now);
@@ -151,6 +167,13 @@ namespace Unity.VersionControl.Git
         public string MergeA => mergeA;
 
         public string MergeB => mergeB;
+
+        /// <summary>
+        /// All parent commit ids, in the order reported by git (first parent first).
+        /// Always contains at least one entry for non-root commits; octopus merges
+        /// can have more than two parents unlike <see cref="MergeA"/> / <see cref="MergeB"/>.
+        /// </summary>
+        public IReadOnlyList<string> Parents => parents ?? (IReadOnlyList<string>)new List<string>();
 
         public string AuthorName => authorName;
 
